@@ -32,6 +32,9 @@ public class ioSettings {
     protected static String getContentLoad(){
         return getData(MakeFieldName("optim"),1);
     }
+    protected static String getDebug(){
+        return getData(MakeFieldName("debug"),1);
+    }
     protected static String getUsername(){
         return getData(MakeFieldName("LoginData"),1);
     }
@@ -88,7 +91,10 @@ public class ioSettings {
         String[] data={contentLoad};
         return saveData(MakeFieldName("optim"),data,1);
     }
-
+    protected static int saveDebug(String debug){
+        String[] data={debug};
+        return saveData(MakeFieldName("debug"),data,1);
+    }
     protected static int saveRemSMS(String remSMS){
         String[] data={remSMS};
         return saveData(MakeFieldName("remSMS"),data,1);

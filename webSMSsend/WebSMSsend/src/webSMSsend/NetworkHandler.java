@@ -3,7 +3,7 @@
  *
     Copyright 2009 Max Hänze --- maximum.blogsite.org
     Copyright 2010 Christian Morlok --- cmorlok.de
-
+    2010 C-o-M
     This file is part of WebSMSsend.
 
     WebSMSsend is free software: you can redistribute it and/or modify
@@ -27,6 +27,7 @@ package webSMSsend;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
 import javax.microedition.io.HttpsConnection;
@@ -36,10 +37,17 @@ import me.regexp.RE;
 
 public class NetworkHandler {
 
+    // taken from ftp://ftp.unicode.org/Public/MAPPINGS/VENDORS/MICSFT/WINDOWS/CP1252.TXT
+    // the first 128 characters are the same as ASCII
+    // undefined chars are replaced by SPACE (0x0020).
+    private char[] cp1252map = "\u20AC\u0020\u201A\u0192\u201E\u2026\u2020\u2021\u02C6\u2030\u0160\u2039\u0152\u0020\u017D\u0020\u0020\u2018\u2019\u201C\u201D\u2022\u2013\u2014\u02DC\u2122\u0161\u203A\u0153\u0020\u017E\u0178\u00A0\u00A1\u00A2\u00A3\u00A4\u00A5\u00A6\u00A7\u00A8\u00A9\u00AA\u00AB\u00AC\u00AD\u00AE\u00AF\u00B0\u00B1\u00B2\u00B3\u00B4\u00B5\u00B6\u00B7\u00B8\u00B9\u00BA\u00BB\u00BC\u00BD\u00BE\u00BF\u00C0\u00C1\u00C2\u00C3\u00C4\u00C5\u00C6\u00C7\u00C8\u00C9\u00CA\u00CB\u00CC\u00CD\u00CE\u00CF\u00D0\u00D1\u00D2\u00D3\u00D4\u00D5\u00D6\u00D7\u00D8\u00D9\u00DA\u00DB\u00DC\u00DD\u00DE\u00DF\u00E0\u00E1\u00E2\u00E3\u00E4\u00E5\u00E6\u00E7\u00E8\u00E9\u00EA\u00EB\u00EC\u00ED\u00EE\u00EF\u00F0\u00F1\u00F2\u00F3\u00F4\u00F5\u00F6\u00F7\u00F8\u00F9\u00FA\u00FB\u00FC\u00FD\u00FE\u00FF".toCharArray();
+    private boolean cp1252internal;
+
     private String username;
     private String password;
     private String content="";
     private String cookie="";
+    private webSMSsend GUI;
 
     
 
@@ -62,14 +70,41 @@ public class NetworkHandler {
     public void setCookie(String cookie2){
         cookie=cookie2;
     }
-    public NetworkHandler(String usernameIn,String passwordIn){
+    public NetworkHandler(String usernameIn, String passwordIn, webSMSsend parent) {
         username=usernameIn;
         password=passwordIn;
-        
+        GUI = parent;
+
+        // test if jvm supports cp1252 encoding
+        cp1252internal = true;
+        try {
+            byte[] testByte = {(byte) 0x80};
+            String testString = new String(testByte, "Cp1252");
+        } catch (UnsupportedEncodingException ex) {
+            GUI.debug(ex.toString());
+            GUI.debug("JVM doesn't support Cp1252 encoding, falling  back to internal decoding.");
+            cp1252internal = false;
+        }
     }
 
+    private String byteArrayToString(byte[] bytes, int off, int len) throws UnsupportedEncodingException {
+        String ret;
+        if (cp1252internal) {
+            ret = new String(bytes, off, len, "Cp1252");
+        } else {
+            char[] chars = new char[len];
+            for (int i = off; i < len + off; ++i) {
+                byte b = bytes[i];
+                chars[i] = (b >= 0) ? (char) b : cp1252map[b + 128];
+            }
+            ret =  new String(chars);
+        }
+        System.out.println("decoded: " + ret);
+        return ret;
+    }
 
     public String checkRecv(String smsRecv){
+//        GUI.debug("checkRecv( " + smsRecv + " )");
         if(smsRecv.startsWith("0")){
             if (smsRecv.startsWith("00"))
             {
@@ -78,6 +113,7 @@ public class NetworkHandler {
             }
                 smsRecv="+49".concat(smsRecv.substring(1));
         }
+//        GUI.debug("checkRecv return " + smsRecv);
         return smsRecv;
     }
 
@@ -85,6 +121,7 @@ public class NetworkHandler {
 
     //statical query line 850!
     public String[] getSendPostRequest(boolean getRemSMS) throws Exception{
+        GUI.debug("getSendPostRequest( " + getRemSMS + " )");
         String[] lineSplit=null;
         
         RE split=new RE('\n'+"");
@@ -162,12 +199,14 @@ public class NetworkHandler {
     }*/
 
     public String getRegexMatch(String lineSplit,String expression,int paren) {
+        GUI.debug("getRegexMatch( " + lineSplit + ", " + expression + ", " + paren + " )");
         String content;
         RE regexp=new RE(expression,RE.MATCH_CASEINDEPENDENT);
 
         regexp.match(lineSplit);
         content=regexp.getParen(paren);
 
+        GUI.debug("getRegexMatch return " + content);
         return content;
     }
 
@@ -189,6 +228,7 @@ public class NetworkHandler {
     
     //statical match line 190!
     public String getFlowExecutionKey() throws Exception{
+        GUI.debug("getFlowExecutionKey()");
         String[] lineSplit;
         RE split=new RE('\n'+"");
         lineSplit=split.split(content);
@@ -197,11 +237,13 @@ public class NetworkHandler {
         int i;
         for(i=190;i<lineSplit.length;i++){ //190 first match line
             if (regexp.match(lineSplit[i])){
+                GUI.debug("getFlowExecutionKey: key found at line " + i);
                 return regexp.getParen(1);
             }
         }
         for (i=0;i<190;i++){
             if (regexp.match(lineSplit[i])){
+                GUI.debug("getFlowExecutionKey: key found at line " + i);
                 return regexp.getParen(1);
             }
         }
@@ -339,6 +381,8 @@ public class NetworkHandler {
 
 
     public int httpHandler(String requestMode, String url, String host,String postReq,boolean loadContent) throws CertificateException, IOException, Exception {
+//        GUI.debug("httpHandler( " + requestMode + ", " + url + ", " + host + ", " + postReq + ", " + loadContent + " )");
+        GUI.debug("httpHandler( " + requestMode + ", " + url + ", " + host + ", postReq, " + loadContent + " )");
         byte[] data;
         HttpConnection con=null;
         content="";
@@ -346,8 +390,14 @@ public class NetworkHandler {
          InputStream is = null;
          OutputStream os = null;
          try {
+             try {
+               con = (HttpConnection)Connector.open(url,Connector.READ_WRITE);
+             } catch (Exception ex) {
+                 GUI.debug("Connector.open failed, exception: " + ex.toString());
+                 throw ex;
+             }
 
-             con = (HttpConnection)Connector.open(url,Connector.READ_WRITE);
+             try {
              //firefox browser identification
              con.setRequestProperty("User-Agent","Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.9.0.9) Gecko/2009040821 Firefox/3.0.9 (.NET CLR 3.5.30729)");
              con.setRequestProperty("Host",host);
@@ -359,20 +409,24 @@ public class NetworkHandler {
              con.setRequestProperty("cookie", cookie);
              if (requestMode.equals("POST")){
                 con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-             }
-             
-
-             //send post request
-             if (requestMode.equals("POST")){
                 con.setRequestMethod(HttpConnection.POST);
                 con.setRequestProperty("Content-Length", ""+postReq.getBytes().length);
-                os = con.openOutputStream();
-                os.write(postReq.getBytes());
-                
+                try {
+                    os = con.openOutputStream();
+                    os.write(postReq.getBytes());
+                } catch (IOException ex) {
+                    GUI.debug("writing to output stream failed, exception: " + ex.toString());
+                    throw ex;
+                }
+
              }else{
                  con.setRequestMethod(HttpConnection.GET);
              }
-
+             } catch (IOException ex) {
+                 GUI.debug("con.setRequestProperty failed, exception: " + ex.toString());
+                 throw ex;
+             }
+             
 
              /* getHeaderField returns only 1 cookie...
              if (con.getHeaderField("Set-Cookie")!=null){
@@ -397,19 +451,26 @@ public class NetworkHandler {
 
              //load content
              if (loadContent){
+                 try {
              is = con.openDataInputStream();
+                 } catch (IOException ex) {
+                     GUI.debug("con.openDataInputStream failed, exception: " + ex.toString());
+                     throw ex;
+                 }
              System.out.println(con.getResponseCode());
              if (con.getResponseCode() == HttpConnection.HTTP_OK) {
                  
                  // Get length and process data
+                 try {
                  int len = (int)con.getLength();
                  if (len > 0) {
                      data = new byte[len];
                      //save whole page as string
                      for (int n; (n = is.read(data)) != -1;) {
-                         String stoapp = new String(data, 0, n, "Cp1252");
+                         //String stoapp = new String(data, 0, n, "Cp1252");
                         //out.append(new String(data, 0, n));
-                         out.append(stoapp);
+                         //out.append(stoapp);
+                         out.append(byteArrayToString(data, 0, n));
                      }
                      data=null;
                      content=out.toString();
@@ -428,8 +489,13 @@ public class NetworkHandler {
                         System.arraycopy(chunk, 0, entireStream, offset, readLength);
                         offset += readLength;
                     }
-                    content = new String(entireStream);
+                    //content = new String(entireStream);
+                    content = byteArrayToString(entireStream, 0, entireStream.length);
                     //return 1;
+                 }
+                 } catch (IOException ex) {
+                     GUI.debug("reading input stream failed, exception: " + ex.toString());
+                     throw ex;
                  }
 
              } else if(con.getResponseCode() == HttpConnection.HTTP_MOVED_TEMP){
