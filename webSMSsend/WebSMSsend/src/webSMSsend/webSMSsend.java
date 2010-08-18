@@ -43,6 +43,9 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitCommand ">
     public class webSMSsend extends MIDlet implements CommandListener {
 
+    public static final int SENDERMODE_STANDARD = 0;
+    public static final int SENDERMODE_TEXT = 1;
+
     String recvNB;
     String text;
     String username;
@@ -76,7 +79,9 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
     private Command eingabeLeeren;
     private Command okCommand5;
     private Command loginScreenSend;
+    private Command Clear;
     private Alert BenutzerwahlBestaettigung;
+    private TextBox Debug;
     private Form MainMenu;
     private TextField textField;
     private StringItem stringItem1;
@@ -107,7 +112,6 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
     private TextField textField7;
     private TextField textField6;
     private List ChooseAccount;
-    private TextBox Debug;
     private SimpleCancellableTask task;
     private Font font;
     private Image image1;
@@ -313,6 +317,9 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
     }
 
     public int sendSMSO2(String smsRecv,String smsText) throws Exception {
+        try{
+        debug("starte sendSMS02()");
+        long totaltime=System.currentTimeMillis();
         if (smsRecv.equals(""))
         {
             waitScreen.setText("kein Empfänger angegeben!");
@@ -325,7 +332,6 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
             Thread.sleep(1000);
             throw new Exception("leere SMS!");
         }
-        try{
         waitScreen.setText("Einstellungen werden geladen...");
         Thread.sleep(500);
         String url;
@@ -334,7 +340,7 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
         waitScreen.setText("Login wird geladen...");
 
         smsRecv=connection.checkRecv(smsRecv);
-        System.out.println(smsRecv);
+        debug("smsRecv: "+smsRecv);
         url = "https://login.o2online.de/loginRegistration/loginAction" +
                      ".do?_flowId=" + "login&o2_type=asp&o2_label=login/co" +
                      "mcenter-login&scheme=http&" + "port=80&server=email." +
@@ -355,16 +361,16 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
                 waitScreen.setText("SSL-Fehler, starte erneut...");
                 Thread.sleep(3000);
             } catch (IOException ex) {
-                debug(ex.toString());
+                debug("IOException: " + ex.toString());
                 if (i==1) {
                     throw ex;
                 }
                 debug("Netzwerkfehler, starte erneut...");
-                waitScreen.setText("Netzwerkfehler, starte erneut...\nException: " + ex.toString());
+                waitScreen.setText("Netzwerkfehler, starte erneut...");
                 Thread.sleep(3000);
             } catch (Exception ex){
-                debug(ex.toString());
-                waitScreen.setText(ex.getMessage());
+                debug("Keine Verbindung möglich :"+ ex.toString()+ " "+ ex.getMessage());
+                waitScreen.setText("Keine Verbindung möglich :"+ ex.toString()+ "\n"+ ex.getMessage());
                 Thread.sleep(3000);
                 throw ex;
             }
@@ -395,7 +401,10 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
         }
         waitScreen.setText("Senden wird vorbereitet...");
         url="https://email.o2online.de/smscenter_new.osp?Autocompletion=1&MsgContentID=-1";
+        long starttime = System.currentTimeMillis();
         connection.httpHandler("GET",url,"email.o2online.de","",true);
+        long httphandlertime =System.currentTimeMillis()-starttime;
+        debug("Fertig mit connection.httpHandler, Dauer: "+ httphandlertime + " ms");
         //System.out.println(connection.getContent()+"\n\n\n");
         String postRequest="";
         waitScreen.setText("SMS wird gesendet...");
@@ -405,30 +414,20 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
 
         
             String[] returnValue;
-            returnValue = connection.getSendPostRequest((remSMS!=-1));
+            starttime = System.currentTimeMillis();
+            returnValue = connection.getSendPostRequest((remSMS!=-1),SenderMode); //Sendermode: 0=phone number 1=text
+            debug("Fertig mit getSendPostRequest, Dauer: "+ (System.currentTimeMillis()-starttime) + " ms" + "HttpHandler: " + httphandlertime + " ms");
             postRequest=returnValue[0];
             if (remSMS!=-1){
                 remSMS=Integer.parseInt(returnValue[1]);
             }
-       
-         
-        if (SenderMode==1) //Text as Sender
-        {
+
+        if (SenderMode==SENDERMODE_TEXT){ //Text as Sender
             postRequest=postRequest+"SMSTo="+URLEncoder.encode(smsRecv)+"&SMSText="
                      +URLEncoder.encode(smsText)+"&SMSFrom="
                      + URLEncoder.encode(SenderName)+ "&Frequency=5";
-            //Replace 0 with 1
-            String oldpattern="FlagDefSender=0";
-            String newpattern="FlagDefSender=1";
-            int index = postRequest.indexOf(oldpattern);
-            if (index!=0)
-            {
-               postRequest=postRequest.substring(0, index) + newpattern + postRequest.substring(index + oldpattern.length());
-
-            }
         }
-        else
-        {
+        else{
             postRequest=postRequest+"SMSTo="+URLEncoder.encode(smsRecv)+"&SMSText="
                      +URLEncoder.encode(smsText)+"&SMSFrom=&Frequency=5";
         }
@@ -438,27 +437,29 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
         //if (remSMS>0) remSMS--;
         int SMSneeded = countSMS(smsText);
         if (remSMS>0) remSMS=remSMS-SMSneeded; //Counting amount of used SMS
-        System.out.println("Die SMS ist Zeichen lang: " + smsText.length());
-        System.out.println("Anzahl SMS: " + SMSneeded);
-
+        debug("Die SMS ist Zeichen lang: " + smsText.length());
+        debug("Anzahl SMS: " + SMSneeded);
+        debug("Fertig mit sendSMS02, Dauer: "+ (System.currentTimeMillis()-totaltime) + " ms");
         waitScreen.setText("SMS wurde versandt!");
         return 0;
 
         }catch (OutOfMemoryError ex){
             waitScreen.setText("Systemspeicher voll!");
+            debug("Systemspeicher voll!");
             Thread.sleep(7000);
             throw ex;
         }catch (Exception ex){
-            waitScreen.setText(ex.getMessage());
+            waitScreen.setText(ex.toString()+ ": "+ex.getMessage());
+            debug(ex.toString()+ ": "+ex.getMessage());
             ex.printStackTrace();
             Thread.sleep(7000);
             throw ex;
         }catch (Throwable e){
-            waitScreen.setText(e.toString());
+            waitScreen.setText("Unklarer Fehler: "+e.toString());
+            debug("Unklarer Fehler: "+e.toString());
             Thread.sleep(10000);
             throw new Exception("Fehler!");
         }
-
     }
 
     private void SyncSettings()
@@ -597,71 +598,74 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
                 switchDisplayable(getBenutzerwahlBestaettigung(), getList());//GEN-LINE:|7-commandAction|6|254-postAction
                 // write post-action user code here
                 BenutzerwahlBestaettigung = null;
-            }//GEN-BEGIN:|7-commandAction|7|291-preAction
+            }//GEN-BEGIN:|7-commandAction|7|294-preAction
         } else if (displayable == Debug) {
-            if (command == back) {//GEN-END:|7-commandAction|7|291-preAction
+            if (command == Clear) {//GEN-END:|7-commandAction|7|294-preAction
                 // write pre-action user code here
-                switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|8|291-postAction
+                getDebug().setString(getDebug().size() +" Zeichen gelöscht");//GEN-LINE:|7-commandAction|8|294-postAction
                 // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|9|245-preAction
+            } else if (command == back) {//GEN-LINE:|7-commandAction|9|291-preAction
+                // write pre-action user code here
+                switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|10|291-postAction
+                // write post-action user code here
+            }//GEN-BEGIN:|7-commandAction|11|245-preAction
         } else if (displayable == MainMenu) {
-            if (command == eingabeLeeren) {//GEN-END:|7-commandAction|9|245-preAction
+            if (command == eingabeLeeren) {//GEN-END:|7-commandAction|11|245-preAction
                 // write pre-action user code here
-                ClearSMSInput();//GEN-LINE:|7-commandAction|10|245-postAction
+                ClearSMSInput();//GEN-LINE:|7-commandAction|12|245-postAction
                 // write post-action user code here
-            } else if (command == exitCommand) {//GEN-LINE:|7-commandAction|11|19-preAction
+            } else if (command == exitCommand) {//GEN-LINE:|7-commandAction|13|19-preAction
                 // write pre-action user code here
-                exitMIDlet();//GEN-LINE:|7-commandAction|12|19-postAction
+                exitMIDlet();//GEN-LINE:|7-commandAction|14|19-postAction
                 // write post-action user code here
-            } else if (command == goToSettings) {//GEN-LINE:|7-commandAction|13|82-preAction
+            } else if (command == goToSettings) {//GEN-LINE:|7-commandAction|15|82-preAction
                 // write pre-action user code here
-                switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|14|82-postAction
+                switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|16|82-postAction
 
-            } else if (command == writeSMS) {//GEN-LINE:|7-commandAction|15|29-preAction
+            } else if (command == writeSMS) {//GEN-LINE:|7-commandAction|17|29-preAction
                 recvNB=textField.getString();
                 text=textField3.getString();
-
-
+                debug("Senden pressed");
                 if (!password.equals("")){
-                    switchDisplayable(null, getWaitScreen());//GEN-LINE:|7-commandAction|16|29-postAction
+                    switchDisplayable(null, getWaitScreen());//GEN-LINE:|7-commandAction|18|29-postAction
                 }else{
                     switchDisplayable(null, getLoginScreen());
                     textField6.setString(username);
                 }
 
-            }//GEN-BEGIN:|7-commandAction|17|166-preAction
+            }//GEN-BEGIN:|7-commandAction|19|166-preAction
         } else if (displayable == list) {
-            if (command == List.SELECT_COMMAND) {//GEN-END:|7-commandAction|17|166-preAction
+            if (command == List.SELECT_COMMAND) {//GEN-END:|7-commandAction|19|166-preAction
                 // write pre-action user code here
-                listAction();//GEN-LINE:|7-commandAction|18|166-postAction
+                listAction();//GEN-LINE:|7-commandAction|20|166-postAction
                 // write post-action user code here
-            } else if (command == back) {//GEN-LINE:|7-commandAction|19|184-preAction
+            } else if (command == back) {//GEN-LINE:|7-commandAction|21|184-preAction
                 // write pre-action user code here
-                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|20|184-postAction
+                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|22|184-postAction
                 stringItem1.setText(getRemSMSText());
-            } else if (command == nextSettings) {//GEN-LINE:|7-commandAction|21|173-preAction
+            } else if (command == nextSettings) {//GEN-LINE:|7-commandAction|23|173-preAction
                 // write pre-action user code here
-                listAction();//GEN-LINE:|7-commandAction|22|173-postAction
+                listAction();//GEN-LINE:|7-commandAction|24|173-postAction
                 // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|23|238-preAction
+            }//GEN-BEGIN:|7-commandAction|25|238-preAction
         } else if (displayable == loginScreen) {
-            if (command == back) {//GEN-END:|7-commandAction|23|238-preAction
+            if (command == back) {//GEN-END:|7-commandAction|25|238-preAction
 
 
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|24|238-postAction
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|26|238-postAction
                 // write post-action user code here
-            } else if (command == loginScreenSend) {//GEN-LINE:|7-commandAction|25|241-preAction
+            } else if (command == loginScreenSend) {//GEN-LINE:|7-commandAction|27|241-preAction
                 username=textField6.getString();
                 password=textField7.getString();
-                switchDisplayable(null, getWaitScreen());//GEN-LINE:|7-commandAction|26|241-postAction
+                switchDisplayable(null, getWaitScreen());//GEN-LINE:|7-commandAction|28|241-postAction
                 // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|27|65-preAction
+            }//GEN-BEGIN:|7-commandAction|29|65-preAction
         } else if (displayable == loginSettings) {
-            if (command == back) {//GEN-END:|7-commandAction|27|65-preAction
+            if (command == back) {//GEN-END:|7-commandAction|29|65-preAction
                 // write pre-action user code here
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|28|65-postAction
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|30|65-postAction
                 // write post-action user code here
-            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|29|85-preAction
+            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|31|85-preAction
 
                 if(choiceGroup1.isSelected(0)){
                     if (textField2.getString().equals("****"))
@@ -675,25 +679,25 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
                 }else password="";
                 username=textField1.getString();
                 ioSettings.saveToRMS(username, password);
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|30|85-postAction
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|32|85-postAction
                 // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|31|110-preAction
+            }//GEN-BEGIN:|7-commandAction|33|110-preAction
         } else if (displayable == notSend) {
-            if (command == exitCommand3) {//GEN-END:|7-commandAction|31|110-preAction
+            if (command == exitCommand3) {//GEN-END:|7-commandAction|33|110-preAction
                 // write pre-action user code here
-                exitMIDlet();//GEN-LINE:|7-commandAction|32|110-postAction
+                exitMIDlet();//GEN-LINE:|7-commandAction|34|110-postAction
                 // write post-action user code here
-            } else if (command == okCommand3) {//GEN-LINE:|7-commandAction|33|112-preAction
+            } else if (command == okCommand3) {//GEN-LINE:|7-commandAction|35|112-preAction
                 // write pre-action user code here
-                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|34|112-postAction
+                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|36|112-postAction
                 // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|35|187-preAction
+            }//GEN-BEGIN:|7-commandAction|37|187-preAction
         } else if (displayable == optimSettings) {
-            if (command == back) {//GEN-END:|7-commandAction|35|187-preAction
+            if (command == back) {//GEN-END:|7-commandAction|37|187-preAction
                 // write pre-action user code here
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|36|187-postAction
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|38|187-postAction
                 // write post-action user code here
-            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|37|208-preAction
+            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|39|208-preAction
                 if (choiceGroup.isSelected(0)){
                     ioSettings.saveOptim("true");
                     contentLoad=true;
@@ -717,15 +721,15 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
                     ioSettings.saveDebug("false");
                     debug=false;
                 }
-                switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|38|208-postAction
+                switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|40|208-postAction
                 // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|39|189-preAction
+            }//GEN-BEGIN:|7-commandAction|41|189-preAction
         } else if (displayable == providerSettings) {
-            if (command == back) {//GEN-END:|7-commandAction|39|189-preAction
+            if (command == back) {//GEN-END:|7-commandAction|41|189-preAction
                 // write pre-action user code here
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|40|189-postAction
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|42|189-postAction
                 // write post-action user code here
-            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|41|232-preAction
+            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|43|232-preAction
                 if (choiceGroup3.getSelectedIndex()!=-1){
                      provider=choiceGroup3.getSelectedIndex();
                      ioSettings.saveSetup(""+provider);
@@ -734,14 +738,14 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
                          ioSettings.saveRemSMS("-2");
                      }
                 }
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|42|232-postAction
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|44|232-postAction
 
 
 
 
-            }//GEN-BEGIN:|7-commandAction|43|227-preAction
+            }//GEN-BEGIN:|7-commandAction|45|227-preAction
         } else if (displayable == setup) {
-            if (command == okCommand) {//GEN-END:|7-commandAction|43|227-preAction
+            if (command == okCommand) {//GEN-END:|7-commandAction|45|227-preAction
                 username=textField5.getString();
                 password=textField4.getString();
                 provider=choiceGroup2.getSelectedIndex();
@@ -757,25 +761,25 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
                 ioSettings.saveSetup(""+(provider));
                 ioSettings.saveToRMS(username, password);
                 SyncSettings();
-                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|44|227-postAction
+                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|46|227-postAction
                 // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|45|104-preAction
+            }//GEN-BEGIN:|7-commandAction|47|104-preAction
         } else if (displayable == smsSend) {
-            if (command == exitCommand2) {//GEN-END:|7-commandAction|45|104-preAction
+            if (command == exitCommand2) {//GEN-END:|7-commandAction|47|104-preAction
                 // write pre-action user code here
-                exitMIDlet();//GEN-LINE:|7-commandAction|46|104-postAction
+                exitMIDlet();//GEN-LINE:|7-commandAction|48|104-postAction
                 // write post-action user code here
-            } else if (command == okCommand2) {//GEN-LINE:|7-commandAction|47|107-preAction
+            } else if (command == okCommand2) {//GEN-LINE:|7-commandAction|49|107-preAction
                 // write pre-action user code here
-                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|48|107-postAction
+                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|50|107-postAction
                 stringItem1.setText(getRemSMSText());
-            }//GEN-BEGIN:|7-commandAction|49|183-preAction
+            }//GEN-BEGIN:|7-commandAction|51|183-preAction
         } else if (displayable == smsSettings) {
-            if (command == back) {//GEN-END:|7-commandAction|49|183-preAction
+            if (command == back) {//GEN-END:|7-commandAction|51|183-preAction
                 // write pre-action user code here
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|50|183-postAction
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|52|183-postAction
                 // write post-action user code here
-            } else if (command == okCommand6) {//GEN-LINE:|7-commandAction|51|270-preAction
+            } else if (command == okCommand6) {//GEN-LINE:|7-commandAction|53|270-preAction
                 if (txtSenderName.getString().length()<5 && choiceGroup4.getSelectedIndex() !=0)
                 {
                     //Fehlermeldung "Name zu kurz" falls Text als Absender gewählt
@@ -788,31 +792,31 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
                     SenderName=txtSenderName.getString();
                     ioSettings.saveSenderSetup(SenderMode, SenderName);
                 // write pre-action user code here
-                    switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|52|270-postAction
+                    switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|54|270-postAction
                 // write post-action user code here
                 }
-            }//GEN-BEGIN:|7-commandAction|53|51-preAction
+            }//GEN-BEGIN:|7-commandAction|55|51-preAction
         } else if (displayable == waitScreen) {
-            if (command == WaitScreen.FAILURE_COMMAND) {//GEN-END:|7-commandAction|53|51-preAction
+            if (command == WaitScreen.FAILURE_COMMAND) {//GEN-END:|7-commandAction|55|51-preAction
                 getNotSend().setString("SMS nicht gesendet!");
-                switchDisplayable(getNotSend(), getMainMenu());//GEN-LINE:|7-commandAction|54|51-postAction
+                switchDisplayable(getNotSend(), getMainMenu());//GEN-LINE:|7-commandAction|56|51-postAction
 
-            } else if (command == WaitScreen.SUCCESS_COMMAND) {//GEN-LINE:|7-commandAction|55|50-preAction
+            } else if (command == WaitScreen.SUCCESS_COMMAND) {//GEN-LINE:|7-commandAction|57|50-preAction
                 if (remSMS!=-1){
                     ioSettings.saveRemSMS(""+remSMS);
                 }
-                switchDisplayable(getSmsSend(), getMainMenu());//GEN-LINE:|7-commandAction|56|50-postAction
+                switchDisplayable(getSmsSend(), getMainMenu());//GEN-LINE:|7-commandAction|58|50-postAction
                 smsSend.setString("SMS gesendet \n"+getRemSMSText());
                 ClearSMSInput();
-            } else if (command == exitCommand1) {//GEN-LINE:|7-commandAction|57|99-preAction
+            } else if (command == exitCommand1) {//GEN-LINE:|7-commandAction|59|99-preAction
                 // write pre-action user code here
-                exitMIDlet();//GEN-LINE:|7-commandAction|58|99-postAction
+                exitMIDlet();//GEN-LINE:|7-commandAction|60|99-postAction
                 // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|59|7-postCommandAction
-        }//GEN-END:|7-commandAction|59|7-postCommandAction
+            }//GEN-BEGIN:|7-commandAction|61|7-postCommandAction
+        }//GEN-END:|7-commandAction|61|7-postCommandAction
         // write post-action user code here
-    }//GEN-BEGIN:|7-commandAction|60|
-    //</editor-fold>//GEN-END:|7-commandAction|60|
+    }//GEN-BEGIN:|7-commandAction|62|
+    //</editor-fold>//GEN-END:|7-commandAction|62|
 
 
 
@@ -933,6 +937,7 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
      */
     public WaitScreen getWaitScreen() {
         if (waitScreen == null) {//GEN-END:|47-getter|0|47-preInit
+            debug("waitscreen erstellen");
             // write pre-init user code here
             waitScreen = new WaitScreen(getDisplay());//GEN-BEGIN:|47-getter|1|47-postInit
             waitScreen.setTitle("Sende SMS...");
@@ -1830,14 +1835,30 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
     public TextBox getDebug() {
         if (Debug == null) {//GEN-END:|287-getter|0|287-preInit
             // write pre-init user code here
-            Debug = new TextBox("Debug Meldungen", null, 5000, TextField.ANY);//GEN-BEGIN:|287-getter|1|287-postInit
+            Debug = new TextBox("Debug Meldungen", "", 12000, TextField.ANY);//GEN-BEGIN:|287-getter|1|287-postInit
             Debug.addCommand(getBack());
+            Debug.addCommand(getClear());
             Debug.setCommandListener(this);//GEN-END:|287-getter|1|287-postInit
             // write post-init user code here
         }//GEN-BEGIN:|287-getter|2|
         return Debug;
     }
     //</editor-fold>//GEN-END:|287-getter|2|
+
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: Clear ">//GEN-BEGIN:|293-getter|0|293-preInit
+    /**
+     * Returns an initiliazed instance of Clear component.
+     * @return the initialized component instance
+     */
+    public Command getClear() {
+        if (Clear == null) {//GEN-END:|293-getter|0|293-preInit
+            // write pre-init user code here
+            Clear = new Command("Clear", Command.SCREEN, 0);//GEN-LINE:|293-getter|1|293-postInit
+            // write post-init user code here
+        }//GEN-BEGIN:|293-getter|2|
+        return Clear;
+    }
+    //</editor-fold>//GEN-END:|293-getter|2|
 
 
 
@@ -1920,9 +1941,14 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
 
     void debug(String msg) {
         if (debug) {
+            try{
             long currentTime = System.currentTimeMillis() - startTime;
             getDebug().insert(currentTime + ": " + msg + "\n", getDebug().size());
-            System.out.println(msg);
+            System.out.println(currentTime + ": " + msg);
+            }
+            catch (Exception ex){
+                getDebug().setString("Textbox voll: "+ getDebug().size() + " Zeichen --> lösche Inhalt\n" );
+            }
         }
     }
 

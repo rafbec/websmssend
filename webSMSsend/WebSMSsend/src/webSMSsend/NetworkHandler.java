@@ -35,6 +35,7 @@ import javax.microedition.pki.CertificateException;
 import me.regexp.RE;
 
 
+
 public class NetworkHandler {
 
     // taken from ftp://ftp.unicode.org/Public/MAPPINGS/VENDORS/MICSFT/WINDOWS/CP1252.TXT
@@ -49,7 +50,6 @@ public class NetworkHandler {
     private String cookie="";
     private webSMSsend GUI;
 
-    
 
     public String getCookie(){
         return cookie;
@@ -84,6 +84,8 @@ public class NetworkHandler {
             GUI.debug(ex.toString());
             GUI.debug("JVM doesn't support Cp1252 encoding, falling  back to internal decoding.");
             cp1252internal = false;
+        } catch (Exception ex){
+            GUI.debug("Exception at NetworkHandler: "+ex.toString());
         }
     }
 
@@ -120,7 +122,7 @@ public class NetworkHandler {
 
 
     //statical query line 850!
-    public String[] getSendPostRequest(boolean getRemSMS) throws Exception{
+    public String[] getSendPostRequest(boolean getRemSMS, int SENDERMODE) throws Exception{
         GUI.debug("getSendPostRequest( " + getRemSMS + " )");
         String[] lineSplit=null;
         
@@ -135,6 +137,7 @@ public class NetworkHandler {
         argumentArray[3][0]="FlagFlash";
         argumentArray[4][0]="FlagAnonymous";
         argumentArray[5][0]="FlagDefSender";
+        argumentArray[5][1]=""+SENDERMODE;
         argumentArray[6][0]="FlagVCal";
         argumentArray[7][0]="FlagVCard";
         argumentArray[8][0]="CID";
@@ -150,7 +153,18 @@ public class NetworkHandler {
         argumentArray[18][0]="REF";
 
         String[] argumentStrings=new String[19];
-        int smsFormLine=getRegexLineMatch(lineSplit,"<form name=\"frmSMS\" action=\"/smscenter_send.osp\" onsubmit=\"return false\" onreset=\"return false\" method=\"post\">",835,false)+1;
+        int smsFormLine=0;
+        try{
+            smsFormLine=getRegexLineMatch(lineSplit,"<form name=\"frmSMS\" action=\"/smscenter_send.osp\" onsubmit=\"return false\" onreset=\"return false\" method=\"post\">",835,false)+1;
+        }
+        catch (ArrayIndexOutOfBoundsException e) { //Fallback: Regex the whole html string
+            GUI.debug("Fallback: RegexLineMatch: Startline is not correct");
+            smsFormLine=getRegexLineMatch(lineSplit,"<form name=\"frmSMS\" action=\"/smscenter_send.osp\" onsubmit=\"return false\" onreset=\"return false\" method=\"post\">",0,false)+1;
+        }
+        catch (Exception ex){
+            throw ex;
+        }
+
         String remSMSstring=null;
         if (getRemSMS){
             int remSMSline=getRegexLineMatch(lineSplit,"<span class=\"FREESMS\"><strong>Frei-SMS: (.+) Web2SMS noch in diesem Monat mit Ihrem Internet-Pack inklusive!</strong></span><br>",lineSplit.length-smsFormLine,false);
@@ -162,7 +176,7 @@ public class NetworkHandler {
         System.arraycopy(lineSplit, smsFormLine , argumentStrings, 0, 19);
         lineSplit=null;
         for (int i=0;i<argumentArray.length;i++){
-            
+            if (argumentArray[i][1]==null) //leave predefined values alone (FlagDefSender)
                 argumentArray[i][1] = URLEncoder.encode(getRegexMatch(argumentStrings[i], "<input type=\"Hidden\" name=\"" + argumentArray[i][0] + "\" value=\"(.*)\"", 1));
             
         }
@@ -514,6 +528,10 @@ public class NetworkHandler {
                 throw new Exception("Connection failed, response code: "+con.getResponseCode());
              }
              }
+         } catch (Exception ex){
+             throw ex;
+         } catch (Throwable t){
+             throw new Exception("Throwable: "+t.toString()+t.getMessage());
          } finally {
              if (is != null)
                  is.close();

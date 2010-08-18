@@ -53,7 +53,7 @@ public class ioSettings {
     protected static int getSetup(){
         String data = getData(MakeFieldName("setup"),1);
         if (data.equals("")){
-            return 0;
+            return 0; //=SENDERMODE_STANDARD
         }
         else{
             return Integer.parseInt(data);
