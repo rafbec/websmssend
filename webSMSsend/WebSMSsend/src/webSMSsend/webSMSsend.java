@@ -137,7 +137,7 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
     }
     private String getRemSMSText(){
         if (remSMS!=-1 & remSMS!=-2){
-            return "verbleibende FreiSMS: "+remSMS;
+            return "verbleibende Frei-SMS: "+remSMS+"\nBenutzerkonto "+(ActiveAccount+1);
         }
         
         else{
