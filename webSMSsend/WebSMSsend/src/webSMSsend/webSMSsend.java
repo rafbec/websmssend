@@ -68,6 +68,7 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
     private Command goToSettings;
     private Command writeSMS;
     private Command okCommand6;
+    private Command startEmailClient;
     private Command back;
     private Command Clear;
     private Command SendEmail;
@@ -81,18 +82,24 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
     private Command eingabeLeeren;
     private Command okCommand5;
     private Command loginScreenSend;
-    private Command startEmailClient;
     private Alert BenutzerwahlBestaettigung;
     private TextBox Debug;
     private Form MainMenu;
     private TextField textField;
     private StringItem stringItem1;
     private TextField textField3;
+    private WaitScreen waitScreen1;
+    private Alert EmailSent;
     private WaitScreen waitScreen;
+    private Alert EmailNotSent;
     private Form loginSettings;
     private TextField textField2;
     private TextField textField1;
     private ChoiceGroup choiceGroup1;
+    private Form SendEmailForm;
+    private TextField txtCCemail;
+    private StringItem stringItem3;
+    private TextField txtFehlerbeschreibung;
     private Alert smsSend;
     private Alert notSend;
     private Alert About;
@@ -114,17 +121,10 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
     private TextField textField7;
     private TextField textField6;
     private List ChooseAccount;
-    private Form SendEmailForm;
-    private StringItem stringItem3;
-    private TextField txtFehlerbeschreibung;
-    private TextField txtCCemail;
-    private WaitScreen waitScreen1;
-    private Alert EmailSent;
-    private Alert EmailNotSent;
+    private SimpleCancellableTask task1;
     private SimpleCancellableTask task;
     private Font font;
     private Image image1;
-    private SimpleCancellableTask task1;
     //</editor-fold>//GEN-END:|fields|0|
 
     /**
@@ -651,7 +651,7 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
         } else if (displayable == SendEmailForm) {
             if (command == back) {//GEN-END:|7-commandAction|21|307-preAction
                 // write pre-action user code here
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|22|307-postAction
+                switchDisplayable(null, getDebug());//GEN-LINE:|7-commandAction|22|307-postAction
                 // write post-action user code here
             } else if (command == startEmailClient) {//GEN-LINE:|7-commandAction|23|306-preAction
 //                EmailClient client = new EmailClient(this,"d2Vic21zZW5kQGdteC5kZQ==","ZG5lc3Ntc2Jldw==",
@@ -1876,8 +1876,8 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
             // write pre-init user code here
             Debug = new TextBox("Debug Meldungen", "", 12000, TextField.ANY);//GEN-BEGIN:|287-getter|1|287-postInit
             Debug.addCommand(getBack());
-            Debug.addCommand(getClear());
             Debug.addCommand(getSendEmail());
+            Debug.addCommand(getClear());
             Debug.setCommandListener(this);//GEN-END:|287-getter|1|287-postInit
             // write post-init user code here
         }//GEN-BEGIN:|287-getter|2|
@@ -1893,7 +1893,7 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
     public Command getClear() {
         if (Clear == null) {//GEN-END:|293-getter|0|293-preInit
             // write pre-init user code here
-            Clear = new Command("Clear", Command.SCREEN, 0);//GEN-LINE:|293-getter|1|293-postInit
+            Clear = new Command("Leeren", Command.SCREEN, 0);//GEN-LINE:|293-getter|1|293-postInit
             // write post-init user code here
         }//GEN-BEGIN:|293-getter|2|
         return Clear;
@@ -2004,7 +2004,7 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
         if (waitScreen1 == null) {//GEN-END:|310-getter|0|310-preInit
             // write pre-init user code here
             waitScreen1 = new WaitScreen(getDisplay());//GEN-BEGIN:|310-getter|1|310-postInit
-            waitScreen1.setTitle("waitScreen1");
+            waitScreen1.setTitle("E-Mail Versand");
             waitScreen1.setCommandListener(this);
             waitScreen1.setTask(getTask1());//GEN-END:|310-getter|1|310-postInit
             // write post-init user code here
