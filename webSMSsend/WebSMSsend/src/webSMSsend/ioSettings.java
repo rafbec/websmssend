@@ -77,6 +77,16 @@ public class ioSettings {
         if (Sender.equals("")) return "Absender"; //Als Standard Absender, damit man auf jeden Fall das Textfeld in smsSettings sieht
         else return Sender;
     }
+
+    protected static int getSendPostRequestSettings(){
+        String data = getData(("SendPostRequestSettings"),1);
+        if (data.equals("")){
+            return 0;
+        }
+        else{
+            return Integer.parseInt(data);
+        }
+    }
     protected static String getTempSMSto(){
         return getData("TempSMS",1);
     }
@@ -114,6 +124,10 @@ public class ioSettings {
     protected static int saveTempSMS(String smsTo,String smsText){
         String[] data={smsTo,smsText};
         return saveData(("TempSMS"),data,2);
+    }
+    protected static int saveSendPostRequestSettings(int StartLineNumber){
+        String[] data={""+StartLineNumber};
+        return saveData(("SendPostRequestSettings"),data,1);
     }
 
     private static String MakeFieldName(String Field)

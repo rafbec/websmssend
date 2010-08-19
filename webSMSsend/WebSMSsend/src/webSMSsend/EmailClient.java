@@ -48,22 +48,22 @@ public class EmailClient {
          is = sc.openInputStream();
          os = sc.openOutputStream();
 
-         os.write(("HELO there" + "\r\n").getBytes());
-         os.write(("AUTH LOGIN"+ "\r\n").getBytes());
-         os.write((user+"\r\n").getBytes());
-         os.write((password+"\r\n").getBytes());
-         os.write(("MAIL FROM: "+ from +"\r\n").getBytes());
-         os.write(("RCPT TO: "+ to + "\r\n").getBytes());
-         if (!cc.equals("")) os.write(("RCPT TO: "+ cc + "\r\n").getBytes()); //not CC but works...;)
-         os.write("DATA\r\n".getBytes());
+         WriteToStream("HELO there" + "\r\n");
+         WriteToStream("AUTH LOGIN"+ "\r\n");
+         WriteToStream(user+"\r\n");
+         WriteToStream(password+"\r\n");
+         WriteToStream("MAIL FROM: "+ from +"\r\n");
+         WriteToStream("RCPT TO: "+ to + "\r\n");
+         if (!cc.equals("")) WriteToStream("RCPT TO: "+ cc + "\r\n"); //not CC but works...;)
+         WriteToStream("DATA\r\n");
          // stamp the msg with date
-         os.write(("Date: " + new Date() + "\r\n").getBytes());
-         os.write(("From: "+from+"\r\n").getBytes());
-         os.write(("To: "+to+"\r\n").getBytes());
-         os.write(("Subject: "+subject+"\r\n").getBytes());
-         os.write(("\r\n"+msg+"\r\n").getBytes()); // message body
-         os.write(".\r\n".getBytes());
-         os.write("QUIT\r\n".getBytes());
+         WriteToStream("Date: " + new Date() + "\r\n");
+         WriteToStream("From: "+from+"\r\n");
+         WriteToStream("To: "+to+"\r\n");
+         WriteToStream("Subject: "+subject+"\r\n");
+         WriteToStream("\r\n"+msg+"\r\n"); // message body
+         WriteToStream(".\r\n");
+         WriteToStream("QUIT\r\n");
 
          // debug
          StringBuffer sb = new StringBuffer();
@@ -78,7 +78,7 @@ public class EmailClient {
             throw new IOException("E-Mail not send");
         }
       } catch(IOException e) {
-        parent.debug("Cannot connect to SMTP server. Ping the server to make sure it is running...\n"+e.getMessage());
+        parent.debug("Cannot connect to SMTP server. Ping the server to make sure it is running...\n"+e.toString()+e.getMessage());
         throw e;
       } finally {
          try {
@@ -96,5 +96,10 @@ public class EmailClient {
          }
       }
       return i;
+   }
+
+   private void WriteToStream(String command) throws IOException{
+       os.write(command.getBytes());
+       os.flush();
    }
 }

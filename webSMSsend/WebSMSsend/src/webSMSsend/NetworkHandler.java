@@ -154,8 +154,10 @@ public class NetworkHandler {
 
         String[] argumentStrings=new String[19];
         int smsFormLine=0;
+        int startline = ioSettings.getSendPostRequestSettings();
+        GUI.debug("Saved Startline: " + startline);
         try{
-            smsFormLine=getRegexLineMatch(lineSplit,"<form name=\"frmSMS\" action=\"/smscenter_send.osp\" onsubmit=\"return false\" onreset=\"return false\" method=\"post\">",838,false)+1;
+            smsFormLine=getRegexLineMatch(lineSplit,"<form name=\"frmSMS\" action=\"/smscenter_send.osp\" onsubmit=\"return false\" onreset=\"return false\" method=\"post\">",startline,false)+1;
         }
         catch (ArrayIndexOutOfBoundsException e) { //Fallback: Regex the whole html string
             GUI.debug("Fallback: RegexLineMatch: Startline is not correct");
@@ -164,7 +166,9 @@ public class NetworkHandler {
         catch (Exception ex){
             throw ex;
         }
-        GUI.debug("Current Startline: " + (lineSplit.length-smsFormLine));
+        startline= (lineSplit.length-smsFormLine);
+        ioSettings.saveSendPostRequestSettings(startline);
+        GUI.debug("Current Startline: " + startline);
         String remSMSstring=null;
         if (getRemSMS){
             int remSMSline=getRegexLineMatch(lineSplit,"<span class=\"FREESMS\"><strong>Frei-SMS: (.+) Web2SMS noch in diesem Monat mit Ihrem Internet-Pack inklusive!</strong></span><br>",lineSplit.length-smsFormLine,false);

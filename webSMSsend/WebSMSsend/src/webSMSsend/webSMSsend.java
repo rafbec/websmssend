@@ -42,6 +42,10 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitCommand ">
     public class webSMSsend extends MIDlet implements CommandListener {
+    
+        //FOR DEBUG ONLY!! SMS will not be sent if true
+    public static final boolean simulation = false;
+
 
     public static final int SENDERMODE_STANDARD = 0;
     public static final int SENDERMODE_TEXT = 1;
@@ -441,8 +445,9 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
             postRequest=postRequest+"SMSTo="+URLEncoder.encode(smsRecv)+"&SMSText="
                      +URLEncoder.encode(smsText)+"&SMSFrom=&Frequency=5";
         }
-
-        //connection.httpHandler("POST",url,"email.o2online.de",postRequest,false);//false
+        
+        if (!simulation)
+            connection.httpHandler("POST",url,"email.o2online.de",postRequest,false);//false
         
         //if (remSMS>0) remSMS--;
         int SMSneeded = countSMS(smsText);
@@ -483,6 +488,7 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
         SenderMode=ioSettings.getSenderMode();
         SenderName=ioSettings.getSenderName();
         debug=ioSettings.getDebug().equals("true");
+        if (simulation) debug = true;
         System.out.println("AcitveAccount: "+ActiveAccount);
     }
 
