@@ -61,7 +61,7 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
     String SenderName; //Name bei Text als Absender
     int SenderMode; //0=Phonenumber, 1=Text( SenderName )
     private boolean midletPaused = false;
-
+    private webSMSsend GUI;
     //<editor-fold defaultstate="collapsed" desc=" Generated Fields ">//GEN-BEGIN:|fields|0|
     private java.util.Hashtable __previousDisplayables = new java.util.Hashtable();
     private Command exitCommand;
@@ -69,6 +69,8 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
     private Command writeSMS;
     private Command okCommand6;
     private Command back;
+    private Command Clear;
+    private Command SendEmail;
     private Command okCommand;
     private Command exitCommand2;
     private Command exitCommand1;
@@ -79,7 +81,7 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
     private Command eingabeLeeren;
     private Command okCommand5;
     private Command loginScreenSend;
-    private Command Clear;
+    private Command startEmailClient;
     private Alert BenutzerwahlBestaettigung;
     private TextBox Debug;
     private Form MainMenu;
@@ -112,16 +114,24 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
     private TextField textField7;
     private TextField textField6;
     private List ChooseAccount;
+    private Form SendEmailForm;
+    private StringItem stringItem3;
+    private TextField txtFehlerbeschreibung;
+    private TextField txtCCemail;
+    private WaitScreen waitScreen1;
+    private Alert EmailSent;
+    private Alert EmailNotSent;
     private SimpleCancellableTask task;
     private Font font;
     private Image image1;
+    private SimpleCancellableTask task1;
     //</editor-fold>//GEN-END:|fields|0|
 
     /**
      * The HelloMIDlet constructor.
      */
     public webSMSsend() {
-        
+        GUI = this;
     }
     public int sendGMXsms(){
         return 0;
@@ -432,7 +442,7 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
                      +URLEncoder.encode(smsText)+"&SMSFrom=&Frequency=5";
         }
 
-        connection.httpHandler("POST",url,"email.o2online.de",postRequest,false);//false
+        //connection.httpHandler("POST",url,"email.o2online.de",postRequest,false);//false
         
         //if (remSMS>0) remSMS--;
         int SMSneeded = countSMS(smsText);
@@ -604,68 +614,87 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
                 // write pre-action user code here
                 getDebug().setString(getDebug().size() +" Zeichen gelöscht");//GEN-LINE:|7-commandAction|8|294-postAction
                 // write post-action user code here
-            } else if (command == back) {//GEN-LINE:|7-commandAction|9|291-preAction
+            } else if (command == SendEmail) {//GEN-LINE:|7-commandAction|9|298-preAction
                 // write pre-action user code here
-                switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|10|291-postAction
+                switchDisplayable(null, getSendEmailForm());//GEN-LINE:|7-commandAction|10|298-postAction
                 // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|11|245-preAction
+            } else if (command == back) {//GEN-LINE:|7-commandAction|11|291-preAction
+                // write pre-action user code here
+                switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|12|291-postAction
+                // write post-action user code here
+            }//GEN-BEGIN:|7-commandAction|13|245-preAction
         } else if (displayable == MainMenu) {
-            if (command == eingabeLeeren) {//GEN-END:|7-commandAction|11|245-preAction
+            if (command == eingabeLeeren) {//GEN-END:|7-commandAction|13|245-preAction
                 // write pre-action user code here
-                ClearSMSInput();//GEN-LINE:|7-commandAction|12|245-postAction
+                ClearSMSInput();//GEN-LINE:|7-commandAction|14|245-postAction
                 // write post-action user code here
-            } else if (command == exitCommand) {//GEN-LINE:|7-commandAction|13|19-preAction
+            } else if (command == exitCommand) {//GEN-LINE:|7-commandAction|15|19-preAction
                 // write pre-action user code here
-                exitMIDlet();//GEN-LINE:|7-commandAction|14|19-postAction
+                exitMIDlet();//GEN-LINE:|7-commandAction|16|19-postAction
                 // write post-action user code here
-            } else if (command == goToSettings) {//GEN-LINE:|7-commandAction|15|82-preAction
+            } else if (command == goToSettings) {//GEN-LINE:|7-commandAction|17|82-preAction
                 // write pre-action user code here
-                switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|16|82-postAction
+                switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|18|82-postAction
 
-            } else if (command == writeSMS) {//GEN-LINE:|7-commandAction|17|29-preAction
+            } else if (command == writeSMS) {//GEN-LINE:|7-commandAction|19|29-preAction
                 recvNB=textField.getString();
                 text=textField3.getString();
                 debug("Senden pressed");
                 if (!password.equals("")){
-                    switchDisplayable(null, getWaitScreen());//GEN-LINE:|7-commandAction|18|29-postAction
+                    switchDisplayable(null, getWaitScreen());//GEN-LINE:|7-commandAction|20|29-postAction
                 }else{
                     switchDisplayable(null, getLoginScreen());
                     textField6.setString(username);
                 }
 
-            }//GEN-BEGIN:|7-commandAction|19|166-preAction
+            }//GEN-BEGIN:|7-commandAction|21|307-preAction
+        } else if (displayable == SendEmailForm) {
+            if (command == back) {//GEN-END:|7-commandAction|21|307-preAction
+                // write pre-action user code here
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|22|307-postAction
+                // write post-action user code here
+            } else if (command == startEmailClient) {//GEN-LINE:|7-commandAction|23|306-preAction
+//                EmailClient client = new EmailClient(this,"d2Vic21zZW5kQGdteC5kZQ==","ZG5lc3Ntc2Jldw==",
+//                        "websmsend@gmx.de", "websmssend@googlemail.com",getTxtCCemail().getString(),
+//                        "Debug-Meldungen", getTxtFehlerbeschreibung().getString() + "\r\n\r\n"
+//                        + getDebug().getString());
+//                client.start();
+                // write pre-action user code here
+                switchDisplayable(null, getWaitScreen1());//GEN-LINE:|7-commandAction|24|306-postAction
+                // write post-action user code here
+            }//GEN-BEGIN:|7-commandAction|25|166-preAction
         } else if (displayable == list) {
-            if (command == List.SELECT_COMMAND) {//GEN-END:|7-commandAction|19|166-preAction
+            if (command == List.SELECT_COMMAND) {//GEN-END:|7-commandAction|25|166-preAction
                 // write pre-action user code here
-                listAction();//GEN-LINE:|7-commandAction|20|166-postAction
+                listAction();//GEN-LINE:|7-commandAction|26|166-postAction
                 // write post-action user code here
-            } else if (command == back) {//GEN-LINE:|7-commandAction|21|184-preAction
+            } else if (command == back) {//GEN-LINE:|7-commandAction|27|184-preAction
                 // write pre-action user code here
-                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|22|184-postAction
+                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|28|184-postAction
                 stringItem1.setText(getRemSMSText());
-            } else if (command == nextSettings) {//GEN-LINE:|7-commandAction|23|173-preAction
+            } else if (command == nextSettings) {//GEN-LINE:|7-commandAction|29|173-preAction
                 // write pre-action user code here
-                listAction();//GEN-LINE:|7-commandAction|24|173-postAction
+                listAction();//GEN-LINE:|7-commandAction|30|173-postAction
                 // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|25|238-preAction
+            }//GEN-BEGIN:|7-commandAction|31|238-preAction
         } else if (displayable == loginScreen) {
-            if (command == back) {//GEN-END:|7-commandAction|25|238-preAction
+            if (command == back) {//GEN-END:|7-commandAction|31|238-preAction
 
 
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|26|238-postAction
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|32|238-postAction
                 // write post-action user code here
-            } else if (command == loginScreenSend) {//GEN-LINE:|7-commandAction|27|241-preAction
+            } else if (command == loginScreenSend) {//GEN-LINE:|7-commandAction|33|241-preAction
                 username=textField6.getString();
                 password=textField7.getString();
-                switchDisplayable(null, getWaitScreen());//GEN-LINE:|7-commandAction|28|241-postAction
+                switchDisplayable(null, getWaitScreen());//GEN-LINE:|7-commandAction|34|241-postAction
                 // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|29|65-preAction
+            }//GEN-BEGIN:|7-commandAction|35|65-preAction
         } else if (displayable == loginSettings) {
-            if (command == back) {//GEN-END:|7-commandAction|29|65-preAction
+            if (command == back) {//GEN-END:|7-commandAction|35|65-preAction
                 // write pre-action user code here
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|30|65-postAction
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|36|65-postAction
                 // write post-action user code here
-            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|31|85-preAction
+            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|37|85-preAction
 
                 if(choiceGroup1.isSelected(0)){
                     if (textField2.getString().equals("****"))
@@ -679,25 +708,25 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
                 }else password="";
                 username=textField1.getString();
                 ioSettings.saveToRMS(username, password);
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|32|85-postAction
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|38|85-postAction
                 // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|33|110-preAction
+            }//GEN-BEGIN:|7-commandAction|39|110-preAction
         } else if (displayable == notSend) {
-            if (command == exitCommand3) {//GEN-END:|7-commandAction|33|110-preAction
+            if (command == exitCommand3) {//GEN-END:|7-commandAction|39|110-preAction
                 // write pre-action user code here
-                exitMIDlet();//GEN-LINE:|7-commandAction|34|110-postAction
+                exitMIDlet();//GEN-LINE:|7-commandAction|40|110-postAction
                 // write post-action user code here
-            } else if (command == okCommand3) {//GEN-LINE:|7-commandAction|35|112-preAction
+            } else if (command == okCommand3) {//GEN-LINE:|7-commandAction|41|112-preAction
                 // write pre-action user code here
-                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|36|112-postAction
+                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|42|112-postAction
                 // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|37|187-preAction
+            }//GEN-BEGIN:|7-commandAction|43|187-preAction
         } else if (displayable == optimSettings) {
-            if (command == back) {//GEN-END:|7-commandAction|37|187-preAction
+            if (command == back) {//GEN-END:|7-commandAction|43|187-preAction
                 // write pre-action user code here
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|38|187-postAction
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|44|187-postAction
                 // write post-action user code here
-            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|39|208-preAction
+            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|45|208-preAction
                 if (choiceGroup.isSelected(0)){
                     ioSettings.saveOptim("true");
                     contentLoad=true;
@@ -721,15 +750,15 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
                     ioSettings.saveDebug("false");
                     debug=false;
                 }
-                switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|40|208-postAction
+                switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|46|208-postAction
                 // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|41|189-preAction
+            }//GEN-BEGIN:|7-commandAction|47|189-preAction
         } else if (displayable == providerSettings) {
-            if (command == back) {//GEN-END:|7-commandAction|41|189-preAction
+            if (command == back) {//GEN-END:|7-commandAction|47|189-preAction
                 // write pre-action user code here
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|42|189-postAction
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|48|189-postAction
                 // write post-action user code here
-            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|43|232-preAction
+            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|49|232-preAction
                 if (choiceGroup3.getSelectedIndex()!=-1){
                      provider=choiceGroup3.getSelectedIndex();
                      ioSettings.saveSetup(""+provider);
@@ -738,14 +767,14 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
                          ioSettings.saveRemSMS("-2");
                      }
                 }
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|44|232-postAction
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|50|232-postAction
 
 
 
 
-            }//GEN-BEGIN:|7-commandAction|45|227-preAction
+            }//GEN-BEGIN:|7-commandAction|51|227-preAction
         } else if (displayable == setup) {
-            if (command == okCommand) {//GEN-END:|7-commandAction|45|227-preAction
+            if (command == okCommand) {//GEN-END:|7-commandAction|51|227-preAction
                 username=textField5.getString();
                 password=textField4.getString();
                 provider=choiceGroup2.getSelectedIndex();
@@ -761,25 +790,25 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
                 ioSettings.saveSetup(""+(provider));
                 ioSettings.saveToRMS(username, password);
                 SyncSettings();
-                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|46|227-postAction
+                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|52|227-postAction
                 // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|47|104-preAction
+            }//GEN-BEGIN:|7-commandAction|53|104-preAction
         } else if (displayable == smsSend) {
-            if (command == exitCommand2) {//GEN-END:|7-commandAction|47|104-preAction
+            if (command == exitCommand2) {//GEN-END:|7-commandAction|53|104-preAction
                 // write pre-action user code here
-                exitMIDlet();//GEN-LINE:|7-commandAction|48|104-postAction
+                exitMIDlet();//GEN-LINE:|7-commandAction|54|104-postAction
                 // write post-action user code here
-            } else if (command == okCommand2) {//GEN-LINE:|7-commandAction|49|107-preAction
+            } else if (command == okCommand2) {//GEN-LINE:|7-commandAction|55|107-preAction
                 // write pre-action user code here
-                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|50|107-postAction
+                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|56|107-postAction
                 stringItem1.setText(getRemSMSText());
-            }//GEN-BEGIN:|7-commandAction|51|183-preAction
+            }//GEN-BEGIN:|7-commandAction|57|183-preAction
         } else if (displayable == smsSettings) {
-            if (command == back) {//GEN-END:|7-commandAction|51|183-preAction
+            if (command == back) {//GEN-END:|7-commandAction|57|183-preAction
                 // write pre-action user code here
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|52|183-postAction
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|58|183-postAction
                 // write post-action user code here
-            } else if (command == okCommand6) {//GEN-LINE:|7-commandAction|53|270-preAction
+            } else if (command == okCommand6) {//GEN-LINE:|7-commandAction|59|270-preAction
                 if (txtSenderName.getString().length()<5 && choiceGroup4.getSelectedIndex() !=0)
                 {
                     //Fehlermeldung "Name zu kurz" falls Text als Absender gewählt
@@ -792,31 +821,41 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
                     SenderName=txtSenderName.getString();
                     ioSettings.saveSenderSetup(SenderMode, SenderName);
                 // write pre-action user code here
-                    switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|54|270-postAction
+                    switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|60|270-postAction
                 // write post-action user code here
                 }
-            }//GEN-BEGIN:|7-commandAction|55|51-preAction
+            }//GEN-BEGIN:|7-commandAction|61|51-preAction
         } else if (displayable == waitScreen) {
-            if (command == WaitScreen.FAILURE_COMMAND) {//GEN-END:|7-commandAction|55|51-preAction
+            if (command == WaitScreen.FAILURE_COMMAND) {//GEN-END:|7-commandAction|61|51-preAction
                 getNotSend().setString("SMS nicht gesendet!");
-                switchDisplayable(getNotSend(), getMainMenu());//GEN-LINE:|7-commandAction|56|51-postAction
+                switchDisplayable(getNotSend(), getMainMenu());//GEN-LINE:|7-commandAction|62|51-postAction
 
-            } else if (command == WaitScreen.SUCCESS_COMMAND) {//GEN-LINE:|7-commandAction|57|50-preAction
+            } else if (command == WaitScreen.SUCCESS_COMMAND) {//GEN-LINE:|7-commandAction|63|50-preAction
                 if (remSMS!=-1){
                     ioSettings.saveRemSMS(""+remSMS);
                 }
-                switchDisplayable(getSmsSend(), getMainMenu());//GEN-LINE:|7-commandAction|58|50-postAction
+                switchDisplayable(getSmsSend(), getMainMenu());//GEN-LINE:|7-commandAction|64|50-postAction
                 smsSend.setString("SMS gesendet \n"+getRemSMSText());
                 ClearSMSInput();
-            } else if (command == exitCommand1) {//GEN-LINE:|7-commandAction|59|99-preAction
+            } else if (command == exitCommand1) {//GEN-LINE:|7-commandAction|65|99-preAction
                 // write pre-action user code here
-                exitMIDlet();//GEN-LINE:|7-commandAction|60|99-postAction
+                exitMIDlet();//GEN-LINE:|7-commandAction|66|99-postAction
                 // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|61|7-postCommandAction
-        }//GEN-END:|7-commandAction|61|7-postCommandAction
+            }//GEN-BEGIN:|7-commandAction|67|312-preAction
+        } else if (displayable == waitScreen1) {
+            if (command == WaitScreen.FAILURE_COMMAND) {//GEN-END:|7-commandAction|67|312-preAction
+                // write pre-action user code here
+                switchDisplayable(getEmailNotSent(), getSendEmailForm());//GEN-LINE:|7-commandAction|68|312-postAction
+                // write post-action user code here
+            } else if (command == WaitScreen.SUCCESS_COMMAND) {//GEN-LINE:|7-commandAction|69|311-preAction
+                // write pre-action user code here
+                switchDisplayable(getEmailSent(), getDebug());//GEN-LINE:|7-commandAction|70|311-postAction
+                // write post-action user code here
+            }//GEN-BEGIN:|7-commandAction|71|7-postCommandAction
+        }//GEN-END:|7-commandAction|71|7-postCommandAction
         // write post-action user code here
-    }//GEN-BEGIN:|7-commandAction|62|
-    //</editor-fold>//GEN-END:|7-commandAction|62|
+    }//GEN-BEGIN:|7-commandAction|72|
+    //</editor-fold>//GEN-END:|7-commandAction|72|
 
 
 
@@ -1838,6 +1877,7 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
             Debug = new TextBox("Debug Meldungen", "", 12000, TextField.ANY);//GEN-BEGIN:|287-getter|1|287-postInit
             Debug.addCommand(getBack());
             Debug.addCommand(getClear());
+            Debug.addCommand(getSendEmail());
             Debug.setCommandListener(this);//GEN-END:|287-getter|1|287-postInit
             // write post-init user code here
         }//GEN-BEGIN:|287-getter|2|
@@ -1859,6 +1899,176 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
         return Clear;
     }
     //</editor-fold>//GEN-END:|293-getter|2|
+
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: SendEmail ">//GEN-BEGIN:|297-getter|0|297-preInit
+    /**
+     * Returns an initiliazed instance of SendEmail component.
+     * @return the initialized component instance
+     */
+    public Command getSendEmail() {
+        if (SendEmail == null) {//GEN-END:|297-getter|0|297-preInit
+            // write pre-init user code here
+            SendEmail = new Command("E-Mail senden", Command.OK, 0);//GEN-LINE:|297-getter|1|297-postInit
+            // write post-init user code here
+        }//GEN-BEGIN:|297-getter|2|
+        return SendEmail;
+    }
+    //</editor-fold>//GEN-END:|297-getter|2|
+
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: startEmailClient ">//GEN-BEGIN:|305-getter|0|305-preInit
+    /**
+     * Returns an initiliazed instance of startEmailClient component.
+     * @return the initialized component instance
+     */
+    public Command getStartEmailClient() {
+        if (startEmailClient == null) {//GEN-END:|305-getter|0|305-preInit
+            // write pre-init user code here
+            startEmailClient = new Command("Senden", Command.OK, 0);//GEN-LINE:|305-getter|1|305-postInit
+            // write post-init user code here
+        }//GEN-BEGIN:|305-getter|2|
+        return startEmailClient;
+    }
+    //</editor-fold>//GEN-END:|305-getter|2|
+
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: SendEmailForm ">//GEN-BEGIN:|301-getter|0|301-preInit
+    /**
+     * Returns an initiliazed instance of SendEmailForm component.
+     * @return the initialized component instance
+     */
+    public Form getSendEmailForm() {
+        if (SendEmailForm == null) {//GEN-END:|301-getter|0|301-preInit
+            // write pre-init user code here
+            SendEmailForm = new Form("Debug Meldungen versenden", new Item[] { getStringItem3(), getTxtCCemail(), getTxtFehlerbeschreibung() });//GEN-BEGIN:|301-getter|1|301-postInit
+            SendEmailForm.addCommand(getStartEmailClient());
+            SendEmailForm.addCommand(getBack());
+            SendEmailForm.setCommandListener(this);//GEN-END:|301-getter|1|301-postInit
+            // write post-init user code here
+        }//GEN-BEGIN:|301-getter|2|
+        return SendEmailForm;
+    }
+    //</editor-fold>//GEN-END:|301-getter|2|
+
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: stringItem3 ">//GEN-BEGIN:|302-getter|0|302-preInit
+    /**
+     * Returns an initiliazed instance of stringItem3 component.
+     * @return the initialized component instance
+     */
+    public StringItem getStringItem3() {
+        if (stringItem3 == null) {//GEN-END:|302-getter|0|302-preInit
+            // write pre-init user code here
+            stringItem3 = new StringItem("Hier gibt es die M\u00F6glichkeit die aktuellen Meldungen im Debug-Fenster komfortabel an die Entwickler per E-Mail weiterzuleiten. Zudem ist es m\u00F6glich eine Fehlerbeschreibung einzugeben und wer m\u00F6chte kann sich diese E-Mail als CC schicken lassen. ", null);//GEN-LINE:|302-getter|1|302-postInit
+            // write post-init user code here
+        }//GEN-BEGIN:|302-getter|2|
+        return stringItem3;
+    }
+    //</editor-fold>//GEN-END:|302-getter|2|
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtFehlerbeschreibung ">//GEN-BEGIN:|303-getter|0|303-preInit
+    /**
+     * Returns an initiliazed instance of txtFehlerbeschreibung component.
+     * @return the initialized component instance
+     */
+    public TextField getTxtFehlerbeschreibung() {
+        if (txtFehlerbeschreibung == null) {//GEN-END:|303-getter|0|303-preInit
+            // write pre-init user code here
+            txtFehlerbeschreibung = new TextField("Fehlerbeschreibung:", null, 1000, TextField.ANY);//GEN-LINE:|303-getter|1|303-postInit
+            // write post-init user code here
+        }//GEN-BEGIN:|303-getter|2|
+        return txtFehlerbeschreibung;
+    }
+    //</editor-fold>//GEN-END:|303-getter|2|
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtCCemail ">//GEN-BEGIN:|304-getter|0|304-preInit
+    /**
+     * Returns an initiliazed instance of txtCCemail component.
+     * @return the initialized component instance
+     */
+    public TextField getTxtCCemail() {
+        if (txtCCemail == null) {//GEN-END:|304-getter|0|304-preInit
+            // write pre-init user code here
+            txtCCemail = new TextField("E-Mail Adresse", null, 50, TextField.ANY);//GEN-LINE:|304-getter|1|304-postInit
+            // write post-init user code here
+        }//GEN-BEGIN:|304-getter|2|
+        return txtCCemail;
+    }
+    //</editor-fold>//GEN-END:|304-getter|2|
+
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: waitScreen1 ">//GEN-BEGIN:|310-getter|0|310-preInit
+    /**
+     * Returns an initiliazed instance of waitScreen1 component.
+     * @return the initialized component instance
+     */
+    public WaitScreen getWaitScreen1() {
+        if (waitScreen1 == null) {//GEN-END:|310-getter|0|310-preInit
+            // write pre-init user code here
+            waitScreen1 = new WaitScreen(getDisplay());//GEN-BEGIN:|310-getter|1|310-postInit
+            waitScreen1.setTitle("waitScreen1");
+            waitScreen1.setCommandListener(this);
+            waitScreen1.setTask(getTask1());//GEN-END:|310-getter|1|310-postInit
+            // write post-init user code here
+        }//GEN-BEGIN:|310-getter|2|
+        return waitScreen1;
+    }
+    //</editor-fold>//GEN-END:|310-getter|2|
+
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: task1 ">//GEN-BEGIN:|313-getter|0|313-preInit
+    /**
+     * Returns an initiliazed instance of task1 component.
+     * @return the initialized component instance
+     */
+    public SimpleCancellableTask getTask1() {
+        if (task1 == null) {//GEN-END:|313-getter|0|313-preInit
+            // write pre-init user code here
+            task1 = new SimpleCancellableTask();//GEN-BEGIN:|313-getter|1|313-execute
+            task1.setExecutable(new org.netbeans.microedition.util.Executable() {
+                public void execute() throws Exception {//GEN-END:|313-getter|1|313-execute
+                    // write task-execution user code here
+                    EmailClient client = new EmailClient(GUI,"d2Vic21zZW5kQGdteC5kZQ==","ZG5lc3Ntc2Jldw==",
+                        "websmsend@gmx.de", "websmssend@googlemail.com",getTxtCCemail().getString(),
+                        "Debug-Meldungen", getTxtFehlerbeschreibung().getString() + "\r\n\r\n"
+                        + getDebug().getString());
+                    if (client.run()==0) throw new Exception("failed");
+                }//GEN-BEGIN:|313-getter|2|313-postInit
+            });//GEN-END:|313-getter|2|313-postInit
+            // write post-init user code here
+        }//GEN-BEGIN:|313-getter|3|
+        return task1;
+    }
+    //</editor-fold>//GEN-END:|313-getter|3|
+
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: EmailSent ">//GEN-BEGIN:|315-getter|0|315-preInit
+    /**
+     * Returns an initiliazed instance of EmailSent component.
+     * @return the initialized component instance
+     */
+    public Alert getEmailSent() {
+        if (EmailSent == null) {//GEN-END:|315-getter|0|315-preInit
+            // write pre-init user code here
+            EmailSent = new Alert("Erfolgreich", "E-Mail wurde erfolgreich versandt", null, AlertType.CONFIRMATION);//GEN-BEGIN:|315-getter|1|315-postInit
+            EmailSent.setTimeout(Alert.FOREVER);//GEN-END:|315-getter|1|315-postInit
+            // write post-init user code here
+        }//GEN-BEGIN:|315-getter|2|
+        return EmailSent;
+    }
+    //</editor-fold>//GEN-END:|315-getter|2|
+
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: EmailNotSent ">//GEN-BEGIN:|318-getter|0|318-preInit
+    /**
+     * Returns an initiliazed instance of EmailNotSent component.
+     * @return the initialized component instance
+     */
+    public Alert getEmailNotSent() {
+        if (EmailNotSent == null) {//GEN-END:|318-getter|0|318-preInit
+            // write pre-init user code here
+            EmailNotSent = new Alert("Fehler", "E-Mail nicht versandt. Siehe Debug-Meldungen", null, AlertType.ERROR);//GEN-BEGIN:|318-getter|1|318-postInit
+            EmailNotSent.setTimeout(Alert.FOREVER);//GEN-END:|318-getter|1|318-postInit
+            // write post-init user code here
+        }//GEN-BEGIN:|318-getter|2|
+        return EmailNotSent;
+    }
+    //</editor-fold>//GEN-END:|318-getter|2|
 
 
 

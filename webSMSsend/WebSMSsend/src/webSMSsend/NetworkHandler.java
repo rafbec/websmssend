@@ -3,7 +3,7 @@
  *
     Copyright 2009 Max Hänze --- maximum.blogsite.org
     Copyright 2010 Christian Morlok --- cmorlok.de
-    2010 C-o-M
+    Copyright 2010 redrocketracoon@googlemail.com
     This file is part of WebSMSsend.
 
     WebSMSsend is free software: you can redistribute it and/or modify
@@ -155,7 +155,7 @@ public class NetworkHandler {
         String[] argumentStrings=new String[19];
         int smsFormLine=0;
         try{
-            smsFormLine=getRegexLineMatch(lineSplit,"<form name=\"frmSMS\" action=\"/smscenter_send.osp\" onsubmit=\"return false\" onreset=\"return false\" method=\"post\">",835,false)+1;
+            smsFormLine=getRegexLineMatch(lineSplit,"<form name=\"frmSMS\" action=\"/smscenter_send.osp\" onsubmit=\"return false\" onreset=\"return false\" method=\"post\">",838,false)+1;
         }
         catch (ArrayIndexOutOfBoundsException e) { //Fallback: Regex the whole html string
             GUI.debug("Fallback: RegexLineMatch: Startline is not correct");
@@ -164,7 +164,7 @@ public class NetworkHandler {
         catch (Exception ex){
             throw ex;
         }
-
+        GUI.debug("Current Startline: " + (lineSplit.length-smsFormLine));
         String remSMSstring=null;
         if (getRemSMS){
             int remSMSline=getRegexLineMatch(lineSplit,"<span class=\"FREESMS\"><strong>Frei-SMS: (.+) Web2SMS noch in diesem Monat mit Ihrem Internet-Pack inklusive!</strong></span><br>",lineSplit.length-smsFormLine,false);
