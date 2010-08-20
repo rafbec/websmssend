@@ -1,27 +1,26 @@
 /*
  *
  *
-    Copyright 2009 Max Hänze --- maximum.blogsite.org
-    Copyright 2010 Christian Morlok --- cmorlok.de
-    modifziert 2010 von RedRocket ---
-    This file is part of WebSMSsend.
+Copyright 2009 Max Hänze --- maximum.blogsite.org
+Copyright 2010 Christian Morlok --- cmorlok.de
+modifziert 2010 von RedRocket ---
+This file is part of WebSMSsend.
 
-    WebSMSsend is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+WebSMSsend is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-    WebSMSsend is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILIT ublic License for more details.
+WebSMSsend is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILIT ublic License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with WebSMSsend.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with WebSMSsend.  If not, see <http://www.gnu.org/licenses/>.
 
  *
  *
  */
-
 package webSMSsend;
 
 import java.io.IOException;
@@ -32,24 +31,15 @@ import javax.microedition.pki.CertificateException;
 import org.netbeans.microedition.lcdui.WaitScreen;
 import org.netbeans.microedition.util.SimpleCancellableTask;
 
+//</editor-fold>
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitCommand ">
+public class webSMSsend extends MIDlet implements CommandListener {
 
-    //</editor-fold>
-
-
-
-
-
-
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitCommand ">
-    public class webSMSsend extends MIDlet implements CommandListener {
-    
-        //FOR DEBUG ONLY!! SMS will not be sent if true
+    //FOR DEBUG ONLY!! SMS will not be sent if true
     public static final boolean simulation = false;
-
-
+    
     public static final int SENDERMODE_STANDARD = 0;
     public static final int SENDERMODE_TEXT = 1;
-
     String recvNB;
     String text;
     String username;
@@ -86,6 +76,7 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
     private Command eingabeLeeren;
     private Command okCommand5;
     private Command loginScreenSend;
+    private Command okCommand1;
     private Alert BenutzerwahlBestaettigung;
     private TextBox Debug;
     private Form MainMenu;
@@ -125,387 +116,398 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
     private TextField textField7;
     private TextField textField6;
     private List ChooseAccount;
+    private Alert NoEmail;
     private SimpleCancellableTask task1;
     private SimpleCancellableTask task;
     private Font font;
     private Image image1;
     //</editor-fold>//GEN-END:|fields|0|
 
-    /**
-     * The HelloMIDlet constructor.
-     */
-    public webSMSsend() {
-        GUI = this;
-    }
-    public int sendGMXsms(){
-        return 0;
-    }
-    private String getVersion(){
-            return "0.6.1";
-    }
-    private String getPasswordField(){
-            if(!ioSettings.getPassword().equals(""))
-            {
+        /**
+         * The HelloMIDlet constructor.
+         */
+        public webSMSsend() {
+            GUI = this;
+        }
+
+        public int sendGMXsms() {
+            return 0;
+        }
+
+        private String getVersion() {
+            return "0.6.2";
+        }
+
+        private String getPasswordField() {
+            if (!ioSettings.getPassword().equals("")) {
                 return "****";
-            }
-            else
-            {
+            } else {
                 return "";
             }
-    }
-    private String getRemSMSText(){
-        if (remSMS!=-1 & remSMS!=-2){
-            return "verbleibende Frei-SMS: "+remSMS+"\nBenutzerkonto "+(ActiveAccount+1);
         }
-        
-        else{
-            return "";
-        }
-    }
-    private int countSMS(String smsText){  //ceiled division
-      return (smsText.length() >= 0) ? ( (smsText.length() + 160 - 1 ) / 160) : (smsText.length() / 160 );
-    }
 
-    public int sendSMS(String smsRecv,String smsText) throws Exception{
-        if (provider==0){
-            return sendSMSO2(smsRecv,smsText);
-        }
-        else{
-            return sendSMSGMX(smsRecv,smsText);
-        }
-    }
-
-    public int sendSMSGMX(String smsRecv,String smsText) throws Exception{
-        if (smsRecv.equals(""))
-        {
-            waitScreen.setText("kein Empfänger angegeben!");
-            Thread.sleep(1500);
-            throw new Exception("kein Empfänger!");
-        }
-        try {
-            waitScreen.setText("Einstellungen werden geladen...");
-            Thread.sleep(500);
-
-            NetworkHandler connection = new NetworkHandler(username, password, this);
-            smsRecv=connection.checkRecv(smsRecv);
-            if (!smsRecv.startsWith("+49")){
-                throw new Exception("Senden von Auslands-SMS nicht möglich!");
+        private String getRemSMSText() {
+            if (remSMS != -1 & remSMS != -2) {
+                return "verbleibende Frei-SMS: " + remSMS + "\nBenutzerkonto " + (ActiveAccount + 1);
+            } else {
+                return "";
             }
-            smsRecv="0".concat(smsRecv.substring(3));
-            String url = "http://www.gmx.net/";
-            // geht wohl auch ohne...
-            //connection.httpHandler("GET", url, "www.gmx.net", "", true);
+        }
+
+        private int countSMS(String smsText) {  //ceiled division
+            return (smsText.length() >= 0) ? ((smsText.length() + 160 - 1) / 160) : (smsText.length() / 160);
+        }
+
+        public int sendSMS(String smsRecv, String smsText) throws Exception {
+            if (provider == 0) {
+                return sendSMSO2(smsRecv, smsText);
+            } else {
+                return sendSMSGMX(smsRecv, smsText);
+            }
+        }
+
+        public int sendSMSGMX(String smsRecv, String smsText) throws Exception {
+            debug("SendSMSGMX()");
+            if (smsRecv.equals("")) {
+                waitScreen.setText("kein Empfänger angegeben!");
+                Thread.sleep(1500);
+                throw new Exception("kein Empfänger!");
+            }
+            try {
+                waitScreen.setText("Einstellungen werden geladen...");
+                Thread.sleep(500);
+
+                NetworkHandler connection = new NetworkHandler(username, password, this);
+                smsRecv = connection.checkRecv(smsRecv);
+                if (!smsRecv.startsWith("+49")) {
+                    throw new Exception("Senden von Auslands-SMS nicht möglich!");
+                }
+                smsRecv = "0".concat(smsRecv.substring(3));
+                String url = "http://www.gmx.net/";
+                // geht wohl auch ohne...
+                //connection.httpHandler("GET", url, "www.gmx.net", "", true);
 
 
-            waitScreen.setText("Login wird geladen...");
-            String localCookie=connection.getCookie();
-            String postReq="AREA=1&EXT=&EXT2=&uinguserid=&dlevel=c&id="
-                    +URLEncoder.encode(username)+"&p="+URLEncoder.encode(password);
-            for (int i=0;i<2;i++){
-                try {
-                    connection.httpHandler("POST", "http://service.gmx.net/de/cgi/login", "service.gmx.net", postReq, true);
-                    continue;
+                waitScreen.setText("Login wird geladen...");
+                debug("Login wird geladen...");
+                String localCookie = connection.getCookie();
+                String postReq = "AREA=1&EXT=&EXT2=&uinguserid=&dlevel=c&id="
+                        + URLEncoder.encode(username) + "&p=" + URLEncoder.encode(password);
+                for (int i = 0; i < 2; i++) {
+                    try {
+                        connection.httpHandler("POST", "http://service.gmx.net/de/cgi/login", "service.gmx.net", postReq, true);
+                        continue;
 
-                } catch (IOException ex) {
-                    if (i==1)
-                    throw ex;
-                    waitScreen.setText("Netzwerkfehler, starte erneut...");
-                    Thread.sleep(3000);
-                } catch (Exception ex){
-                    waitScreen.setText(ex.getMessage());
-                    Thread.sleep(3000);
+                    } catch (IOException ex) {
+                        if (i == 1) {
+                            throw ex;
+                        }
+                        waitScreen.setText("Netzwerkfehler, starte erneut...");
+                        debug("Netzwerkfehler: " + ex.toString() + ex.getMessage());
+                        Thread.sleep(3000);
+                    } catch (Exception ex) {
+                        waitScreen.setText(ex.getMessage());
+                        debug("Netzwerkfehler: " + ex.toString() + ex.getMessage());
+                        Thread.sleep(3000);
+                        throw ex;
+                    }
+                }
+                //System.out.println(connection.getContent());
+
+                if (localCookie.equals(connection.getCookie())) {
+                    Exception ex = new Exception("Zugangsdaten falsch!");
+                    debug("Zugangsdaten falsch!");
                     throw ex;
                 }
-            }
-                        //System.out.println(connection.getContent());
 
-            if(localCookie.equals(connection.getCookie())){
-                Exception ex = new Exception("Zugangsdaten falsch!");
-                throw ex;
-            }
+                waitScreen.setText("Login erfolgreich...");
+                debug("Login erfolgreich");
+                url = connection.getRegexStringMatch("<a href=\"(http://service.gmx.net/de/cgi/g.fcgi/sms\\?cc=subnavi_sms_mms&amp;sid=.*)\">SMS und MMS</a></li>", "<li>", 0, 1);
+                debug("Lade SMS-Manager-URL: " + url);
+                connection.httpHandler("GET", url, "service.gmx.net", "", true);
+                //http://service.gmx.net/de/cgi/g.fcgi/sms?cc=subnavi_smsmms&sid=babhdee.1254499929.29227.jr09oorphd.73.ign
+                waitScreen.setText("Lade SMS-Manager...");
+                String sid = connection.getRegexMatch(url, "sid=(.*)", 1);//connection.getRegexStringMatch("<a href=\"http://service.gmx.net/de/cgi/g.fcgi/sms\\?sid=(.*)\">SMS und MMS</a></li>","<li>",0,1);
+                debug("Cookie: " + connection.getCookie());
 
-            waitScreen.setText("Login erfolgreich...");
-            url=connection.getRegexStringMatch("<a href=\"(http://service.gmx.net/de/cgi/g.fcgi/sms\\?cc=subnavi_sms_mms&amp;sid=.*)\">SMS und MMS</a></li>","<li>",0,1);
-            connection.httpHandler("GET",url,"service.gmx.net","",true);
-            //http://service.gmx.net/de/cgi/g.fcgi/sms?cc=subnavi_smsmms&sid=babhdee.1254499929.29227.jr09oorphd.73.ign
-            waitScreen.setText("Lade SMS-Manager...");
-            String sid=connection.getRegexMatch(url, "sid=(.*)", 1);//connection.getRegexStringMatch("<a href=\"http://service.gmx.net/de/cgi/g.fcgi/sms\\?sid=(.*)\">SMS und MMS</a></li>","<li>",0,1);
-            System.out.println(connection.getCookie());
+                url = "http://service.gmx.net/de/cgi/g.fcgi/sms/manager/popup?sid=" + sid;
+                debug("httpHandler('GET'" + url);
+                connection.httpHandler("GET", url, "service.gmx.net", "", true);
 
-            url="http://service.gmx.net/de/cgi/g.fcgi/sms/manager/popup?sid="+sid;
-            connection.httpHandler("GET",url,"service.gmx.net","",true);
+                waitScreen.setText("Senden wird vorbereitet...");
+                url = connection.getRegexStringMatch("url = \"(http://www.sms-manager.info/wsm/login_action.jsp\\?resCustId=.*&password=.*&destination=&customer=GMX)\"", "\n", 0, 1);
+                String customID = connection.getRegexMatch(url, "resCustId=(.*)&password", 1);
+                debug("Senden wird vorbereitet: " + url);
+                connection.httpHandler("GET", url, "www.sms-manager.info", "", true);
 
-            waitScreen.setText("Senden wird vorbereitet...");
-            url=connection.getRegexStringMatch("url = \"(http://www.sms-manager.info/wsm/login_action.jsp\\?resCustId=.*&password=.*&destination=&customer=GMX)\"","\n",0,1);
-            String customID=connection.getRegexMatch(url, "resCustId=(.*)&password", 1);
-            connection.httpHandler("GET",url,"www.sms-manager.info","",true);
+                if (remSMS != -1) {
+                    String sendSMSstring = connection.getRegexStringMatch("noch (.*) von (.+)", "\n", 0, 1);
+                    remSMS = Integer.parseInt(sendSMSstring);
+                    debug("" + remSMS);
+                }
 
-            if (remSMS!=-1){
-                String sendSMSstring=connection.getRegexStringMatch("noch (.*) von (.+)", "\n", 0, 1);
-                remSMS=Integer.parseInt(sendSMSstring);
-                System.out.println(remSMS);
-            }
-
-            waitScreen.setText("SMS wird gesendet...");
-            if(connection.getRegexStringMatch("<input type=\"radio\".* (.*)>","\n",0,1).equals("checked")){
-                postReq="senderType=number&senderId=&receiver="+URLEncoder.encode(smsRecv)+"&message="
-                    +URLEncoder.encode(smsText)+"&sendLater=0";
-                System.out.println("Absender Nummer erkannt");
-            }
-            else{
-                postReq="senderType=text&senderId=SMS&receiver="+URLEncoder.encode(smsRecv)+"&message="
-                    +URLEncoder.encode(smsText)+"&sendLater=0";
-                System.out.println("Absender nicht hinterlegt");
-            }
-            url="http://www.sms-manager.info/wsm/send_sms_action.jsp?wsmCustomerId="+customID;
-            connection.httpHandler("POST",url,"www.sms-manager.info",postReq,true);
-
-            if(remSMS>0){
-                remSMS--;
-            }
+                waitScreen.setText("SMS wird gesendet...");
+                if (connection.getRegexStringMatch("<input type=\"radio\".* (.*)>", "\n", 0, 1).equals("checked")) {
+                    postReq = "senderType=number&senderId=&receiver=" + URLEncoder.encode(smsRecv) + "&message="
+                            + URLEncoder.encode(smsText) + "&sendLater=0";
+                    debug("Absender Nummer erkannt, postReq: " + postReq);
+                } else {
+                    postReq = "senderType=text&senderId=SMS&receiver=" + URLEncoder.encode(smsRecv) + "&message="
+                            + URLEncoder.encode(smsText) + "&sendLater=0";
+                    debug("Absender nicht hinterlegt, postReq: " + postReq);
+                }
+                url = "http://www.sms-manager.info/wsm/send_sms_action.jsp?wsmCustomerId=" + customID;
+                connection.httpHandler("POST", url, "www.sms-manager.info", postReq, true);
+                debug("SMS gesendet");
+                if (remSMS > 0) {
+                    remSMS--;
+                }
 
 
-            /*waitScreen.setText("Abmelden...");
-            try{
-            connection.httpHandler("GET", logoutUrl, "service.gmx.net", "", true);
-            }catch (Exception e){
+                /*waitScreen.setText("Abmelden...");
+                try{
+                connection.httpHandler("GET", logoutUrl, "service.gmx.net", "", true);
+                }catch (Exception e){
                 waitScreen.setText("Abmeldung fehlgeschlagen!");
                 Thread.sleep(500);
 
-            }*/
-            /*
-             *
-             * SMS-manager is used!
-             *
-             *
-             *
-             *
-             String postCodeName;
-            //System.out.println(connection.getContent());
-            postCodeName="_"+connection.getRegexStringMatch("input type=\"hidden\" name=\"_(.*)\" value=\"_(.*)\" ", "/><", 0, 1);
-            String postCodeValue;
-            postCodeValue="_"+connection.getRegexStringMatch("input type=\"hidden\" name=\"_(.*)\" value=\"_(.*)\" ", "/><", 0, 2);
-            String sid=connection.getRegexMatch(url, ".*sid=(.*)", 1);
-            postReq="sid="+sid+"&fromaddrbk=0&"+postCodeName+"="+postCodeValue+"&number="
-                    +smsRecv+"&from="+"none"/*URLEncoder.encode(username)
-                    *//*+"&message="+URLEncoder.encode(smsText)
-                    +"&buttonSubmit.x=108&buttonSubmit.y=14";
-            //System.out.println(postReq);
-            waitScreen.setText("SMS wird gesendet...");
-            url="http://service.gmx.net/de/cgi/g.fcgi/sms/send";
-            connection.httpHandler("POST", url, "service.gmx.net", postReq, true);
-            
-            if (remSMS>0){
+                }*/
+                /*
+                 *
+                 * SMS-manager is used!
+                 *
+                 *
+                 *
+                 *
+                String postCodeName;
+                //System.out.println(connection.getContent());
+                postCodeName="_"+connection.getRegexStringMatch("input type=\"hidden\" name=\"_(.*)\" value=\"_(.*)\" ", "/><", 0, 1);
+                String postCodeValue;
+                postCodeValue="_"+connection.getRegexStringMatch("input type=\"hidden\" name=\"_(.*)\" value=\"_(.*)\" ", "/><", 0, 2);
+                String sid=connection.getRegexMatch(url, ".*sid=(.*)", 1);
+                postReq="sid="+sid+"&fromaddrbk=0&"+postCodeName+"="+postCodeValue+"&number="
+                +smsRecv+"&from="+"none"/*URLEncoder.encode(username)
+                 *//*+"&message="+URLEncoder.encode(smsText)
+                +"&buttonSubmit.x=108&buttonSubmit.y=14";
+                //System.out.println(postReq);
+                waitScreen.setText("SMS wird gesendet...");
+                url="http://service.gmx.net/de/cgi/g.fcgi/sms/send";
+                connection.httpHandler("POST", url, "service.gmx.net", postReq, true);
+
+                if (remSMS>0){
                 int sms=Integer.parseInt(connection.getRegexStringMatch(" *\\(Zeichenanzahl: (.*)\\)", '\n'+"", 0, 1));
                 remSMS=remSMS-(sms/160+1);
-            }
-            //System.out.println(connection.getContent());
-            postReq="sid="+sid+"&buttonSubmit=Ja%2C+SMS+senden";
-            url="http://service.gmx.net/de/cgi/g.fcgi/sms/confirm";
-            //connection.httpHandler("POST", url, "service.gmx.net", postReq, true);
-            
-
-            url=connection.getRegexStringMatch("a href=\"(http://service.gmx.net/de/cgi/nph-logout\\?CUSTOMERNO=.*)\"", "><", 0, 1);
-            //System.out.println(url);
-            connection.httpHandler("GET", url, "service.gmx.net", "", true);
-            //System.out.println(connection.getContent());
-            */
-
-        }catch (IOException ex) {
-            waitScreen.setText(ex.getMessage());
-            Thread.sleep(7000);
-            ex.printStackTrace();
-            throw ex;
-        } catch (Exception ex) {
-            waitScreen.setText(ex.getMessage());
-            Thread.sleep(7000);
-            ex.printStackTrace();
-            throw ex;
-        } catch (Throwable e){
-            waitScreen.setText(e.getMessage());
-            Thread.sleep(7000);
-            e.printStackTrace();
-            throw new Exception("Fehler!");
-        }
-        return 0;
-    }
-
-    public int sendSMSO2(String smsRecv,String smsText) throws Exception {
-        try{
-        debug("starte sendSMS02()");
-        long totaltime=System.currentTimeMillis();
-        if (smsRecv.equals(""))
-        {
-            waitScreen.setText("kein Empfänger angegeben!");
-            Thread.sleep(1000);
-            throw new Exception("kein Empfänger!");
-        }
-        if (smsText.equals(""))
-        {
-            waitScreen.setText("kein SMS-Text angegeben!");
-            Thread.sleep(1000);
-            throw new Exception("leere SMS!");
-        }
-        waitScreen.setText("Einstellungen werden geladen...");
-        Thread.sleep(500);
-        String url;
-
-        NetworkHandler connection=new NetworkHandler(username,password, this);
-        waitScreen.setText("Login wird geladen...");
-
-        smsRecv=connection.checkRecv(smsRecv);
-        debug("smsRecv: "+smsRecv);
-        url = "https://login.o2online.de/loginRegistration/loginAction" +
-                     ".do?_flowId=" + "login&o2_type=asp&o2_label=login/co" +
-                     "mcenter-login&scheme=http&" + "port=80&server=email." +
-                     "o2online.de&url=%2Fssomanager.osp%3FAPIID" + "%3DAUT" +
-                     "H-WEBSSO%26TargetApp%3D%2Fsms_new.osp%3F%26o2_type%3" +
-                     "Durl" + "%26o2_label%3Dweb2sms-o2online";
-        for (int i=0;i<2;i++){
-            try {
-                connection.httpHandler("GET", url, "login.o2online.de", "", true);
-          //      continue;
-                break;
-            } catch (CertificateException ex) {
-                debug(ex.toString());
-                if (i==1) {
-                    throw ex;
                 }
-                debug("SSL-Fehler, starte erneut...");
-                waitScreen.setText("SSL-Fehler, starte erneut...");
-                Thread.sleep(3000);
+                //System.out.println(connection.getContent());
+                postReq="sid="+sid+"&buttonSubmit=Ja%2C+SMS+senden";
+                url="http://service.gmx.net/de/cgi/g.fcgi/sms/confirm";
+                //connection.httpHandler("POST", url, "service.gmx.net", postReq, true);
+
+
+                url=connection.getRegexStringMatch("a href=\"(http://service.gmx.net/de/cgi/nph-logout\\?CUSTOMERNO=.*)\"", "><", 0, 1);
+                //System.out.println(url);
+                connection.httpHandler("GET", url, "service.gmx.net", "", true);
+                //System.out.println(connection.getContent());
+                 */
+
             } catch (IOException ex) {
-                debug("IOException: " + ex.toString());
-                if (i==1) {
+                waitScreen.setText(ex.getMessage());
+                debug(ex.toString() + " " +ex.getMessage());
+                Thread.sleep(7000);
+                ex.printStackTrace();
+                throw ex;
+            } catch (Exception ex) {
+                waitScreen.setText(ex.getMessage());
+                debug(ex.toString() + " " +ex.getMessage());
+                Thread.sleep(7000);
+                ex.printStackTrace();
+                throw ex;
+            } catch (Throwable e) {
+                waitScreen.setText(e.getMessage());
+                debug(e.toString() + " " +e.getMessage());
+                Thread.sleep(7000);
+                e.printStackTrace();
+                throw new Exception("Fehler!");
+            }
+            return 0;
+        }
+
+        public int sendSMSO2(String smsRecv, String smsText) throws Exception {
+            try {
+                debug("starte sendSMS02()");
+                long totaltime = System.currentTimeMillis();
+                if (smsRecv.equals("")) {
+                    waitScreen.setText("kein Empfänger angegeben!");
+                    Thread.sleep(1000);
+                    throw new Exception("kein Empfänger!");
+                }
+                if (smsText.equals("")) {
+                    waitScreen.setText("kein SMS-Text angegeben!");
+                    Thread.sleep(1000);
+                    throw new Exception("leere SMS!");
+                }
+                waitScreen.setText("Einstellungen werden geladen...");
+                Thread.sleep(500);
+                String url;
+
+                NetworkHandler connection = new NetworkHandler(username, password, this);
+                waitScreen.setText("Login wird geladen...");
+
+                smsRecv = connection.checkRecv(smsRecv);
+                debug("smsRecv: " + smsRecv);
+                url = "https://login.o2online.de/loginRegistration/loginAction"
+                        + ".do?_flowId=" + "login&o2_type=asp&o2_label=login/co"
+                        + "mcenter-login&scheme=http&" + "port=80&server=email."
+                        + "o2online.de&url=%2Fssomanager.osp%3FAPIID" + "%3DAUT"
+                        + "H-WEBSSO%26TargetApp%3D%2Fsms_new.osp%3F%26o2_type%3"
+                        + "Durl" + "%26o2_label%3Dweb2sms-o2online";
+                for (int i = 0; i < 2; i++) {
+                    try {
+                        connection.httpHandler("GET", url, "login.o2online.de", "", true);
+                        //      continue;
+                        break;
+                    } catch (CertificateException ex) {
+                        debug(ex.toString());
+                        if (i == 1) {
+                            throw ex;
+                        }
+                        debug("SSL-Fehler, starte erneut...");
+                        waitScreen.setText("SSL-Fehler, starte erneut...");
+                        Thread.sleep(3000);
+                    } catch (IOException ex) {
+                        debug("IOException: " + ex.toString());
+                        if (i == 1) {
+                            throw ex;
+                        }
+                        debug("Netzwerkfehler, starte erneut...");
+                        waitScreen.setText("Netzwerkfehler, starte erneut...");
+                        Thread.sleep(3000);
+                    } catch (Exception ex) {
+                        debug("Keine Verbindung möglich :" + ex.toString() + " " + ex.getMessage());
+                        waitScreen.setText("Keine Verbindung möglich :" + ex.toString() + "\n" + ex.getMessage());
+                        Thread.sleep(3000);
+                        throw ex;
+                    }
+                }
+
+                String flowExecutionKey;
+
+                flowExecutionKey = connection.getFlowExecutionKey();
+
+                waitScreen.setText("Zugangsdaten werden gesendet...");
+
+                url = "https://login.o2online.de/loginRegistration/loginAction.do";
+                connection.httpHandler("POST", url, "login.o2online.de", "_flowExecutionKey="
+                        + URLEncoder.encode(flowExecutionKey)
+                        + "&loginName=" + URLEncoder.encode(connection.getUsername().trim())
+                        + "&password=" + URLEncoder.encode(connection.getPassword().trim())
+                        + "&_eventId=login", false);//False
+
+                waitScreen.setText("Zugangsdaten werden geprüft...");
+                url = "https://email.o2online.de/ssomanager.osp?APIID=AUTH-WEBSSO&"
+                        + "TargetApp=/sms_new.osp%3f&o2_type=url&o2_label=web2sms-o2online";
+                String localCookie = connection.getCookie();
+                connection.httpHandler("GET", url, "email.o2online.de", "", false);//false
+
+                if (localCookie.equals(connection.getCookie())) {
+                    Exception ex = new Exception("Zugangsdaten falsch!");
                     throw ex;
                 }
-                debug("Netzwerkfehler, starte erneut...");
-                waitScreen.setText("Netzwerkfehler, starte erneut...");
-                Thread.sleep(3000);
-            } catch (Exception ex){
-                debug("Keine Verbindung möglich :"+ ex.toString()+ " "+ ex.getMessage());
-                waitScreen.setText("Keine Verbindung möglich :"+ ex.toString()+ "\n"+ ex.getMessage());
-                Thread.sleep(3000);
+                waitScreen.setText("Senden wird vorbereitet...");
+                url = "https://email.o2online.de/smscenter_new.osp?Autocompletion=1&MsgContentID=-1";
+                long starttime = System.currentTimeMillis();
+                connection.httpHandler("GET", url, "email.o2online.de", "", true);
+                long httphandlertime = System.currentTimeMillis() - starttime;
+                debug("Fertig mit connection.httpHandler, Dauer: " + httphandlertime + " ms");
+                //System.out.println(connection.getContent()+"\n\n\n");
+                String postRequest = "";
+                waitScreen.setText("SMS wird gesendet...");
+                url = "https://email.o2online.de/smscenter_send.osp";
+
+                //Build SMS send request and get remaining SMS.
+
+
+                String[] returnValue;
+                starttime = System.currentTimeMillis();
+                returnValue = connection.getSendPostRequest((remSMS != -1), SenderMode); //Sendermode: 0=phone number 1=text
+                debug("Fertig mit getSendPostRequest, Dauer: " + (System.currentTimeMillis() - starttime) + " ms" + "HttpHandler: " + httphandlertime + " ms");
+                postRequest = returnValue[0];
+                if (remSMS != -1) {
+                    remSMS = Integer.parseInt(returnValue[1]);
+                }
+
+                if (SenderMode == SENDERMODE_TEXT) { //Text as Sender
+                    postRequest = postRequest + "SMSTo=" + URLEncoder.encode(smsRecv) + "&SMSText="
+                            + URLEncoder.encode(smsText) + "&SMSFrom="
+                            + URLEncoder.encode(SenderName) + "&Frequency=5";
+                } else {
+                    postRequest = postRequest + "SMSTo=" + URLEncoder.encode(smsRecv) + "&SMSText="
+                            + URLEncoder.encode(smsText) + "&SMSFrom=&Frequency=5";
+                }
+
+                if (!simulation) {
+                    connection.httpHandler("POST", url, "email.o2online.de", postRequest, false);//false
+                }
+                //if (remSMS>0) remSMS--;
+                int SMSneeded = countSMS(smsText);
+                if (remSMS > 0) {
+                    remSMS = remSMS - SMSneeded; //Counting amount of used SMS
+                }
+                debug("Die SMS ist Zeichen lang: " + smsText.length());
+                debug("Anzahl SMS: " + SMSneeded);
+                debug("Fertig mit sendSMS02, Dauer: " + (System.currentTimeMillis() - totaltime) + " ms");
+                waitScreen.setText("SMS wurde versandt!");
+                return 0;
+
+            } catch (OutOfMemoryError ex) {
+                waitScreen.setText("Systemspeicher voll!");
+                debug("Systemspeicher voll!");
+                Thread.sleep(7000);
                 throw ex;
+            } catch (Exception ex) {
+                waitScreen.setText(ex.toString() + ": " + ex.getMessage());
+                debug(ex.toString() + ": " + ex.getMessage());
+                ex.printStackTrace();
+                Thread.sleep(7000);
+                throw ex;
+            } catch (Throwable e) {
+                waitScreen.setText("Unklarer Fehler: " + e.toString());
+                debug("Unklarer Fehler: " + e.toString());
+                Thread.sleep(10000);
+                throw new Exception("Fehler!");
             }
         }
 
-        String flowExecutionKey;
-        
-        flowExecutionKey = connection.getFlowExecutionKey();
-        
-        waitScreen.setText("Zugangsdaten werden gesendet...");
-
-        url="https://login.o2online.de/loginRegistration/loginAction.do";
-        connection.httpHandler("POST",url,"login.o2online.de","_flowExecutionKey="+
-                URLEncoder.encode(flowExecutionKey)+
-                "&loginName="+URLEncoder.encode(connection.getUsername().trim())+
-                "&password="+URLEncoder.encode(connection.getPassword().trim())+
-                "&_eventId=login",false);//False
-       
-        waitScreen.setText("Zugangsdaten werden geprüft...");
-        url="https://email.o2online.de/ssomanager.osp?APIID=AUTH-WEBSSO&" +
-                "TargetApp=/sms_new.osp%3f&o2_type=url&o2_label=web2sms-o2online";
-        String localCookie=connection.getCookie();
-        connection.httpHandler("GET",url,"email.o2online.de","",false);//false
-
-        if(localCookie.equals(connection.getCookie())){
-                Exception ex = new Exception("Zugangsdaten falsch!");
-                throw ex;
-        }
-        waitScreen.setText("Senden wird vorbereitet...");
-        url="https://email.o2online.de/smscenter_new.osp?Autocompletion=1&MsgContentID=-1";
-        long starttime = System.currentTimeMillis();
-        connection.httpHandler("GET",url,"email.o2online.de","",true);
-        long httphandlertime =System.currentTimeMillis()-starttime;
-        debug("Fertig mit connection.httpHandler, Dauer: "+ httphandlertime + " ms");
-        //System.out.println(connection.getContent()+"\n\n\n");
-        String postRequest="";
-        waitScreen.setText("SMS wird gesendet...");
-        url="https://email.o2online.de/smscenter_send.osp";
-
-        //Build SMS send request and get remaining SMS.
-
-        
-            String[] returnValue;
-            starttime = System.currentTimeMillis();
-            returnValue = connection.getSendPostRequest((remSMS!=-1),SenderMode); //Sendermode: 0=phone number 1=text
-            debug("Fertig mit getSendPostRequest, Dauer: "+ (System.currentTimeMillis()-starttime) + " ms" + "HttpHandler: " + httphandlertime + " ms");
-            postRequest=returnValue[0];
-            if (remSMS!=-1){
-                remSMS=Integer.parseInt(returnValue[1]);
+        private void SyncSettings() {
+            username = ioSettings.getUsername();
+            password = ioSettings.getPassword();
+            provider = ioSettings.getSetup();
+            remSMS = ioSettings.getRemSMS();
+            contentLoad = ioSettings.getContentLoad().equals("true");
+            ActiveAccount = Integer.parseInt(ioSettings.getActiveAccount());
+            SenderMode = ioSettings.getSenderMode();
+            SenderName = ioSettings.getSenderName();
+            debug = ioSettings.getDebug().equals("true");
+            if (simulation) {
+                debug = true;
             }
-
-        if (SenderMode==SENDERMODE_TEXT){ //Text as Sender
-            postRequest=postRequest+"SMSTo="+URLEncoder.encode(smsRecv)+"&SMSText="
-                     +URLEncoder.encode(smsText)+"&SMSFrom="
-                     + URLEncoder.encode(SenderName)+ "&Frequency=5";
+            System.out.println("AcitveAccount: " + ActiveAccount);
         }
-        else{
-            postRequest=postRequest+"SMSTo="+URLEncoder.encode(smsRecv)+"&SMSText="
-                     +URLEncoder.encode(smsText)+"&SMSFrom=&Frequency=5";
+
+        private void SaveTempSMS() {
+            ioSettings.saveTempSMS(textField.getString(), textField3.getString());
         }
-        
-        if (!simulation)
-            connection.httpHandler("POST",url,"email.o2online.de",postRequest,false);//false
-        
-        //if (remSMS>0) remSMS--;
-        int SMSneeded = countSMS(smsText);
-        if (remSMS>0) remSMS=remSMS-SMSneeded; //Counting amount of used SMS
-        debug("Die SMS ist Zeichen lang: " + smsText.length());
-        debug("Anzahl SMS: " + SMSneeded);
-        debug("Fertig mit sendSMS02, Dauer: "+ (System.currentTimeMillis()-totaltime) + " ms");
-        waitScreen.setText("SMS wurde versandt!");
-        return 0;
 
-        }catch (OutOfMemoryError ex){
-            waitScreen.setText("Systemspeicher voll!");
-            debug("Systemspeicher voll!");
-            Thread.sleep(7000);
-            throw ex;
-        }catch (Exception ex){
-            waitScreen.setText(ex.toString()+ ": "+ex.getMessage());
-            debug(ex.toString()+ ": "+ex.getMessage());
-            ex.printStackTrace();
-            Thread.sleep(7000);
-            throw ex;
-        }catch (Throwable e){
-            waitScreen.setText("Unklarer Fehler: "+e.toString());
-            debug("Unklarer Fehler: "+e.toString());
-            Thread.sleep(10000);
-            throw new Exception("Fehler!");
+        private void RetrieveTempSMS() {
+            textField.setString("" + ioSettings.getTempSMSto());
+            textField3.setString("" + ioSettings.getTempSMStext());
         }
-    }
 
-    private void SyncSettings()
-    {
-        username=ioSettings.getUsername();
-        password=ioSettings.getPassword();
-        provider=ioSettings.getSetup();
-        remSMS=ioSettings.getRemSMS();
-        contentLoad=ioSettings.getContentLoad().equals("true");
-        ActiveAccount=Integer.parseInt(ioSettings.getActiveAccount());
-        SenderMode=ioSettings.getSenderMode();
-        SenderName=ioSettings.getSenderName();
-        debug=ioSettings.getDebug().equals("true");
-        if (simulation) debug = true;
-        System.out.println("AcitveAccount: "+ActiveAccount);
-    }
-
-    private void SaveTempSMS(){
-        ioSettings.saveTempSMS(textField.getString(), textField3.getString());
-    }
-
-    private void RetrieveTempSMS(){
-        textField.setString(""+ioSettings.getTempSMSto());
-        textField3.setString(""+ioSettings.getTempSMStext());
-    }
-
-    private void ClearSMSInput(){
-        textField3.setString("");
-        textField3.setLabel("Eingabe");
-        textField.setString("");
-    }
+        private void ClearSMSInput() {
+            textField3.setString("");
+            textField3.setLabel("Eingabe");
+            textField.setString("");
+        }
     //<editor-fold defaultstate="collapsed" desc=" Generated Methods ">//GEN-BEGIN:|methods|0|
     /**
      * Switches a display to previous displayable of the current displayable.
@@ -541,13 +543,13 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
      * Performs an action assigned to the Mobile Device - MIDlet Started point.
      */
     public void startMIDlet() {//GEN-END:|3-startMIDlet|0|3-preAction
-        if (ioSettings.getUsername().equals("")){
-            switchDisplayable(null,getSetup());
+        if (ioSettings.getUsername().equals("")) {
+            switchDisplayable(null, getSetup());
 
-        }else {
+        } else {
 
 
-            switchDisplayable(null,getMainMenu());
+            switchDisplayable(null, getMainMenu());
             SyncSettings();
             stringItem1.setText(getRemSMSText());
         }
@@ -643,233 +645,228 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
                 switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|18|82-postAction
 
             } else if (command == writeSMS) {//GEN-LINE:|7-commandAction|19|29-preAction
-                recvNB=textField.getString();
-                text=textField3.getString();
+                recvNB = textField.getString();
+                text = textField3.getString();
                 debug("Senden pressed");
-                if (!password.equals("")){
+                if (!password.equals("")) {
                     switchDisplayable(null, getWaitScreen());//GEN-LINE:|7-commandAction|20|29-postAction
-                }else{
+                } else {
                     switchDisplayable(null, getLoginScreen());
                     textField6.setString(username);
                 }
 
-            }//GEN-BEGIN:|7-commandAction|21|307-preAction
+            }//GEN-BEGIN:|7-commandAction|21|323-preAction
+        } else if (displayable == NoEmail) {
+            if (command == back) {//GEN-END:|7-commandAction|21|323-preAction
+                // write pre-action user code here
+                switchDisplayable(null, getSendEmailForm());//GEN-LINE:|7-commandAction|22|323-postAction
+                // write post-action user code here
+            } else if (command == okCommand1) {//GEN-LINE:|7-commandAction|23|325-preAction
+                // write pre-action user code here
+                switchDisplayable(null, getWaitScreen1());//GEN-LINE:|7-commandAction|24|325-postAction
+                // write post-action user code here
+            }//GEN-BEGIN:|7-commandAction|25|307-preAction
         } else if (displayable == SendEmailForm) {
-            if (command == back) {//GEN-END:|7-commandAction|21|307-preAction
+            if (command == back) {//GEN-END:|7-commandAction|25|307-preAction
                 // write pre-action user code here
-                switchDisplayable(null, getDebug());//GEN-LINE:|7-commandAction|22|307-postAction
+                switchDisplayable(null, getDebug());//GEN-LINE:|7-commandAction|26|307-postAction
                 // write post-action user code here
-            } else if (command == startEmailClient) {//GEN-LINE:|7-commandAction|23|306-preAction
-//                EmailClient client = new EmailClient(this,"d2Vic21zZW5kQGdteC5kZQ==","ZG5lc3Ntc2Jldw==",
-//                        "websmsend@gmx.de", "websmssend@googlemail.com",getTxtCCemail().getString(),
-//                        "Debug-Meldungen", getTxtFehlerbeschreibung().getString() + "\r\n\r\n"
-//                        + getDebug().getString());
-//                client.start();
+            } else if (command == startEmailClient) {//GEN-LINE:|7-commandAction|27|306-preAction
                 // write pre-action user code here
-                switchDisplayable(null, getWaitScreen1());//GEN-LINE:|7-commandAction|24|306-postAction
+                isEmailNotEntered();//GEN-LINE:|7-commandAction|28|306-postAction
                 // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|25|166-preAction
+            }//GEN-BEGIN:|7-commandAction|29|166-preAction
         } else if (displayable == list) {
-            if (command == List.SELECT_COMMAND) {//GEN-END:|7-commandAction|25|166-preAction
+            if (command == List.SELECT_COMMAND) {//GEN-END:|7-commandAction|29|166-preAction
                 // write pre-action user code here
-                listAction();//GEN-LINE:|7-commandAction|26|166-postAction
+                listAction();//GEN-LINE:|7-commandAction|30|166-postAction
                 // write post-action user code here
-            } else if (command == back) {//GEN-LINE:|7-commandAction|27|184-preAction
+            } else if (command == back) {//GEN-LINE:|7-commandAction|31|184-preAction
                 // write pre-action user code here
-                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|28|184-postAction
+                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|32|184-postAction
                 stringItem1.setText(getRemSMSText());
-            } else if (command == nextSettings) {//GEN-LINE:|7-commandAction|29|173-preAction
+            } else if (command == nextSettings) {//GEN-LINE:|7-commandAction|33|173-preAction
                 // write pre-action user code here
-                listAction();//GEN-LINE:|7-commandAction|30|173-postAction
+                listAction();//GEN-LINE:|7-commandAction|34|173-postAction
                 // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|31|238-preAction
+            }//GEN-BEGIN:|7-commandAction|35|238-preAction
         } else if (displayable == loginScreen) {
-            if (command == back) {//GEN-END:|7-commandAction|31|238-preAction
+            if (command == back) {//GEN-END:|7-commandAction|35|238-preAction
 
 
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|32|238-postAction
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|36|238-postAction
                 // write post-action user code here
-            } else if (command == loginScreenSend) {//GEN-LINE:|7-commandAction|33|241-preAction
-                username=textField6.getString();
-                password=textField7.getString();
-                switchDisplayable(null, getWaitScreen());//GEN-LINE:|7-commandAction|34|241-postAction
+            } else if (command == loginScreenSend) {//GEN-LINE:|7-commandAction|37|241-preAction
+                username = textField6.getString();
+                password = textField7.getString();
+                switchDisplayable(null, getWaitScreen());//GEN-LINE:|7-commandAction|38|241-postAction
                 // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|35|65-preAction
+            }//GEN-BEGIN:|7-commandAction|39|65-preAction
         } else if (displayable == loginSettings) {
-            if (command == back) {//GEN-END:|7-commandAction|35|65-preAction
+            if (command == back) {//GEN-END:|7-commandAction|39|65-preAction
                 // write pre-action user code here
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|36|65-postAction
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|40|65-postAction
                 // write post-action user code here
-            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|37|85-preAction
+            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|41|85-preAction
 
-                if(choiceGroup1.isSelected(0)){
-                    if (textField2.getString().equals("****"))
-                    {
-                        password=ioSettings.getPassword();
+                if (choiceGroup1.isSelected(0)) {
+                    if (textField2.getString().equals("****")) {
+                        password = ioSettings.getPassword();
+                    } else {
+                        password = textField2.getString();
                     }
-                    else
-                    {
-                        password=textField2.getString();
-                    }
-                }else password="";
-                username=textField1.getString();
+                } else {
+                    password = "";
+                }
+                username = textField1.getString();
                 ioSettings.saveToRMS(username, password);
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|38|85-postAction
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|42|85-postAction
                 // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|39|110-preAction
+            }//GEN-BEGIN:|7-commandAction|43|110-preAction
         } else if (displayable == notSend) {
-            if (command == exitCommand3) {//GEN-END:|7-commandAction|39|110-preAction
+            if (command == exitCommand3) {//GEN-END:|7-commandAction|43|110-preAction
                 // write pre-action user code here
-                exitMIDlet();//GEN-LINE:|7-commandAction|40|110-postAction
+                exitMIDlet();//GEN-LINE:|7-commandAction|44|110-postAction
                 // write post-action user code here
-            } else if (command == okCommand3) {//GEN-LINE:|7-commandAction|41|112-preAction
+            } else if (command == okCommand3) {//GEN-LINE:|7-commandAction|45|112-preAction
                 // write pre-action user code here
-                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|42|112-postAction
+                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|46|112-postAction
                 // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|43|187-preAction
+            }//GEN-BEGIN:|7-commandAction|47|187-preAction
         } else if (displayable == optimSettings) {
-            if (command == back) {//GEN-END:|7-commandAction|43|187-preAction
+            if (command == back) {//GEN-END:|7-commandAction|47|187-preAction
                 // write pre-action user code here
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|44|187-postAction
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|48|187-postAction
                 // write post-action user code here
-            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|45|208-preAction
-                if (choiceGroup.isSelected(0)){
+            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|49|208-preAction
+                if (choiceGroup.isSelected(0)) {
                     ioSettings.saveOptim("true");
-                    contentLoad=true;
-                }else {
+                    contentLoad = true;
+                } else {
                     ioSettings.saveOptim("false");
-                    contentLoad=false;
+                    contentLoad = false;
                 }
-                if (choiceGroup.isSelected(1)){
-                    if (remSMS<0){
+                if (choiceGroup.isSelected(1)) {
+                    if (remSMS < 0) {
                         ioSettings.saveRemSMS("-2");
-                        remSMS=-2;
+                        remSMS = -2;
                     }
-                }else {
+                } else {
                     ioSettings.saveRemSMS("-1");
-                    remSMS=-1;
+                    remSMS = -1;
                 }
-                if (choiceGroup.isSelected(2)){
+                if (choiceGroup.isSelected(2)) {
                     ioSettings.saveDebug("true");
-                    debug=true;
-                }else {
+                    debug = true;
+                } else {
                     ioSettings.saveDebug("false");
-                    debug=false;
+                    debug = false;
                 }
-                switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|46|208-postAction
+                switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|50|208-postAction
                 // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|47|189-preAction
+            }//GEN-BEGIN:|7-commandAction|51|189-preAction
         } else if (displayable == providerSettings) {
-            if (command == back) {//GEN-END:|7-commandAction|47|189-preAction
+            if (command == back) {//GEN-END:|7-commandAction|51|189-preAction
                 // write pre-action user code here
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|48|189-postAction
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|52|189-postAction
                 // write post-action user code here
-            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|49|232-preAction
-                if (choiceGroup3.getSelectedIndex()!=-1){
-                     provider=choiceGroup3.getSelectedIndex();
-                     ioSettings.saveSetup(""+provider);
-                     if (remSMS!=-1){
-                         remSMS=-2;
-                         ioSettings.saveRemSMS("-2");
-                     }
+            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|53|232-preAction
+                if (choiceGroup3.getSelectedIndex() != -1) {
+                    provider = choiceGroup3.getSelectedIndex();
+                    ioSettings.saveSetup("" + provider);
+                    if (remSMS != -1) {
+                        remSMS = -2;
+                        ioSettings.saveRemSMS("-2");
+                    }
                 }
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|50|232-postAction
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|54|232-postAction
 
 
 
 
-            }//GEN-BEGIN:|7-commandAction|51|227-preAction
+            }//GEN-BEGIN:|7-commandAction|55|227-preAction
         } else if (displayable == setup) {
-            if (command == okCommand) {//GEN-END:|7-commandAction|51|227-preAction
-                username=textField5.getString();
-                password=textField4.getString();
-                provider=choiceGroup2.getSelectedIndex();
-                System.out.println("Provider: "+provider);
-                remSMS=-2;
-                contentLoad=false;
-                debug=false;
+            if (command == okCommand) {//GEN-END:|7-commandAction|55|227-preAction
+                username = textField5.getString();
+                password = textField4.getString();
+                provider = choiceGroup2.getSelectedIndex();
+                System.out.println("Provider: " + provider);
+                remSMS = -2;
+                contentLoad = false;
+                debug = false;
 
-                if (provider==-1) provider=0;
+                if (provider == -1) {
+                    provider = 0;
+                }
                 ioSettings.saveOptim("false");
                 ioSettings.saveDebug("false");
-                ioSettings.saveRemSMS(""+remSMS);
-                ioSettings.saveSetup(""+(provider));
+                ioSettings.saveRemSMS("" + remSMS);
+                ioSettings.saveSetup("" + (provider));
                 ioSettings.saveToRMS(username, password);
                 SyncSettings();
-                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|52|227-postAction
+                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|56|227-postAction
                 // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|53|104-preAction
+            }//GEN-BEGIN:|7-commandAction|57|104-preAction
         } else if (displayable == smsSend) {
-            if (command == exitCommand2) {//GEN-END:|7-commandAction|53|104-preAction
+            if (command == exitCommand2) {//GEN-END:|7-commandAction|57|104-preAction
                 // write pre-action user code here
-                exitMIDlet();//GEN-LINE:|7-commandAction|54|104-postAction
+                exitMIDlet();//GEN-LINE:|7-commandAction|58|104-postAction
                 // write post-action user code here
-            } else if (command == okCommand2) {//GEN-LINE:|7-commandAction|55|107-preAction
+            } else if (command == okCommand2) {//GEN-LINE:|7-commandAction|59|107-preAction
                 // write pre-action user code here
-                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|56|107-postAction
+                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|60|107-postAction
                 stringItem1.setText(getRemSMSText());
-            }//GEN-BEGIN:|7-commandAction|57|183-preAction
+            }//GEN-BEGIN:|7-commandAction|61|183-preAction
         } else if (displayable == smsSettings) {
-            if (command == back) {//GEN-END:|7-commandAction|57|183-preAction
+            if (command == back) {//GEN-END:|7-commandAction|61|183-preAction
                 // write pre-action user code here
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|58|183-postAction
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|62|183-postAction
                 // write post-action user code here
-            } else if (command == okCommand6) {//GEN-LINE:|7-commandAction|59|270-preAction
-                if (txtSenderName.getString().length()<5 && choiceGroup4.getSelectedIndex() !=0)
-                {
+            } else if (command == okCommand6) {//GEN-LINE:|7-commandAction|63|270-preAction
+                if (txtSenderName.getString().length() < 5 && choiceGroup4.getSelectedIndex() != 0) {
                     //Fehlermeldung "Name zu kurz" falls Text als Absender gewählt
                     stringItem2.setText("Der Absender muss mindestens 5 Buchstaben lang sein");
                     stringItem2.setLabel("Achtung!");
-                }
-                else
-                {
-                    SenderMode=choiceGroup4.getSelectedIndex();
-                    SenderName=txtSenderName.getString();
+                } else {
+                    SenderMode = choiceGroup4.getSelectedIndex();
+                    SenderName = txtSenderName.getString();
                     ioSettings.saveSenderSetup(SenderMode, SenderName);
-                // write pre-action user code here
-                    switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|60|270-postAction
-                // write post-action user code here
+                    // write pre-action user code here
+                    switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|64|270-postAction
+                    // write post-action user code here
                 }
-            }//GEN-BEGIN:|7-commandAction|61|51-preAction
+            }//GEN-BEGIN:|7-commandAction|65|51-preAction
         } else if (displayable == waitScreen) {
-            if (command == WaitScreen.FAILURE_COMMAND) {//GEN-END:|7-commandAction|61|51-preAction
+            if (command == WaitScreen.FAILURE_COMMAND) {//GEN-END:|7-commandAction|65|51-preAction
                 getNotSend().setString("SMS nicht gesendet!");
-                switchDisplayable(getNotSend(), getMainMenu());//GEN-LINE:|7-commandAction|62|51-postAction
+                switchDisplayable(getNotSend(), getMainMenu());//GEN-LINE:|7-commandAction|66|51-postAction
 
-            } else if (command == WaitScreen.SUCCESS_COMMAND) {//GEN-LINE:|7-commandAction|63|50-preAction
-                if (remSMS!=-1){
-                    ioSettings.saveRemSMS(""+remSMS);
+            } else if (command == WaitScreen.SUCCESS_COMMAND) {//GEN-LINE:|7-commandAction|67|50-preAction
+                if (remSMS != -1) {
+                    ioSettings.saveRemSMS("" + remSMS);
                 }
-                switchDisplayable(getSmsSend(), getMainMenu());//GEN-LINE:|7-commandAction|64|50-postAction
-                smsSend.setString("SMS gesendet \n"+getRemSMSText());
+                switchDisplayable(getSmsSend(), getMainMenu());//GEN-LINE:|7-commandAction|68|50-postAction
+                smsSend.setString("SMS gesendet \n" + getRemSMSText());
                 ClearSMSInput();
-            } else if (command == exitCommand1) {//GEN-LINE:|7-commandAction|65|99-preAction
+            } else if (command == exitCommand1) {//GEN-LINE:|7-commandAction|69|99-preAction
                 // write pre-action user code here
-                exitMIDlet();//GEN-LINE:|7-commandAction|66|99-postAction
+                exitMIDlet();//GEN-LINE:|7-commandAction|70|99-postAction
                 // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|67|312-preAction
+            }//GEN-BEGIN:|7-commandAction|71|312-preAction
         } else if (displayable == waitScreen1) {
-            if (command == WaitScreen.FAILURE_COMMAND) {//GEN-END:|7-commandAction|67|312-preAction
+            if (command == WaitScreen.FAILURE_COMMAND) {//GEN-END:|7-commandAction|71|312-preAction
                 // write pre-action user code here
-                switchDisplayable(getEmailNotSent(), getSendEmailForm());//GEN-LINE:|7-commandAction|68|312-postAction
+                switchDisplayable(getEmailNotSent(), getSendEmailForm());//GEN-LINE:|7-commandAction|72|312-postAction
                 // write post-action user code here
-            } else if (command == WaitScreen.SUCCESS_COMMAND) {//GEN-LINE:|7-commandAction|69|311-preAction
+            } else if (command == WaitScreen.SUCCESS_COMMAND) {//GEN-LINE:|7-commandAction|73|311-preAction
                 // write pre-action user code here
-                switchDisplayable(getEmailSent(), getDebug());//GEN-LINE:|7-commandAction|70|311-postAction
+                switchDisplayable(getEmailSent(), getDebug());//GEN-LINE:|7-commandAction|74|311-postAction
                 // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|71|7-postCommandAction
-        }//GEN-END:|7-commandAction|71|7-postCommandAction
+            }//GEN-BEGIN:|7-commandAction|75|7-postCommandAction
+        }//GEN-END:|7-commandAction|75|7-postCommandAction
         // write post-action user code here
-    }//GEN-BEGIN:|7-commandAction|72|
-    //</editor-fold>//GEN-END:|7-commandAction|72|
-
-
-
-
-
-
-
-
+    }//GEN-BEGIN:|7-commandAction|76|
+    //</editor-fold>//GEN-END:|7-commandAction|76|
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitCommand ">//GEN-BEGIN:|18-getter|0|18-preInit
     /**
@@ -902,11 +899,12 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
             MainMenu.setCommandListener(this);//GEN-END:|14-getter|1|14-postInit
             // write post-init user code here
             ItemStateListener listener = new ItemStateListener() {
+
                 public void itemStateChanged(Item item) {
-                   if (item==textField3) {
-                        textField3.setLabel(""+textField3.getString().length()+
-                                " (" + countSMS(textField3.getString())+" SMS)" );
-                   }
+                    if (item == textField3) {
+                        textField3.setLabel("" + textField3.getString().length()
+                                + " (" + countSMS(textField3.getString()) + " SMS)");
+                    }
                 }
             };
             MainMenu.setItemStateListener(listener);
@@ -915,12 +913,6 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
         return MainMenu;
     }
     //</editor-fold>//GEN-END:|14-getter|2|
-
- 
-
-
-
-
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: goToSettings ">//GEN-BEGIN:|24-getter|0|24-preInit
     /**
@@ -952,8 +944,6 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
     }
     //</editor-fold>//GEN-END:|28-getter|2|
 
-
-
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: back ">//GEN-BEGIN:|33-getter|0|33-preInit
     /**
      * Returns an initiliazed instance of back component.
@@ -968,12 +958,6 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
         return back;
     }
     //</editor-fold>//GEN-END:|33-getter|2|
-
-
-
-
-
-
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: waitScreen ">//GEN-BEGIN:|47-getter|0|47-preInit
     /**
@@ -1046,12 +1030,6 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
     }
     //</editor-fold>//GEN-END:|62-getter|2|
 
-
-
-
-
-
-
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommand ">//GEN-BEGIN:|84-getter|0|84-preInit
     /**
      * Returns an initiliazed instance of okCommand component.
@@ -1105,8 +1083,6 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
     }
     //</editor-fold>//GEN-END:|91-getter|2|
 
-
-
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitCommand1 ">//GEN-BEGIN:|98-getter|0|98-preInit
     /**
      * Returns an initiliazed instance of exitCommand1 component.
@@ -1121,8 +1097,6 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
         return exitCommand1;
     }
     //</editor-fold>//GEN-END:|98-getter|2|
-
-
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitCommand2 ">//GEN-BEGIN:|103-getter|0|103-preInit
     /**
@@ -1200,24 +1174,6 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
     }
     //</editor-fold>//GEN-END:|116-getter|2|
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: task ">//GEN-BEGIN:|140-getter|0|140-preInit
     /**
      * Returns an initiliazed instance of task component.
@@ -1229,7 +1185,7 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
             task = new SimpleCancellableTask();//GEN-BEGIN:|140-getter|1|140-execute
             task.setExecutable(new org.netbeans.microedition.util.Executable() {
                 public void execute() throws Exception {//GEN-END:|140-getter|1|140-execute
-                    sendSMS(recvNB,text);
+                    sendSMS(recvNB, text);
                 }//GEN-BEGIN:|140-getter|2|140-postInit
             });//GEN-END:|140-getter|2|140-postInit
             // write post-init user code here
@@ -1237,20 +1193,6 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
         return task;
     }
     //</editor-fold>//GEN-END:|140-getter|3|
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: textField ">//GEN-BEGIN:|156-getter|0|156-preInit
     /**
@@ -1268,10 +1210,6 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
         return textField;
     }
     //</editor-fold>//GEN-END:|156-getter|2|
-
-
-
-
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: nextSettings ">//GEN-BEGIN:|172-getter|0|172-preInit
     /**
@@ -1345,7 +1283,7 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
                 // write pre-action user code here
                 switchDisplayable(null, getOptimSettings());//GEN-LINE:|165-action|8|170-postAction
 
-                boolean[] selected={contentLoad,(remSMS!=-1),debug};
+                boolean[] selected = {contentLoad, (remSMS != -1), debug};
                 choiceGroup.setSelectedFlags(selected);
             } else if (__selectedString.equals("SMS-Anbieter")) {//GEN-LINE:|165-action|9|171-preAction
                 // write pre-action user code here
@@ -1364,7 +1302,6 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
         // enter post-action user code here
     }//GEN-BEGIN:|165-action|16|
     //</editor-fold>//GEN-END:|165-action|16|
-
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: smsSettings ">//GEN-BEGIN:|177-getter|0|177-preInit
     /**
@@ -1438,12 +1375,6 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
     }
     //</editor-fold>//GEN-END:|194-getter|2|
 
-
-
-
-
-
-
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: choiceGroup ">//GEN-BEGIN:|204-getter|0|204-preInit
     /**
      * Returns an initiliazed instance of choiceGroup component.
@@ -1467,8 +1398,6 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
     }
     //</editor-fold>//GEN-END:|204-getter|2|
 
-
-
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: font ">//GEN-BEGIN:|211-getter|0|211-preInit
     /**
      * Returns an initiliazed instance of font component.
@@ -1483,8 +1412,6 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
         return font;
     }
     //</editor-fold>//GEN-END:|211-getter|2|
-
-
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: eingabeLeeren ">//GEN-BEGIN:|212-getter|0|212-preInit
     /**
@@ -1786,7 +1713,7 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
         return choiceGroup4;
     }
     //</editor-fold>//GEN-END:|263-getter|2|
-    //</editor-fold>
+        //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtSenderName ">//GEN-BEGIN:|266-getter|0|266-preInit
     /**
@@ -1851,11 +1778,7 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
     }
     //</editor-fold>//GEN-END:|272-getter|2|
 
-
-
-
-    //</editor-fold>
-
+        //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: BenutzerwahlBestaettigung ">//GEN-BEGIN:|281-getter|0|281-preInit
     /**
      * Returns an initiliazed instance of BenutzerwahlBestaettigung component.
@@ -1962,13 +1885,13 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
     public StringItem getStringItem3() {
         if (stringItem3 == null) {//GEN-END:|302-getter|0|302-preInit
             // write pre-init user code here
-            stringItem3 = new StringItem("Hier gibt es die M\u00F6glichkeit die aktuellen Meldungen im Debug-Fenster komfortabel an die Entwickler per E-Mail weiterzuleiten. Zudem ist es m\u00F6glich eine Fehlerbeschreibung einzugeben und wer m\u00F6chte kann sich diese E-Mail als CC schicken lassen. ", null);//GEN-LINE:|302-getter|1|302-postInit
+            stringItem3 = new StringItem("Hier k\u00F6nnen die Debug-Meldungen mit einer Fehlerbeschreibung an die Entwickler weitergeleitet werden. Zum Antworten und f\u00FCr Nachfragen wird eine E-Mail-Adresse ben\u00F6tigt!", null, Item.PLAIN);//GEN-LINE:|302-getter|1|302-postInit
             // write post-init user code here
         }//GEN-BEGIN:|302-getter|2|
         return stringItem3;
     }
     //</editor-fold>//GEN-END:|302-getter|2|
-    //</editor-fold>
+        //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtFehlerbeschreibung ">//GEN-BEGIN:|303-getter|0|303-preInit
     /**
@@ -1984,7 +1907,7 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
         return txtFehlerbeschreibung;
     }
     //</editor-fold>//GEN-END:|303-getter|2|
-    //</editor-fold>
+        //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtCCemail ">//GEN-BEGIN:|304-getter|0|304-preInit
     /**
@@ -1994,7 +1917,7 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
     public TextField getTxtCCemail() {
         if (txtCCemail == null) {//GEN-END:|304-getter|0|304-preInit
             // write pre-init user code here
-            txtCCemail = new TextField("E-Mail Adresse", null, 50, TextField.ANY);//GEN-LINE:|304-getter|1|304-postInit
+            txtCCemail = new TextField("E-Mail Adresse", null, 50, TextField.EMAILADDR);//GEN-LINE:|304-getter|1|304-postInit
             // write post-init user code here
         }//GEN-BEGIN:|304-getter|2|
         return txtCCemail;
@@ -2031,11 +1954,13 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
             task1.setExecutable(new org.netbeans.microedition.util.Executable() {
                 public void execute() throws Exception {//GEN-END:|313-getter|1|313-execute
                     // write task-execution user code here
-                    EmailClient client = new EmailClient(GUI,"d2Vic21zZW5kQGdteC5kZQ==","ZG5lc3Ntc2Jldw==",
-                        "websmsend@gmx.de", "websmssend@googlemail.com",getTxtCCemail().getString(),
-                        "Debug-Meldungen", getTxtFehlerbeschreibung().getString() + "\r\n\r\n"
-                        + getDebug().getString());
-                    if (client.run()==0) throw new Exception("failed");
+                    EmailClient client = new EmailClient(GUI, "d2Vic21zZW5kQGdteC5kZQ==", "ZG5lc3Ntc2Jldw==",
+                            "websmsend@gmx.de", "websmssend@googlemail.com", getTxtCCemail().getString(),
+                            "Debug-Meldungen", getTxtFehlerbeschreibung().getString() + "\r\n\r\n"
+                            + getDebug().getString());
+                    if (client.run() == 0) {
+                        throw new Exception("failed");
+                    }
                 }//GEN-BEGIN:|313-getter|2|313-postInit
             });//GEN-END:|313-getter|2|313-postInit
             // write post-init user code here
@@ -2075,43 +2000,66 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
         return EmailNotSent;
     }
     //</editor-fold>//GEN-END:|318-getter|2|
+        //</editor-fold>
 
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: NoEmail ">//GEN-BEGIN:|321-getter|0|321-preInit
+    /**
+     * Returns an initiliazed instance of NoEmail component.
+     * @return the initialized component instance
+     */
+    public Alert getNoEmail() {
+        if (NoEmail == null) {//GEN-END:|321-getter|0|321-preInit
+            // write pre-init user code here
+            NoEmail = new Alert("Keine E-Mail Adresse", "Es wurde keine E-Mail Adresse angegeben!\nDamit kann auf Ihre Debug-Meldungen keine Antwort geschickt werden\nMit Weiter trotzdem senden", null, AlertType.CONFIRMATION);//GEN-BEGIN:|321-getter|1|321-postInit
+            NoEmail.addCommand(getBack());
+            NoEmail.addCommand(getOkCommand1());
+            NoEmail.setCommandListener(this);
+            NoEmail.setTimeout(Alert.FOREVER);//GEN-END:|321-getter|1|321-postInit
+            // write post-init user code here
+        }//GEN-BEGIN:|321-getter|2|
+        return NoEmail;
+    }
+    //</editor-fold>//GEN-END:|321-getter|2|
 
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommand1 ">//GEN-BEGIN:|324-getter|0|324-preInit
+    /**
+     * Returns an initiliazed instance of okCommand1 component.
+     * @return the initialized component instance
+     */
+    public Command getOkCommand1() {
+        if (okCommand1 == null) {//GEN-END:|324-getter|0|324-preInit
+            // write pre-init user code here
+            okCommand1 = new Command("Weiter", Command.OK, 0);//GEN-LINE:|324-getter|1|324-postInit
+            // write post-init user code here
+        }//GEN-BEGIN:|324-getter|2|
+        return okCommand1;
+    }
+    //</editor-fold>//GEN-END:|324-getter|2|
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    //<editor-fold defaultstate="collapsed" desc=" Generated Method: isEmailNotEntered ">//GEN-BEGIN:|330-if|0|330-preIf
+    /**
+     * Performs an action assigned to the isEmailNotEntered if-point.
+     */
+    public void isEmailNotEntered() {//GEN-END:|330-if|0|330-preIf
+        // enter pre-if user code here
+        if (this.getTxtCCemail().getString().equals("")) {//GEN-LINE:|330-if|1|331-preAction
+            // write pre-action user code here
+            switchDisplayable(null, getNoEmail());//GEN-LINE:|330-if|2|331-postAction
+            // write post-action user code here
+        } else {//GEN-LINE:|330-if|3|332-preAction
+            // write pre-action user code here
+            switchDisplayable(null, getWaitScreen1());//GEN-LINE:|330-if|4|332-postAction
+            // write post-action user code here
+        }//GEN-LINE:|330-if|5|330-postIf
+        // enter post-if user code here
+    }//GEN-BEGIN:|330-if|6|
+    //</editor-fold>//GEN-END:|330-if|6|
 
     /**
      * Returns a display instance.
      * @return the display instance.
      */
-    public Display getDisplay () {
+    public Display getDisplay() {
         return Display.getDisplay(this);
     }
 
@@ -2120,7 +2068,7 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
      */
     public void exitMIDlet() {
         SaveTempSMS();
-        switchDisplayable (null, null);
+        switchDisplayable(null, null);
         destroyApp(true);
         notifyDestroyed();
     }
@@ -2131,10 +2079,10 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
      */
     public void startApp() {
         if (midletPaused) {
-            resumeMIDlet ();
+            resumeMIDlet();
         } else {
-            initialize ();
-            startMIDlet ();
+            initialize();
+            startMIDlet();
         }
         midletPaused = false;
     }
@@ -2157,15 +2105,13 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
 
     void debug(String msg) {
         if (debug) {
-            try{
-            long currentTime = System.currentTimeMillis() - startTime;
-            getDebug().insert(currentTime + ": " + msg + "\n", getDebug().size());
-            System.out.println(currentTime + ": " + msg);
-            }
-            catch (Exception ex){
-                getDebug().setString("Textbox voll: "+ getDebug().size() + " Zeichen --> lösche Inhalt\n" );
+            try {
+                long currentTime = System.currentTimeMillis() - startTime;
+                getDebug().insert(currentTime + ": " + msg + "\n", getDebug().size());
+                System.out.println(currentTime + ": " + msg);
+            } catch (Exception ex) {
+                getDebug().setString("Textbox voll: " + getDebug().size() + " Zeichen --> lösche Inhalt\n");
             }
         }
     }
-
 }

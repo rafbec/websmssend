@@ -54,12 +54,14 @@ public class EmailClient {
          WriteToStream(password+"\r\n");
          WriteToStream("MAIL FROM: "+ from +"\r\n");
          WriteToStream("RCPT TO: "+ to + "\r\n");
-         if (!cc.equals("")) WriteToStream("RCPT TO: "+ cc + "\r\n"); //not CC but works...;)
+         if (!cc.equals("")) WriteToStream("RCPT TO: "+ cc + "\r\n"); 
          WriteToStream("DATA\r\n");
          // stamp the msg with date
          WriteToStream("Date: " + new Date() + "\r\n");
+         if (!cc.equals("")) WriteToStream("Reply-To: "+ cc + "\r\n"); //this way we can answer the sender easily
          WriteToStream("From: "+from+"\r\n");
          WriteToStream("To: "+to+"\r\n");
+         if (!cc.equals("")) WriteToStream("Cc: "+ cc + "\r\n");
          WriteToStream("Subject: "+subject+"\r\n");
          WriteToStream("\r\n"+msg+"\r\n"); // message body
          WriteToStream(".\r\n");
