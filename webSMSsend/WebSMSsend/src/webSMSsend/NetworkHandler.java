@@ -244,29 +244,51 @@ public class NetworkHandler {
         return i;
     }
     
+    private static final String CHECK_FLOW = // .
+	"name=\"_flowExecutionKey\" value=\"";
+
+    private static String getFlowExecutionkeyALT(final String html) {
+		String ret = "";
+		int i = html.indexOf(CHECK_FLOW);
+		if (i > 0) {
+			int j = html.indexOf("\"", i + 35);
+			if (j >= 0) {
+				ret = html.substring(i + 32, j);
+			}
+		}
+		return ret;
+	}
     //statical match line 190!
     public String getFlowExecutionKey() throws Exception{
         GUI.debug("getFlowExecutionKey()");
-        String[] lineSplit;
-        RE split=new RE('\n'+"");
-        lineSplit=split.split(content);
-        //System.out.println(content);
-        RE regexp=new RE(".*name=\"_flowExecutionKey\" value=\"(.*)\" />.*");
-        int i;
-        for(i=190;i<lineSplit.length;i++){ //190 first match line
-            if (regexp.match(lineSplit[i])){
-                GUI.debug("getFlowExecutionKey: key found at line " + i);
-                return regexp.getParen(1);
+        try{
+            String[] lineSplit;
+            RE split = new RE('\n' + "");
+            lineSplit = split.split(content);
+            GUI.debug("lineSplit finished");
+            RE regexp = new RE(".*name=\"_flowExecutionKey\" value=\"(.*)\" />.*");
+            int i;
+            for (i = 190; i < lineSplit.length; i++) { //190 first match line
+                if (regexp.match(lineSplit[i])) {
+                    GUI.debug("getFlowExecutionKey: key found at line " + i);
+                    return regexp.getParen(1);
+                }
             }
-        }
-        for (i=0;i<190;i++){
-            if (regexp.match(lineSplit[i])){
-                GUI.debug("getFlowExecutionKey: key found at line " + i);
-                return regexp.getParen(1);
+            for (i = 0; i < 190; i++) {
+                if (regexp.match(lineSplit[i])) {
+                    GUI.debug("getFlowExecutionKey: key found at line " + i);
+                    return regexp.getParen(1);
+                }
             }
+
+            throw new Exception("flowExecutionKey not found!");
+
+        }catch(Exception ex){
+            GUI.debug(ex.toString() + " " + ex.getMessage() + "Fallback: getFlowExecutionkeyALT()");
+            String key=getFlowExecutionkeyALT(content);
+            if (key.equals("")) throw new Exception("flowExecutionKey not found!");
+            return key;
         }
-        
-        throw new Exception("flowExecutionKey not found!");
 
         
     }

@@ -36,8 +36,7 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
 public class webSMSsend extends MIDlet implements CommandListener {
 
     //FOR DEBUG ONLY!! SMS will not be sent if true
-    public static final boolean simulation = false;
-    
+    public static boolean simulation = false;
     public static final int SENDERMODE_STANDARD = 0;
     public static final int SENDERMODE_TEXT = 1;
     String recvNB;
@@ -128,6 +127,11 @@ public class webSMSsend extends MIDlet implements CommandListener {
          */
         public webSMSsend() {
             GUI = this;
+//#if DefaultConfiguration
+    simulation = true;
+//#else
+//#     simulation = false;
+//#endif
         }
 
         public int sendGMXsms() {
@@ -354,7 +358,7 @@ public class webSMSsend extends MIDlet implements CommandListener {
                 waitScreen.setText("Login wird geladen...");
 
                 smsRecv = connection.checkRecv(smsRecv);
-                debug("smsRecv: " + smsRecv);
+                debug("Login wird geladen: smsRecv: " + smsRecv);
                 url = "https://login.o2online.de/loginRegistration/loginAction"
                         + ".do?_flowId=" + "login&o2_type=asp&o2_label=login/co"
                         + "mcenter-login&scheme=http&" + "port=80&server=email."
@@ -395,7 +399,7 @@ public class webSMSsend extends MIDlet implements CommandListener {
                 flowExecutionKey = connection.getFlowExecutionKey();
 
                 waitScreen.setText("Zugangsdaten werden gesendet...");
-
+                debug("Zugangsdaten werden gesendet: Flow ExecutionKey: "+flowExecutionKey);
                 url = "https://login.o2online.de/loginRegistration/loginAction.do";
                 connection.httpHandler("POST", url, "login.o2online.de", "_flowExecutionKey="
                         + URLEncoder.encode(flowExecutionKey)
@@ -461,7 +465,7 @@ public class webSMSsend extends MIDlet implements CommandListener {
 
             } catch (OutOfMemoryError ex) {
                 waitScreen.setText("Systemspeicher voll!");
-                debug("Systemspeicher voll!");
+                debug("Systemspeicher voll!" + ex.getMessage());
                 Thread.sleep(7000);
                 throw ex;
             } catch (Exception ex) {
