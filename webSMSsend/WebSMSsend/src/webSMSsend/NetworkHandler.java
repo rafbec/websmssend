@@ -258,40 +258,50 @@ public class NetworkHandler {
 		}
 		return ret;
 	}
-    //statical match line 190!
-    public String getFlowExecutionKey() throws Exception{
-        GUI.debug("getFlowExecutionKey()");
-        try{
-            String[] lineSplit;
-            RE split = new RE('\n' + "");
-            lineSplit = split.split(content);
-            GUI.debug("lineSplit finished");
-            RE regexp = new RE(".*name=\"_flowExecutionKey\" value=\"(.*)\" />.*");
-            int i;
-            for (i = 190; i < lineSplit.length; i++) { //190 first match line
-                if (regexp.match(lineSplit[i])) {
-                    GUI.debug("getFlowExecutionKey: key found at line " + i);
-                    return regexp.getParen(1);
-                }
-            }
-            for (i = 0; i < 190; i++) {
-                if (regexp.match(lineSplit[i])) {
-                    GUI.debug("getFlowExecutionKey: key found at line " + i);
-                    return regexp.getParen(1);
-                }
-            }
 
-            throw new Exception("flowExecutionKey not found!");
-
-        }catch(Exception ex){
-            GUI.debug(ex.toString() + " " + ex.getMessage() + "Fallback: getFlowExecutionkeyALT()");
-            String key=getFlowExecutionkeyALT(content);
-            if (key.equals("")) throw new Exception("flowExecutionKey not found!");
-            return key;
-        }
-
-        
+     public String getFlowExecutionKey() throws Exception{
+         GUI.debug("Using getFlowExecutionkeyALT()");
+         String key = getFlowExecutionkeyALT(content);
+         if (key.equals("")) {
+             throw new Exception("flowExecutionKey not found!");
+         }
+         return key;
     }
+
+//Original GetFlowExecutionKey has statical match line 190!
+//    public String getFlowExecutionKey() throws Exception{
+//        GUI.debug("getFlowExecutionKey()");
+//        try{
+//            String[] lineSplit;
+//            RE split = new RE('\n' + "");
+//            lineSplit = split.split(content);
+//            GUI.debug("lineSplit finished");
+//            RE regexp = new RE(".*name=\"_flowExecutionKey\" value=\"(.*)\" />.*");
+//            int i;
+//            for (i = 190; i < lineSplit.length; i++) { //190 first match line
+//                if (regexp.match(lineSplit[i])) {
+//                    GUI.debug("getFlowExecutionKey: key found at line " + i);
+//                    return regexp.getParen(1);
+//                }
+//            }
+//            for (i = 0; i < 190; i++) {
+//                if (regexp.match(lineSplit[i])) {
+//                    GUI.debug("getFlowExecutionKey: key found at line " + i);
+//                    return regexp.getParen(1);
+//                }
+//            }
+//
+//            throw new Exception("flowExecutionKey not found!");
+//
+//        }catch(Exception ex){
+//            GUI.debug(ex.toString() + " " + ex.getMessage() + "Fallback: getFlowExecutionkeyALT()");
+//            GUI.debug("Fallback: getFlowExecutionkeyALT()");
+//            String key=getFlowExecutionkeyALT(content);
+//            if (key.equals("")) throw new Exception("flowExecutionKey not found!");
+//            return key;
+//        }
+//    }
+
     public String getRegexStringMatch(String regex,String seperator,int startline, int paren) throws Exception{
         String[] lineSplit;
         RE split=new RE(seperator);
