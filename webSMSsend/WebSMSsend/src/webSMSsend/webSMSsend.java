@@ -153,7 +153,7 @@ public class webSMSsend extends MIDlet implements CommandListener {
     }
 
         private String getVersion() {
-            return "0.62.4";
+            return "0.62.5";
         }
 
         private String getPasswordField() {
@@ -1153,20 +1153,20 @@ public class webSMSsend extends MIDlet implements CommandListener {
         }
         //</editor-fold>//GEN-END:|106-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitCommand3 ">//GEN-BEGIN:|109-getter|0|109-preInit
-    /**
-     * Returns an initiliazed instance of exitCommand3 component.
-     * @return the initialized component instance
-     */
-    public Command getExitCommand3() {
-        if (exitCommand3 == null) {//GEN-END:|109-getter|0|109-preInit
+        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitCommand3 ">//GEN-BEGIN:|109-getter|0|109-preInit
+        /**
+         * Returns an initiliazed instance of exitCommand3 component.
+         * @return the initialized component instance
+         */
+        public Command getExitCommand3() {
+            if (exitCommand3 == null) {//GEN-END:|109-getter|0|109-preInit
             // write pre-init user code here
-            exitCommand3 = new Command("Exit", Command.EXIT, 0);//GEN-LINE:|109-getter|1|109-postInit
+                exitCommand3 = new Command("Exit", Command.EXIT, 0);//GEN-LINE:|109-getter|1|109-postInit
             // write post-init user code here
-        }//GEN-BEGIN:|109-getter|2|
-        return exitCommand3;
-    }
-    //</editor-fold>//GEN-END:|109-getter|2|
+            }//GEN-BEGIN:|109-getter|2|
+            return exitCommand3;
+        }
+        //</editor-fold>//GEN-END:|109-getter|2|
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommand3 ">//GEN-BEGIN:|111-getter|0|111-preInit
     /**
@@ -1191,7 +1191,7 @@ public class webSMSsend extends MIDlet implements CommandListener {
     public Alert getAbout() {
         if (About == null) {//GEN-END:|116-getter|0|116-preInit
             // write pre-init user code here
-            About = new Alert("About", "© 2009 Max H\u00E4nze\n© 2010 Christian Morlok\n2010 modifziert von C-o-M und RedRocket\nLizenz: GNU GPL 3.0\nVersion: "+getVersion(), null, null);//GEN-BEGIN:|116-getter|1|116-postInit
+            About = new Alert("About", "© 2009 Max H\u00E4nze\n© 2010 Christian Morlok\n© 2010 RedRocket\nLizenz: GNU GPL 3.0\nVersion: "+getVersion(), null, null);//GEN-BEGIN:|116-getter|1|116-postInit
             About.setTimeout(Alert.FOREVER);//GEN-END:|116-getter|1|116-postInit
             // write post-init user code here
         }//GEN-BEGIN:|116-getter|2|
