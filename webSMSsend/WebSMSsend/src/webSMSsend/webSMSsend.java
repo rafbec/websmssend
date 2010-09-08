@@ -60,13 +60,8 @@ public class webSMSsend extends MIDlet implements CommandListener {
     private Command exitCommand;
     private Command goToSettings;
     private Command writeSMS;
-    private Command okCommand6;
-    private Command startEmailClient;
     private Command back;
-    private Command Clear;
-    private Command SendEmail;
     private Command okCommand;
-    private Command okCommand1;
     private Command exitCommand2;
     private Command exitCommand1;
     private Command okCommand3;
@@ -76,25 +71,20 @@ public class webSMSsend extends MIDlet implements CommandListener {
     private Command eingabeLeeren;
     private Command okCommand5;
     private Command loginScreenSend;
-    private Alert BenutzerwahlBestaettigung;
-    private TextBox Debug;
+    private Command okCommand6;
+    private Command startEmailClient;
+    private Command Clear;
+    private Command SendEmail;
+    private Command okCommand1;
     private Form MainMenu;
     private TextField textField;
     private StringItem stringItem1;
     private TextField textField3;
-    private WaitScreen waitScreen1;
-    private Alert EmailSent;
     private WaitScreen waitScreen;
-    private Alert EmailNotSent;
     private Form loginSettings;
     private TextField textField2;
     private TextField textField1;
     private ChoiceGroup choiceGroup1;
-    private Form SendEmailForm;
-    private TextField txtCCemail;
-    private StringItem stringItem3;
-    private TextField txtFehlerbeschreibung;
-    private Alert NoEmail;
     private Alert smsSend;
     private Alert notSend;
     private Alert About;
@@ -116,17 +106,27 @@ public class webSMSsend extends MIDlet implements CommandListener {
     private TextField textField7;
     private TextField textField6;
     private List ChooseAccount;
+    private Alert BenutzerwahlBestaettigung;
+    private TextBox Debug;
+    private WaitScreen waitScreen1;
+    private Alert EmailSent;
+    private Alert EmailNotSent;
+    private Form SendEmailForm;
+    private TextField txtCCemail;
+    private StringItem stringItem3;
+    private TextField txtFehlerbeschreibung;
     private Alert WrongCharacter;
-    private SimpleCancellableTask task1;
+    private Alert NoEmail;
     private SimpleCancellableTask task;
     private Font font;
     private Image image1;
+    private SimpleCancellableTask task1;
     //</editor-fold>//GEN-END:|fields|0|
 
         /**
          * The HelloMIDlet constructor.
          */
-        public webSMSsend() {
+        public webSMSsend() throws IOException {
             GUI = this;
 //#if DefaultConfiguration
     simulation = true;
@@ -258,20 +258,24 @@ public class webSMSsend extends MIDlet implements CommandListener {
                 debug("Senden wird vorbereitet: " + url);
                 connection.httpHandler("GET", url, "www.sms-manager.info", "", true);
 
-                if (remSMS != -1) {
-                    String sendSMSstring = connection.getRegexStringMatch("noch (.*) von (.+)", "\n", 0, 1);
-                    remSMS = Integer.parseInt(sendSMSstring);
-                    debug("" + remSMS);
+                try {
+                    if (remSMS != -1) {
+                        String sendSMSstring = connection.getRegexStringMatch("noch (.*) von (.+)", "\n", 0, 1);
+                        remSMS = Integer.parseInt(sendSMSstring);
+                        debug("" + remSMS);
+                    }
+                } catch (Exception ex) {
+                    debug("Failed to receive remaining SMS: " + ex.toString() + ex.getMessage());
                 }
 
                 waitScreen.setText("SMS wird gesendet...");
                 if (connection.getRegexStringMatch("<input type=\"radio\".* (.*)>", "\n", 0, 1).equals("checked")) {
                     postReq = "senderType=number&senderId=&receiver=" + URLEncoder.encode(smsRecv) + "&message="
-                            + URLEncoder.encode(smsText) + "&sendLater=0";
+                            + URLEncoderISO8859.encode(smsText) + "&sendLater=0";
                     debug("Absender Nummer erkannt, postReq: " + postReq);
                 } else {
                     postReq = "senderType=text&senderId=SMS&receiver=" + URLEncoder.encode(smsRecv) + "&message="
-                            + URLEncoder.encode(smsText) + "&sendLater=0";
+                            + URLEncoderISO8859.encode(smsText) + "&sendLater=0";
                     debug("Absender nicht hinterlegt, postReq: " + postReq);
                 }
                 url = "http://www.sms-manager.info/wsm/send_sms_action.jsp?wsmCustomerId=" + customID;
@@ -445,15 +449,20 @@ public class webSMSsend extends MIDlet implements CommandListener {
 
                 //Build SMS send request and get remaining SMS.
 
-
                 String[] returnValue;
                 starttime = System.currentTimeMillis();
                 returnValue = connection.getSendPostRequest((remSMS != -1), SenderMode); //Sendermode: 0=phone number 1=text
                 debug("Fertig mit getSendPostRequest, Dauer: " + (System.currentTimeMillis() - starttime) + " ms" + "HttpHandler: " + httphandlertime + " ms");
                 postRequest = returnValue[0];
-                if (remSMS != -1) {
-                    remSMS = Integer.parseInt(returnValue[1]);
+
+                try {
+                    if (remSMS != -1) {
+                        remSMS = Integer.parseInt(returnValue[1]);
+                    }
+                } catch (Exception ex) {
+                    debug("Failed to receive remaining SMS: " + ex.toString() + ex.getMessage());
                 }
+
 
                 if (SenderMode == SENDERMODE_TEXT) { //Text as Sender
                     postRequest = postRequest + "SMSTo=" + URLEncoder.encode(smsRecv) + "&SMSText="
@@ -938,7 +947,7 @@ public class webSMSsend extends MIDlet implements CommandListener {
         public Command getGoToSettings() {
             if (goToSettings == null) {//GEN-END:|24-getter|0|24-preInit
             // write pre-init user code here
-                goToSettings = new Command("Settings", Command.CANCEL, 3);//GEN-LINE:|24-getter|1|24-postInit
+                goToSettings = new Command("Einstellungen", Command.CANCEL, 3);//GEN-LINE:|24-getter|1|24-postInit
             // write post-init user code here
             }//GEN-BEGIN:|24-getter|2|
             return goToSettings;
@@ -1114,35 +1123,35 @@ public class webSMSsend extends MIDlet implements CommandListener {
         }
         //</editor-fold>//GEN-END:|98-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitCommand2 ">//GEN-BEGIN:|103-getter|0|103-preInit
-    /**
-     * Returns an initiliazed instance of exitCommand2 component.
-     * @return the initialized component instance
-     */
-    public Command getExitCommand2() {
-        if (exitCommand2 == null) {//GEN-END:|103-getter|0|103-preInit
+        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitCommand2 ">//GEN-BEGIN:|103-getter|0|103-preInit
+        /**
+         * Returns an initiliazed instance of exitCommand2 component.
+         * @return the initialized component instance
+         */
+        public Command getExitCommand2() {
+            if (exitCommand2 == null) {//GEN-END:|103-getter|0|103-preInit
             // write pre-init user code here
-            exitCommand2 = new Command("Exit", Command.EXIT, 0);//GEN-LINE:|103-getter|1|103-postInit
+                exitCommand2 = new Command("Exit", Command.EXIT, 0);//GEN-LINE:|103-getter|1|103-postInit
             // write post-init user code here
-        }//GEN-BEGIN:|103-getter|2|
-        return exitCommand2;
-    }
-    //</editor-fold>//GEN-END:|103-getter|2|
+            }//GEN-BEGIN:|103-getter|2|
+            return exitCommand2;
+        }
+        //</editor-fold>//GEN-END:|103-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommand2 ">//GEN-BEGIN:|106-getter|0|106-preInit
-    /**
-     * Returns an initiliazed instance of okCommand2 component.
-     * @return the initialized component instance
-     */
-    public Command getOkCommand2() {
-        if (okCommand2 == null) {//GEN-END:|106-getter|0|106-preInit
+        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommand2 ">//GEN-BEGIN:|106-getter|0|106-preInit
+        /**
+         * Returns an initiliazed instance of okCommand2 component.
+         * @return the initialized component instance
+         */
+        public Command getOkCommand2() {
+            if (okCommand2 == null) {//GEN-END:|106-getter|0|106-preInit
             // write pre-init user code here
-            okCommand2 = new Command("Ok", Command.OK, 0);//GEN-LINE:|106-getter|1|106-postInit
+                okCommand2 = new Command("Ok", Command.OK, 0);//GEN-LINE:|106-getter|1|106-postInit
             // write post-init user code here
-        }//GEN-BEGIN:|106-getter|2|
-        return okCommand2;
-    }
-    //</editor-fold>//GEN-END:|106-getter|2|
+            }//GEN-BEGIN:|106-getter|2|
+            return okCommand2;
+        }
+        //</editor-fold>//GEN-END:|106-getter|2|
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitCommand3 ">//GEN-BEGIN:|109-getter|0|109-preInit
     /**
