@@ -45,9 +45,7 @@ import java.io.IOException;
                 } else if (c == ' ') {
                     ret.append('+');
                 } else {
-                    if (c > 126) {
                         appendHex(c, ret);
-                    }
                 }
                 c = bIn.read();
                 c = bIn.read();

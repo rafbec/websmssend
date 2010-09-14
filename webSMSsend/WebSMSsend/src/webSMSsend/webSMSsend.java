@@ -153,7 +153,7 @@ public class webSMSsend extends MIDlet implements CommandListener {
     }
 
         private String getVersion() {
-            return "0.62.5";
+            return "0.62.6";
         }
 
         private String getPasswordField() {
