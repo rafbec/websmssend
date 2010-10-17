@@ -123,419 +123,417 @@ public class webSMSsend extends MIDlet implements CommandListener {
     private SimpleCancellableTask task1;
     //</editor-fold>//GEN-END:|fields|0|
 
-        /**
-         * The HelloMIDlet constructor.
-         */
-        public webSMSsend() throws IOException {
-            GUI = this;
+    /**
+     * The HelloMIDlet constructor.
+     */
+    public webSMSsend() throws IOException {
+        GUI = this;
 //#if DefaultConfiguration
-    simulation = true;
+        simulation = true;
 //#else
 //#     simulation = false;
 //#endif
-        }
+    }
 
-        public int sendGMXsms() {
-            return 0;
-        }
+    public int sendGMXsms() {
+        return 0;
+    }
 
     private boolean CheckCharacters(String text) {
-        boolean correctcharacters=true;
+        boolean correctcharacters = true;
         char[] checkname = text.toCharArray();
         for (int i = 0; i < checkname.length; i++) {
             if ((checkname[i] >= 'a' && checkname[i] <= 'z') || (checkname[i] >= 'A' && checkname[i] <= 'Z')) {
             } else {
-                correctcharacters=false;
+                correctcharacters = false;
                 break;
             }
         }
         return correctcharacters;
     }
 
-        private String getVersion() {
-            return "0.62.6";
-        }
+    private String getVersion() {
+        return "0.62.6";
+    }
 
-        private String getPasswordField() {
-            if (!ioSettings.getPassword().equals("")) {
-                return "****";
-            } else {
-                return "";
+    private String getPasswordField() {
+        if (!ioSettings.getPassword().equals("")) {
+            return "****";
+        } else {
+            return "";
+        }
+    }
+
+    private String getRemSMSText() {
+        if (remSMS != -1 & remSMS != -2) {
+            return "verbleibende Frei-SMS: " + remSMS + "\nBenutzerkonto " + (ActiveAccount + 1);
+        } else {
+            return "";
+        }
+    }
+
+    private int countSMS(String smsText) {  //ceiled division
+        return (smsText.length() >= 0) ? ((smsText.length() + 160 - 1) / 160) : (smsText.length() / 160);
+    }
+
+    public int sendSMS(String smsRecv, String smsText) throws Exception {
+        if (provider == 0) {
+            return sendSMSO2(smsRecv, smsText);
+        } else {
+            return sendSMSGMX(smsRecv, smsText);
+        }
+    }
+
+    public int sendSMSGMX(String smsRecv, String smsText) throws Exception {
+        debug("SendSMSGMX()");
+        if (smsRecv.equals("")) {
+            waitScreen.setText("kein Empfänger angegeben!");
+            Thread.sleep(1500);
+            throw new Exception("kein Empfänger!");
+        }
+        try {
+            waitScreen.setText("Einstellungen werden geladen...");
+            Thread.sleep(500);
+
+            NetworkHandler connection = new NetworkHandler(username, password, this);
+            smsRecv = connection.checkRecv(smsRecv);
+            if (!smsRecv.startsWith("+49")) {
+                throw new Exception("Senden von Auslands-SMS nicht möglich!");
             }
-        }
+            smsRecv = "0".concat(smsRecv.substring(3));
+            debug("Empfänger: " + smsRecv.substring(0, 6) + "*******");
+            
+            String url = "http://www.gmx.net/";
+            waitScreen.setText("Login wird geladen...");
+            debug("Login wird geladen...");
+            String localCookie = connection.getCookie();
+            String postReq = "AREA=1&EXT=&EXT2=&uinguserid=&dlevel=c&id="
+                    + URLEncoder.encode(username) + "&p=" + URLEncoder.encode(password);
+            for (int i = 0; i < 2; i++) {
+                try {
+                    connection.httpHandler("POST", "http://service.gmx.net/de/cgi/login", "service.gmx.net", postReq, true);
+                    continue;
 
-        private String getRemSMSText() {
-            if (remSMS != -1 & remSMS != -2) {
-                return "verbleibende Frei-SMS: " + remSMS + "\nBenutzerkonto " + (ActiveAccount + 1);
-            } else {
-                return "";
+                } catch (IOException ex) {
+                    if (i == 1) {
+                        throw ex;
+                    }
+                    waitScreen.setText("Netzwerkfehler, starte erneut...");
+                    debug("Netzwerkfehler: " + ex.toString() + ex.getMessage());
+                    Thread.sleep(3000);
+                } catch (Exception ex) {
+                    waitScreen.setText(ex.getMessage());
+                    debug("Netzwerkfehler: " + ex.toString() + ex.getMessage());
+                    Thread.sleep(3000);
+                    throw ex;
+                }
             }
-        }
+            //System.out.println(connection.getContent());
 
-        private int countSMS(String smsText) {  //ceiled division
-            return (smsText.length() >= 0) ? ((smsText.length() + 160 - 1) / 160) : (smsText.length() / 160);
-        }
-
-        public int sendSMS(String smsRecv, String smsText) throws Exception {
-            if (provider == 0) {
-                return sendSMSO2(smsRecv, smsText);
-            } else {
-                return sendSMSGMX(smsRecv, smsText);
+            if (localCookie.equals(connection.getCookie())) {
+                Exception ex = new Exception("Zugangsdaten falsch!");
+                debug("Zugangsdaten falsch!");
+                throw ex;
             }
-        }
 
-        public int sendSMSGMX(String smsRecv, String smsText) throws Exception {
-            debug("SendSMSGMX()");
+            waitScreen.setText("Login erfolgreich...");
+            debug("Login erfolgreich");
+            url = connection.getRegexStringMatch("<a href=\"(http://service.gmx.net/de/cgi/g.fcgi/sms\\?cc=subnavi_sms_mms&amp;sid=.*)\">SMS und MMS</a></li>", "<li>", 0, 1);
+            debug("Lade SMS-Manager-URL: " + url);
+            connection.httpHandler("GET", url, "service.gmx.net", "", true);
+            //http://service.gmx.net/de/cgi/g.fcgi/sms?cc=subnavi_smsmms&sid=babhdee.1254499929.29227.jr09oorphd.73.ign
+            waitScreen.setText("Lade SMS-Manager...");
+            String sid = connection.getRegexMatch(url, "sid=(.*)", 1);//connection.getRegexStringMatch("<a href=\"http://service.gmx.net/de/cgi/g.fcgi/sms\\?sid=(.*)\">SMS und MMS</a></li>","<li>",0,1);
+            debug("Cookie: " + connection.getCookie());
+
+            url = "http://service.gmx.net/de/cgi/g.fcgi/sms/manager/popup?sid=" + sid;
+            debug("httpHandler('GET'" + url);
+            connection.httpHandler("GET", url, "service.gmx.net", "", true);
+
+            waitScreen.setText("Senden wird vorbereitet...");
+            url = connection.getRegexStringMatch("url = \"(http://www.sms-manager.info/wsm/login_action.jsp\\?resCustId=.*&password=.*&destination=&customer=GMX)\"", "\n", 0, 1);
+            String customID = connection.getRegexMatch(url, "resCustId=(.*)&password", 1);
+            debug("Senden wird vorbereitet: " + url);
+            connection.httpHandler("GET", url, "www.sms-manager.info", "", true);
+
+            try {
+                if (remSMS != -1) {
+                    String sendSMSstring = connection.getRegexStringMatch("noch (.*) von (.+)", "\n", 0, 1);
+                    remSMS = Integer.parseInt(sendSMSstring);
+                    debug("" + remSMS);
+                }
+            } catch (Exception ex) {
+                debug("Failed to receive remaining SMS: " + ex.toString() + ex.getMessage());
+            }
+
+            waitScreen.setText("SMS wird gesendet...");
+            if (connection.getRegexStringMatch("<input type=\"radio\".* (.*)>", "\n", 0, 1).equals("checked")) {
+                postReq = "senderType=number&senderId=&receiver=" + URLEncoder.encode(smsRecv) + "&message="
+                        + URLEncoderISO8859.encode(smsText) + "&sendLater=0";
+                debug("Absender Nummer erkannt, postReq: " + postReq);
+            } else {
+                postReq = "senderType=text&senderId=SMS&receiver=" + URLEncoder.encode(smsRecv) + "&message="
+                        + URLEncoderISO8859.encode(smsText) + "&sendLater=0";
+                debug("Absender nicht hinterlegt, postReq: " + postReq);
+            }
+            url = "http://www.sms-manager.info/wsm/send_sms_action.jsp?wsmCustomerId=" + customID;
+            connection.httpHandler("POST", url, "www.sms-manager.info", postReq, true);
+            debug("SMS gesendet");
+            int SMSneeded = countSMS(smsText);
+            if (remSMS > 0) {
+                remSMS = remSMS - SMSneeded; //Counting amount of used SMS
+            }
+
+
+            /*waitScreen.setText("Abmelden...");
+            try{
+            connection.httpHandler("GET", logoutUrl, "service.gmx.net", "", true);
+            }catch (Exception e){
+            waitScreen.setText("Abmeldung fehlgeschlagen!");
+            Thread.sleep(500);
+
+            }*/
+            /*
+             *
+             * SMS-manager is used!
+             *
+             *
+             *
+             *
+            String postCodeName;
+            //System.out.println(connection.getContent());
+            postCodeName="_"+connection.getRegexStringMatch("input type=\"hidden\" name=\"_(.*)\" value=\"_(.*)\" ", "/><", 0, 1);
+            String postCodeValue;
+            postCodeValue="_"+connection.getRegexStringMatch("input type=\"hidden\" name=\"_(.*)\" value=\"_(.*)\" ", "/><", 0, 2);
+            String sid=connection.getRegexMatch(url, ".*sid=(.*)", 1);
+            postReq="sid="+sid+"&fromaddrbk=0&"+postCodeName+"="+postCodeValue+"&number="
+            +smsRecv+"&from="+"none"/*URLEncoder.encode(username)
+             *//*+"&message="+URLEncoder.encode(smsText)
+            +"&buttonSubmit.x=108&buttonSubmit.y=14";
+            //System.out.println(postReq);
+            waitScreen.setText("SMS wird gesendet...");
+            url="http://service.gmx.net/de/cgi/g.fcgi/sms/send";
+            connection.httpHandler("POST", url, "service.gmx.net", postReq, true);
+
+            if (remSMS>0){
+            int sms=Integer.parseInt(connection.getRegexStringMatch(" *\\(Zeichenanzahl: (.*)\\)", '\n'+"", 0, 1));
+            remSMS=remSMS-(sms/160+1);
+            }
+            //System.out.println(connection.getContent());
+            postReq="sid="+sid+"&buttonSubmit=Ja%2C+SMS+senden";
+            url="http://service.gmx.net/de/cgi/g.fcgi/sms/confirm";
+            //connection.httpHandler("POST", url, "service.gmx.net", postReq, true);
+
+
+            url=connection.getRegexStringMatch("a href=\"(http://service.gmx.net/de/cgi/nph-logout\\?CUSTOMERNO=.*)\"", "><", 0, 1);
+            //System.out.println(url);
+            connection.httpHandler("GET", url, "service.gmx.net", "", true);
+            //System.out.println(connection.getContent());
+             */
+
+        } catch (IOException ex) {
+            waitScreen.setText(ex.getMessage());
+            debug(ex.toString() + " " + ex.getMessage());
+            Thread.sleep(7000);
+            ex.printStackTrace();
+            throw ex;
+        } catch (Exception ex) {
+            waitScreen.setText(ex.getMessage());
+            debug(ex.toString() + " " + ex.getMessage());
+            Thread.sleep(7000);
+            ex.printStackTrace();
+            throw ex;
+        } catch (Throwable e) {
+            waitScreen.setText(e.getMessage());
+            debug(e.toString() + " " + e.getMessage());
+            Thread.sleep(7000);
+            e.printStackTrace();
+            throw new Exception("Fehler!");
+        }
+        return 0;
+    }
+
+    public int sendSMSO2(String smsRecv, String smsText) throws Exception {
+        try {
+            debug("starte sendSMS02()");
+            long totaltime = System.currentTimeMillis();
             if (smsRecv.equals("")) {
                 waitScreen.setText("kein Empfänger angegeben!");
-                Thread.sleep(1500);
+                Thread.sleep(1000);
                 throw new Exception("kein Empfänger!");
             }
-            try {
-                waitScreen.setText("Einstellungen werden geladen...");
-                Thread.sleep(500);
+            if (smsText.equals("")) {
+                waitScreen.setText("kein SMS-Text angegeben!");
+                Thread.sleep(1000);
+                throw new Exception("leere SMS!");
+            }
+            waitScreen.setText("Einstellungen werden geladen...");
+            Thread.sleep(500);
+            String url;
 
-                NetworkHandler connection = new NetworkHandler(username, password, this);
-                smsRecv = connection.checkRecv(smsRecv);
-                if (!smsRecv.startsWith("+49")) {
-                    throw new Exception("Senden von Auslands-SMS nicht möglich!");
-                }
-                smsRecv = "0".concat(smsRecv.substring(3));
-                String url = "http://www.gmx.net/";
-                // geht wohl auch ohne...
-                //connection.httpHandler("GET", url, "www.gmx.net", "", true);
+            NetworkHandler connection = new NetworkHandler(username, password, this);
+            waitScreen.setText("Login wird geladen...");
 
-
-                waitScreen.setText("Login wird geladen...");
-                debug("Login wird geladen...");
-                String localCookie = connection.getCookie();
-                String postReq = "AREA=1&EXT=&EXT2=&uinguserid=&dlevel=c&id="
-                        + URLEncoder.encode(username) + "&p=" + URLEncoder.encode(password);
-                for (int i = 0; i < 2; i++) {
-                    try {
-                        connection.httpHandler("POST", "http://service.gmx.net/de/cgi/login", "service.gmx.net", postReq, true);
-                        continue;
-
-                    } catch (IOException ex) {
-                        if (i == 1) {
-                            throw ex;
-                        }
-                        waitScreen.setText("Netzwerkfehler, starte erneut...");
-                        debug("Netzwerkfehler: " + ex.toString() + ex.getMessage());
-                        Thread.sleep(3000);
-                    } catch (Exception ex) {
-                        waitScreen.setText(ex.getMessage());
-                        debug("Netzwerkfehler: " + ex.toString() + ex.getMessage());
-                        Thread.sleep(3000);
+            smsRecv = connection.checkRecv(smsRecv);
+            debug("Login wird geladen: smsRecv: " + smsRecv);
+            url = "https://login.o2online.de/loginRegistration/loginAction"
+                    + ".do?_flowId=" + "login&o2_type=asp&o2_label=login/co"
+                    + "mcenter-login&scheme=http&" + "port=80&server=email."
+                    + "o2online.de&url=%2Fssomanager.osp%3FAPIID" + "%3DAUT"
+                    + "H-WEBSSO%26TargetApp%3D%2Fsms_new.osp%3F%26o2_type%3"
+                    + "Durl" + "%26o2_label%3Dweb2sms-o2online";
+            for (int i = 0; i < 2; i++) {
+                try {
+                    connection.httpHandler("GET", url, "login.o2online.de", "", true);
+                    //      continue;
+                    break;
+                } catch (CertificateException ex) {
+                    debug(ex.toString());
+                    if (i == 1) {
                         throw ex;
                     }
-                }
-                //System.out.println(connection.getContent());
-
-                if (localCookie.equals(connection.getCookie())) {
-                    Exception ex = new Exception("Zugangsdaten falsch!");
-                    debug("Zugangsdaten falsch!");
+                    debug("SSL-Fehler, starte erneut...");
+                    waitScreen.setText("SSL-Fehler, starte erneut...");
+                    Thread.sleep(3000);
+                } catch (IOException ex) {
+                    debug("IOException: " + ex.toString());
+                    if (i == 1) {
+                        throw ex;
+                    }
+                    debug("Netzwerkfehler, starte erneut...");
+                    waitScreen.setText("Netzwerkfehler, starte erneut...");
+                    Thread.sleep(3000);
+                } catch (Exception ex) {
+                    debug("Keine Verbindung möglich :" + ex.toString() + " " + ex.getMessage());
+                    waitScreen.setText("Keine Verbindung möglich :" + ex.toString() + "\n" + ex.getMessage());
+                    Thread.sleep(3000);
                     throw ex;
                 }
-
-                waitScreen.setText("Login erfolgreich...");
-                debug("Login erfolgreich");
-                url = connection.getRegexStringMatch("<a href=\"(http://service.gmx.net/de/cgi/g.fcgi/sms\\?cc=subnavi_sms_mms&amp;sid=.*)\">SMS und MMS</a></li>", "<li>", 0, 1);
-                debug("Lade SMS-Manager-URL: " + url);
-                connection.httpHandler("GET", url, "service.gmx.net", "", true);
-                //http://service.gmx.net/de/cgi/g.fcgi/sms?cc=subnavi_smsmms&sid=babhdee.1254499929.29227.jr09oorphd.73.ign
-                waitScreen.setText("Lade SMS-Manager...");
-                String sid = connection.getRegexMatch(url, "sid=(.*)", 1);//connection.getRegexStringMatch("<a href=\"http://service.gmx.net/de/cgi/g.fcgi/sms\\?sid=(.*)\">SMS und MMS</a></li>","<li>",0,1);
-                debug("Cookie: " + connection.getCookie());
-
-                url = "http://service.gmx.net/de/cgi/g.fcgi/sms/manager/popup?sid=" + sid;
-                debug("httpHandler('GET'" + url);
-                connection.httpHandler("GET", url, "service.gmx.net", "", true);
-
-                waitScreen.setText("Senden wird vorbereitet...");
-                url = connection.getRegexStringMatch("url = \"(http://www.sms-manager.info/wsm/login_action.jsp\\?resCustId=.*&password=.*&destination=&customer=GMX)\"", "\n", 0, 1);
-                String customID = connection.getRegexMatch(url, "resCustId=(.*)&password", 1);
-                debug("Senden wird vorbereitet: " + url);
-                connection.httpHandler("GET", url, "www.sms-manager.info", "", true);
-
-                try {
-                    if (remSMS != -1) {
-                        String sendSMSstring = connection.getRegexStringMatch("noch (.*) von (.+)", "\n", 0, 1);
-                        remSMS = Integer.parseInt(sendSMSstring);
-                        debug("" + remSMS);
-                    }
-                } catch (Exception ex) {
-                    debug("Failed to receive remaining SMS: " + ex.toString() + ex.getMessage());
-                }
-
-                waitScreen.setText("SMS wird gesendet...");
-                if (connection.getRegexStringMatch("<input type=\"radio\".* (.*)>", "\n", 0, 1).equals("checked")) {
-                    postReq = "senderType=number&senderId=&receiver=" + URLEncoder.encode(smsRecv) + "&message="
-                            + URLEncoderISO8859.encode(smsText) + "&sendLater=0";
-                    debug("Absender Nummer erkannt, postReq: " + postReq);
-                } else {
-                    postReq = "senderType=text&senderId=SMS&receiver=" + URLEncoder.encode(smsRecv) + "&message="
-                            + URLEncoderISO8859.encode(smsText) + "&sendLater=0";
-                    debug("Absender nicht hinterlegt, postReq: " + postReq);
-                }
-                url = "http://www.sms-manager.info/wsm/send_sms_action.jsp?wsmCustomerId=" + customID;
-                connection.httpHandler("POST", url, "www.sms-manager.info", postReq, true);
-                debug("SMS gesendet");
-                int SMSneeded = countSMS(smsText);
-                if (remSMS > 0) {
-                    remSMS = remSMS - SMSneeded; //Counting amount of used SMS
-                }
-
-
-                /*waitScreen.setText("Abmelden...");
-                try{
-                connection.httpHandler("GET", logoutUrl, "service.gmx.net", "", true);
-                }catch (Exception e){
-                waitScreen.setText("Abmeldung fehlgeschlagen!");
-                Thread.sleep(500);
-
-                }*/
-                /*
-                 *
-                 * SMS-manager is used!
-                 *
-                 *
-                 *
-                 *
-                String postCodeName;
-                //System.out.println(connection.getContent());
-                postCodeName="_"+connection.getRegexStringMatch("input type=\"hidden\" name=\"_(.*)\" value=\"_(.*)\" ", "/><", 0, 1);
-                String postCodeValue;
-                postCodeValue="_"+connection.getRegexStringMatch("input type=\"hidden\" name=\"_(.*)\" value=\"_(.*)\" ", "/><", 0, 2);
-                String sid=connection.getRegexMatch(url, ".*sid=(.*)", 1);
-                postReq="sid="+sid+"&fromaddrbk=0&"+postCodeName+"="+postCodeValue+"&number="
-                +smsRecv+"&from="+"none"/*URLEncoder.encode(username)
-                 *//*+"&message="+URLEncoder.encode(smsText)
-                +"&buttonSubmit.x=108&buttonSubmit.y=14";
-                //System.out.println(postReq);
-                waitScreen.setText("SMS wird gesendet...");
-                url="http://service.gmx.net/de/cgi/g.fcgi/sms/send";
-                connection.httpHandler("POST", url, "service.gmx.net", postReq, true);
-
-                if (remSMS>0){
-                int sms=Integer.parseInt(connection.getRegexStringMatch(" *\\(Zeichenanzahl: (.*)\\)", '\n'+"", 0, 1));
-                remSMS=remSMS-(sms/160+1);
-                }
-                //System.out.println(connection.getContent());
-                postReq="sid="+sid+"&buttonSubmit=Ja%2C+SMS+senden";
-                url="http://service.gmx.net/de/cgi/g.fcgi/sms/confirm";
-                //connection.httpHandler("POST", url, "service.gmx.net", postReq, true);
-
-
-                url=connection.getRegexStringMatch("a href=\"(http://service.gmx.net/de/cgi/nph-logout\\?CUSTOMERNO=.*)\"", "><", 0, 1);
-                //System.out.println(url);
-                connection.httpHandler("GET", url, "service.gmx.net", "", true);
-                //System.out.println(connection.getContent());
-                 */
-
-            } catch (IOException ex) {
-                waitScreen.setText(ex.getMessage());
-                debug(ex.toString() + " " +ex.getMessage());
-                Thread.sleep(7000);
-                ex.printStackTrace();
-                throw ex;
-            } catch (Exception ex) {
-                waitScreen.setText(ex.getMessage());
-                debug(ex.toString() + " " +ex.getMessage());
-                Thread.sleep(7000);
-                ex.printStackTrace();
-                throw ex;
-            } catch (Throwable e) {
-                waitScreen.setText(e.getMessage());
-                debug(e.toString() + " " +e.getMessage());
-                Thread.sleep(7000);
-                e.printStackTrace();
-                throw new Exception("Fehler!");
             }
+
+            String flowExecutionKey;
+
+            flowExecutionKey = connection.getFlowExecutionKey();
+
+            waitScreen.setText("Zugangsdaten werden gesendet...");
+            debug("Zugangsdaten werden gesendet: Flow ExecutionKey: " + flowExecutionKey);
+            url = "https://login.o2online.de/loginRegistration/loginAction.do";
+            connection.httpHandler("POST", url, "login.o2online.de", "_flowExecutionKey="
+                    + URLEncoder.encode(flowExecutionKey)
+                    + "&loginName=" + URLEncoder.encode(connection.getUsername().trim())
+                    + "&password=" + URLEncoder.encode(connection.getPassword().trim())
+                    + "&_eventId=login", false);//False
+
+            waitScreen.setText("Zugangsdaten werden geprüft...");
+            url = "https://email.o2online.de/ssomanager.osp?APIID=AUTH-WEBSSO&"
+                    + "TargetApp=/sms_new.osp%3f&o2_type=url&o2_label=web2sms-o2online";
+            String localCookie = connection.getCookie();
+            connection.httpHandler("GET", url, "email.o2online.de", "", false);//false
+
+            if (localCookie.equals(connection.getCookie())) {
+                Exception ex = new Exception("Zugangsdaten falsch!");
+                throw ex;
+            }
+            waitScreen.setText("Senden wird vorbereitet...");
+            url = "https://email.o2online.de/smscenter_new.osp?Autocompletion=1&MsgContentID=-1";
+            long starttime = System.currentTimeMillis();
+            connection.httpHandler("GET", url, "email.o2online.de", "", true);
+            long httphandlertime = System.currentTimeMillis() - starttime;
+            debug("Fertig mit connection.httpHandler, Dauer: " + httphandlertime + " ms");
+            //System.out.println(connection.getContent()+"\n\n\n");
+            String postRequest = "";
+            waitScreen.setText("SMS wird gesendet...");
+            url = "https://email.o2online.de/smscenter_send.osp";
+
+            //Build SMS send request and get remaining SMS.
+
+            String[] returnValue;
+            starttime = System.currentTimeMillis();
+            returnValue = connection.getSendPostRequest((remSMS != -1), SenderMode); //Sendermode: 0=phone number 1=text
+            debug("Fertig mit getSendPostRequest, Dauer: " + (System.currentTimeMillis() - starttime) + " ms" + "HttpHandler: " + httphandlertime + " ms");
+            postRequest = returnValue[0];
+
+            try {
+                if (remSMS != -1) {
+                    remSMS = Integer.parseInt(returnValue[1]);
+                }
+            } catch (Exception ex) {
+                debug("Failed to receive remaining SMS: " + ex.toString() + ex.getMessage());
+            }
+
+
+            if (SenderMode == SENDERMODE_TEXT) { //Text as Sender
+                postRequest = postRequest + "SMSTo=" + URLEncoder.encode(smsRecv) + "&SMSText="
+                        + URLEncoder.encode(smsText) + "&SMSFrom="
+                        + URLEncoder.encode(SenderName) + "&Frequency=5";
+            } else {
+                postRequest = postRequest + "SMSTo=" + URLEncoder.encode(smsRecv) + "&SMSText="
+                        + URLEncoder.encode(smsText) + "&SMSFrom=&Frequency=5";
+            }
+
+            if (!simulation) {
+                connection.httpHandler("POST", url, "email.o2online.de", postRequest, false);//false
+            }
+            //if (remSMS>0) remSMS--;
+            int SMSneeded = countSMS(smsText);
+            if (remSMS > 0) {
+                remSMS = remSMS - SMSneeded; //Counting amount of used SMS
+            }
+            debug("Die SMS ist Zeichen lang: " + smsText.length());
+            debug("Anzahl SMS: " + SMSneeded);
+            debug("Fertig mit sendSMS02, Dauer: " + (System.currentTimeMillis() - totaltime) + " ms");
+            waitScreen.setText("SMS wurde versandt!");
             return 0;
+
+        } catch (OutOfMemoryError ex) {
+            waitScreen.setText("Systemspeicher voll!");
+            debug("Systemspeicher voll!" + ex.getMessage());
+            Thread.sleep(7000);
+            throw ex;
+        } catch (Exception ex) {
+            waitScreen.setText(ex.toString() + ": " + ex.getMessage());
+            debug(ex.toString() + ": " + ex.getMessage());
+            ex.printStackTrace();
+            Thread.sleep(7000);
+            throw ex;
+        } catch (Throwable e) {
+            waitScreen.setText("Unklarer Fehler: " + e.toString());
+            debug("Unklarer Fehler: " + e.toString());
+            Thread.sleep(10000);
+            throw new Exception("Fehler!");
         }
+    }
 
-        public int sendSMSO2(String smsRecv, String smsText) throws Exception {
-            try {
-                debug("starte sendSMS02()");
-                long totaltime = System.currentTimeMillis();
-                if (smsRecv.equals("")) {
-                    waitScreen.setText("kein Empfänger angegeben!");
-                    Thread.sleep(1000);
-                    throw new Exception("kein Empfänger!");
-                }
-                if (smsText.equals("")) {
-                    waitScreen.setText("kein SMS-Text angegeben!");
-                    Thread.sleep(1000);
-                    throw new Exception("leere SMS!");
-                }
-                waitScreen.setText("Einstellungen werden geladen...");
-                Thread.sleep(500);
-                String url;
-
-                NetworkHandler connection = new NetworkHandler(username, password, this);
-                waitScreen.setText("Login wird geladen...");
-
-                smsRecv = connection.checkRecv(smsRecv);
-                debug("Login wird geladen: smsRecv: " + smsRecv);
-                url = "https://login.o2online.de/loginRegistration/loginAction"
-                        + ".do?_flowId=" + "login&o2_type=asp&o2_label=login/co"
-                        + "mcenter-login&scheme=http&" + "port=80&server=email."
-                        + "o2online.de&url=%2Fssomanager.osp%3FAPIID" + "%3DAUT"
-                        + "H-WEBSSO%26TargetApp%3D%2Fsms_new.osp%3F%26o2_type%3"
-                        + "Durl" + "%26o2_label%3Dweb2sms-o2online";
-                for (int i = 0; i < 2; i++) {
-                    try {
-                        connection.httpHandler("GET", url, "login.o2online.de", "", true);
-                        //      continue;
-                        break;
-                    } catch (CertificateException ex) {
-                        debug(ex.toString());
-                        if (i == 1) {
-                            throw ex;
-                        }
-                        debug("SSL-Fehler, starte erneut...");
-                        waitScreen.setText("SSL-Fehler, starte erneut...");
-                        Thread.sleep(3000);
-                    } catch (IOException ex) {
-                        debug("IOException: " + ex.toString());
-                        if (i == 1) {
-                            throw ex;
-                        }
-                        debug("Netzwerkfehler, starte erneut...");
-                        waitScreen.setText("Netzwerkfehler, starte erneut...");
-                        Thread.sleep(3000);
-                    } catch (Exception ex) {
-                        debug("Keine Verbindung möglich :" + ex.toString() + " " + ex.getMessage());
-                        waitScreen.setText("Keine Verbindung möglich :" + ex.toString() + "\n" + ex.getMessage());
-                        Thread.sleep(3000);
-                        throw ex;
-                    }
-                }
-
-                String flowExecutionKey;
-
-                flowExecutionKey = connection.getFlowExecutionKey();
-
-                waitScreen.setText("Zugangsdaten werden gesendet...");
-                debug("Zugangsdaten werden gesendet: Flow ExecutionKey: "+flowExecutionKey);
-                url = "https://login.o2online.de/loginRegistration/loginAction.do";
-                connection.httpHandler("POST", url, "login.o2online.de", "_flowExecutionKey="
-                        + URLEncoder.encode(flowExecutionKey)
-                        + "&loginName=" + URLEncoder.encode(connection.getUsername().trim())
-                        + "&password=" + URLEncoder.encode(connection.getPassword().trim())
-                        + "&_eventId=login", false);//False
-
-                waitScreen.setText("Zugangsdaten werden geprüft...");
-                url = "https://email.o2online.de/ssomanager.osp?APIID=AUTH-WEBSSO&"
-                        + "TargetApp=/sms_new.osp%3f&o2_type=url&o2_label=web2sms-o2online";
-                String localCookie = connection.getCookie();
-                connection.httpHandler("GET", url, "email.o2online.de", "", false);//false
-
-                if (localCookie.equals(connection.getCookie())) {
-                    Exception ex = new Exception("Zugangsdaten falsch!");
-                    throw ex;
-                }
-                waitScreen.setText("Senden wird vorbereitet...");
-                url = "https://email.o2online.de/smscenter_new.osp?Autocompletion=1&MsgContentID=-1";
-                long starttime = System.currentTimeMillis();
-                connection.httpHandler("GET", url, "email.o2online.de", "", true);
-                long httphandlertime = System.currentTimeMillis() - starttime;
-                debug("Fertig mit connection.httpHandler, Dauer: " + httphandlertime + " ms");
-                //System.out.println(connection.getContent()+"\n\n\n");
-                String postRequest = "";
-                waitScreen.setText("SMS wird gesendet...");
-                url = "https://email.o2online.de/smscenter_send.osp";
-
-                //Build SMS send request and get remaining SMS.
-
-                String[] returnValue;
-                starttime = System.currentTimeMillis();
-                returnValue = connection.getSendPostRequest((remSMS != -1), SenderMode); //Sendermode: 0=phone number 1=text
-                debug("Fertig mit getSendPostRequest, Dauer: " + (System.currentTimeMillis() - starttime) + " ms" + "HttpHandler: " + httphandlertime + " ms");
-                postRequest = returnValue[0];
-
-                try {
-                    if (remSMS != -1) {
-                        remSMS = Integer.parseInt(returnValue[1]);
-                    }
-                } catch (Exception ex) {
-                    debug("Failed to receive remaining SMS: " + ex.toString() + ex.getMessage());
-                }
-
-
-                if (SenderMode == SENDERMODE_TEXT) { //Text as Sender
-                    postRequest = postRequest + "SMSTo=" + URLEncoder.encode(smsRecv) + "&SMSText="
-                            + URLEncoder.encode(smsText) + "&SMSFrom="
-                            + URLEncoder.encode(SenderName) + "&Frequency=5";
-                } else {
-                    postRequest = postRequest + "SMSTo=" + URLEncoder.encode(smsRecv) + "&SMSText="
-                            + URLEncoder.encode(smsText) + "&SMSFrom=&Frequency=5";
-                }
-
-                if (!simulation) {
-                    connection.httpHandler("POST", url, "email.o2online.de", postRequest, false);//false
-                }
-                //if (remSMS>0) remSMS--;
-                int SMSneeded = countSMS(smsText);
-                if (remSMS > 0) {
-                    remSMS = remSMS - SMSneeded; //Counting amount of used SMS
-                }
-                debug("Die SMS ist Zeichen lang: " + smsText.length());
-                debug("Anzahl SMS: " + SMSneeded);
-                debug("Fertig mit sendSMS02, Dauer: " + (System.currentTimeMillis() - totaltime) + " ms");
-                waitScreen.setText("SMS wurde versandt!");
-                return 0;
-
-            } catch (OutOfMemoryError ex) {
-                waitScreen.setText("Systemspeicher voll!");
-                debug("Systemspeicher voll!" + ex.getMessage());
-                Thread.sleep(7000);
-                throw ex;
-            } catch (Exception ex) {
-                waitScreen.setText(ex.toString() + ": " + ex.getMessage());
-                debug(ex.toString() + ": " + ex.getMessage());
-                ex.printStackTrace();
-                Thread.sleep(7000);
-                throw ex;
-            } catch (Throwable e) {
-                waitScreen.setText("Unklarer Fehler: " + e.toString());
-                debug("Unklarer Fehler: " + e.toString());
-                Thread.sleep(10000);
-                throw new Exception("Fehler!");
-            }
+    private void SyncSettings() {
+        username = ioSettings.getUsername();
+        password = ioSettings.getPassword();
+        provider = ioSettings.getSetup();
+        remSMS = ioSettings.getRemSMS();
+        contentLoad = ioSettings.getContentLoad().equals("true");
+        ActiveAccount = Integer.parseInt(ioSettings.getActiveAccount());
+        SenderMode = ioSettings.getSenderMode();
+        SenderName = ioSettings.getSenderName();
+        debug = ioSettings.getDebug().equals("true");
+        if (simulation) {
+            debug = true;
         }
+        System.out.println("AcitveAccount: " + ActiveAccount);
+    }
 
-        private void SyncSettings() {
-            username = ioSettings.getUsername();
-            password = ioSettings.getPassword();
-            provider = ioSettings.getSetup();
-            remSMS = ioSettings.getRemSMS();
-            contentLoad = ioSettings.getContentLoad().equals("true");
-            ActiveAccount = Integer.parseInt(ioSettings.getActiveAccount());
-            SenderMode = ioSettings.getSenderMode();
-            SenderName = ioSettings.getSenderName();
-            debug = ioSettings.getDebug().equals("true");
-            if (simulation) {
-                debug = true;
-            }
-            System.out.println("AcitveAccount: " + ActiveAccount);
-        }
+    private void SaveTempSMS() {
+        ioSettings.saveTempSMS(textField.getString(), textField3.getString());
+    }
 
-        private void SaveTempSMS() {
-            ioSettings.saveTempSMS(textField.getString(), textField3.getString());
-        }
+    private void RetrieveTempSMS() {
+        textField.setString("" + ioSettings.getTempSMSto());
+        textField3.setString("" + ioSettings.getTempSMStext());
+    }
 
-        private void RetrieveTempSMS() {
-            textField.setString("" + ioSettings.getTempSMSto());
-            textField3.setString("" + ioSettings.getTempSMStext());
-        }
-
-        private void ClearSMSInput() {
-            textField3.setString("");
-            textField3.setLabel("Eingabe");
-            textField.setString("");
-        }
+    private void ClearSMSInput() {
+        textField3.setString("");
+        textField3.setLabel("Eingabe");
+        textField.setString("");
+    }
         //<editor-fold defaultstate="collapsed" desc=" Generated Methods ">//GEN-BEGIN:|methods|0|
         /**
          * Switches a display to previous displayable of the current displayable.
@@ -558,11 +556,11 @@ public class webSMSsend extends MIDlet implements CommandListener {
          * It is called only once when the MIDlet is started. The method is called before the <code>startMIDlet</code> method.
          */
         private void initialize() {//GEN-END:|0-initialize|0|0-preInitialize
-        startTime = System.currentTimeMillis();
+            startTime = System.currentTimeMillis();
 
 
 //GEN-LINE:|0-initialize|1|0-postInitialize
-        // write post-initialize user code here
+            // write post-initialize user code here
         }//GEN-BEGIN:|0-initialize|2|
         //</editor-fold>//GEN-END:|0-initialize|2|
 
@@ -571,16 +569,16 @@ public class webSMSsend extends MIDlet implements CommandListener {
          * Performs an action assigned to the Mobile Device - MIDlet Started point.
          */
         public void startMIDlet() {//GEN-END:|3-startMIDlet|0|3-preAction
-        if (ioSettings.getUsername().equals("")) {
-            switchDisplayable(null, getSetup());
+            if (ioSettings.getUsername().equals("")) {
+                switchDisplayable(null, getSetup());
 
-        } else {
+            } else {
 
 
-            switchDisplayable(null, getMainMenu());
-            SyncSettings();
-            stringItem1.setText(getRemSMSText());
-        }
+                switchDisplayable(null, getMainMenu());
+                SyncSettings();
+                stringItem1.setText(getRemSMSText());
+            }
 //GEN-LINE:|3-startMIDlet|1|3-postAction
 
         }//GEN-BEGIN:|3-startMIDlet|2|
@@ -591,9 +589,9 @@ public class webSMSsend extends MIDlet implements CommandListener {
          * Performs an action assigned to the Mobile Device - MIDlet Resumed point.
          */
         public void resumeMIDlet() {//GEN-END:|4-resumeMIDlet|0|4-preAction
-        // write pre-action user code here
+            // write pre-action user code here
 //GEN-LINE:|4-resumeMIDlet|1|4-postAction
-        // write post-action user code here
+            // write post-action user code here
         }//GEN-BEGIN:|4-resumeMIDlet|2|
         //</editor-fold>//GEN-END:|4-resumeMIDlet|2|
 
@@ -604,7 +602,7 @@ public class webSMSsend extends MIDlet implements CommandListener {
          * @param nextDisplayable the Displayable to be set
          */
         public void switchDisplayable(Alert alert, Displayable nextDisplayable) {//GEN-END:|5-switchDisplayable|0|5-preSwitch
-        // write pre-switch user code here
+            // write pre-switch user code here
             Display display = getDisplay();//GEN-BEGIN:|5-switchDisplayable|1|5-postSwitch
             Displayable __currentDisplayable = display.getCurrent();
             if (__currentDisplayable != null  &&  nextDisplayable != null) {
@@ -615,7 +613,7 @@ public class webSMSsend extends MIDlet implements CommandListener {
             } else {
                 display.setCurrent(alert, nextDisplayable);
             }//GEN-END:|5-switchDisplayable|1|5-postSwitch
-        // write post-switch user code here
+            // write post-switch user code here
         }//GEN-BEGIN:|5-switchDisplayable|2|
         //</editor-fold>//GEN-END:|5-switchDisplayable|2|
 
@@ -626,187 +624,187 @@ public class webSMSsend extends MIDlet implements CommandListener {
          * @param displayable the Displayable where the command was invoked
          */
         public void commandAction(Command command, Displayable displayable) {//GEN-END:|7-commandAction|0|7-preCommandAction
-        // write pre-action user code here
+            // write pre-action user code here
             if (displayable == ChooseAccount) {//GEN-BEGIN:|7-commandAction|1|249-preAction
                 if (command == List.SELECT_COMMAND) {//GEN-END:|7-commandAction|1|249-preAction
-                // write pre-action user code here
+                    // write pre-action user code here
                     ChooseAccountAction();//GEN-LINE:|7-commandAction|2|249-postAction
-                // write post-action user code here
-                switchDisplayable(getBenutzerwahlBestaettigung(), getList());
-                BenutzerwahlBestaettigung = null;
+                    // write post-action user code here
+                    switchDisplayable(getBenutzerwahlBestaettigung(), getList());
+                    BenutzerwahlBestaettigung = null;
                 } else if (command == back) {//GEN-LINE:|7-commandAction|3|255-preAction
-                // write pre-action user code here
+                    // write pre-action user code here
                     switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|4|255-postAction
-                // write post-action user code here
+                    // write post-action user code here
                 } else if (command == okCommand5) {//GEN-LINE:|7-commandAction|5|254-preAction
-                ChooseAccountAction();
-                // write pre-action user code here
+                    ChooseAccountAction();
+                    // write pre-action user code here
                 switchDisplayable(getBenutzerwahlBestaettigung(), getList());//GEN-LINE:|7-commandAction|6|254-postAction
-                // write post-action user code here
-                BenutzerwahlBestaettigung = null;
+                    // write post-action user code here
+                    BenutzerwahlBestaettigung = null;
                 }//GEN-BEGIN:|7-commandAction|7|294-preAction
             } else if (displayable == Debug) {
                 if (command == Clear) {//GEN-END:|7-commandAction|7|294-preAction
-                // write pre-action user code here
+                    // write pre-action user code here
                     getDebug().setString(getDebug().size() +" Zeichen gelöscht");//GEN-LINE:|7-commandAction|8|294-postAction
-                // write post-action user code here
+                    // write post-action user code here
                 } else if (command == SendEmail) {//GEN-LINE:|7-commandAction|9|298-preAction
-                // write pre-action user code here
+                    // write pre-action user code here
                     switchDisplayable(null, getSendEmailForm());//GEN-LINE:|7-commandAction|10|298-postAction
-                // write post-action user code here
+                    // write post-action user code here
                 } else if (command == back) {//GEN-LINE:|7-commandAction|11|291-preAction
-                // write pre-action user code here
+                    // write pre-action user code here
                     switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|12|291-postAction
-                // write post-action user code here
+                    // write post-action user code here
                 }//GEN-BEGIN:|7-commandAction|13|245-preAction
             } else if (displayable == MainMenu) {
                 if (command == eingabeLeeren) {//GEN-END:|7-commandAction|13|245-preAction
-                // write pre-action user code here
+                    // write pre-action user code here
                     ClearSMSInput();//GEN-LINE:|7-commandAction|14|245-postAction
-                // write post-action user code here
+                    // write post-action user code here
                 } else if (command == exitCommand) {//GEN-LINE:|7-commandAction|15|19-preAction
-                // write pre-action user code here
+                    // write pre-action user code here
                     exitMIDlet();//GEN-LINE:|7-commandAction|16|19-postAction
-                // write post-action user code here
+                    // write post-action user code here
                 } else if (command == goToSettings) {//GEN-LINE:|7-commandAction|17|82-preAction
-                // write pre-action user code here
+                    // write pre-action user code here
                     switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|18|82-postAction
 
                 } else if (command == writeSMS) {//GEN-LINE:|7-commandAction|19|29-preAction
-                recvNB = textField.getString();
-                text = textField3.getString();
-                debug("Senden pressed");
-                if (!password.equals("")) {
+                    recvNB = textField.getString();
+                    text = textField3.getString();
+                    debug("Senden pressed");
+                    if (!password.equals("")) {
                     switchDisplayable(null, getWaitScreen());//GEN-LINE:|7-commandAction|20|29-postAction
-                } else {
-                    switchDisplayable(null, getLoginScreen());
-                    textField6.setString(username);
-                }
+                    } else {
+                        switchDisplayable(null, getLoginScreen());
+                        textField6.setString(username);
+                    }
 
                 }//GEN-BEGIN:|7-commandAction|21|323-preAction
             } else if (displayable == NoEmail) {
                 if (command == back) {//GEN-END:|7-commandAction|21|323-preAction
-                // write pre-action user code here
+                    // write pre-action user code here
                     switchDisplayable(null, getSendEmailForm());//GEN-LINE:|7-commandAction|22|323-postAction
-                // write post-action user code here
+                    // write post-action user code here
                 } else if (command == okCommand1) {//GEN-LINE:|7-commandAction|23|325-preAction
-                // write pre-action user code here
+                    // write pre-action user code here
                     switchDisplayable(null, getWaitScreen1());//GEN-LINE:|7-commandAction|24|325-postAction
-                // write post-action user code here
+                    // write post-action user code here
                 }//GEN-BEGIN:|7-commandAction|25|307-preAction
             } else if (displayable == SendEmailForm) {
                 if (command == back) {//GEN-END:|7-commandAction|25|307-preAction
-                // write pre-action user code here
+                    // write pre-action user code here
                     switchDisplayable(null, getDebug());//GEN-LINE:|7-commandAction|26|307-postAction
-                // write post-action user code here
+                    // write post-action user code here
                 } else if (command == startEmailClient) {//GEN-LINE:|7-commandAction|27|306-preAction
-                // write pre-action user code here
+                    // write pre-action user code here
                     isEmailNotEntered();//GEN-LINE:|7-commandAction|28|306-postAction
-                // write post-action user code here
+                    // write post-action user code here
                 }//GEN-BEGIN:|7-commandAction|29|166-preAction
             } else if (displayable == list) {
                 if (command == List.SELECT_COMMAND) {//GEN-END:|7-commandAction|29|166-preAction
-                // write pre-action user code here
+                    // write pre-action user code here
                     listAction();//GEN-LINE:|7-commandAction|30|166-postAction
-                // write post-action user code here
+                    // write post-action user code here
                 } else if (command == back) {//GEN-LINE:|7-commandAction|31|184-preAction
-                // write pre-action user code here
+                    // write pre-action user code here
                     switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|32|184-postAction
-                stringItem1.setText(getRemSMSText());
+                    stringItem1.setText(getRemSMSText());
                 } else if (command == nextSettings) {//GEN-LINE:|7-commandAction|33|173-preAction
-                // write pre-action user code here
+                    // write pre-action user code here
                     listAction();//GEN-LINE:|7-commandAction|34|173-postAction
-                // write post-action user code here
+                    // write post-action user code here
                 }//GEN-BEGIN:|7-commandAction|35|238-preAction
             } else if (displayable == loginScreen) {
                 if (command == back) {//GEN-END:|7-commandAction|35|238-preAction
 
 
                     switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|36|238-postAction
-                // write post-action user code here
+                    // write post-action user code here
                 } else if (command == loginScreenSend) {//GEN-LINE:|7-commandAction|37|241-preAction
-                username = textField6.getString();
-                password = textField7.getString();
+                    username = textField6.getString();
+                    password = textField7.getString();
                 switchDisplayable(null, getWaitScreen());//GEN-LINE:|7-commandAction|38|241-postAction
-                // write post-action user code here
+                    // write post-action user code here
                 }//GEN-BEGIN:|7-commandAction|39|65-preAction
             } else if (displayable == loginSettings) {
                 if (command == back) {//GEN-END:|7-commandAction|39|65-preAction
-                // write pre-action user code here
+                    // write pre-action user code here
                     switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|40|65-postAction
-                // write post-action user code here
+                    // write post-action user code here
                 } else if (command == okCommand) {//GEN-LINE:|7-commandAction|41|85-preAction
 
-                if (choiceGroup1.isSelected(0)) {
-                    if (textField2.getString().equals("****")) {
-                        password = ioSettings.getPassword();
+                    if (choiceGroup1.isSelected(0)) {
+                        if (textField2.getString().equals("****")) {
+                            password = ioSettings.getPassword();
+                        } else {
+                            password = textField2.getString();
+                        }
                     } else {
-                        password = textField2.getString();
+                        password = "";
                     }
-                } else {
-                    password = "";
-                }
-                username = textField1.getString();
-                ioSettings.saveToRMS(username, password);
+                    username = textField1.getString();
+                    ioSettings.saveToRMS(username, password);
                 switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|42|85-postAction
-                // write post-action user code here
+                    // write post-action user code here
                 }//GEN-BEGIN:|7-commandAction|43|110-preAction
             } else if (displayable == notSend) {
                 if (command == exitCommand3) {//GEN-END:|7-commandAction|43|110-preAction
-                // write pre-action user code here
+                    // write pre-action user code here
                     exitMIDlet();//GEN-LINE:|7-commandAction|44|110-postAction
-                // write post-action user code here
+                    // write post-action user code here
                 } else if (command == okCommand3) {//GEN-LINE:|7-commandAction|45|112-preAction
-                // write pre-action user code here
+                    // write pre-action user code here
                     switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|46|112-postAction
-                // write post-action user code here
+                    // write post-action user code here
                 }//GEN-BEGIN:|7-commandAction|47|187-preAction
             } else if (displayable == optimSettings) {
                 if (command == back) {//GEN-END:|7-commandAction|47|187-preAction
-                // write pre-action user code here
+                    // write pre-action user code here
                     switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|48|187-postAction
-                // write post-action user code here
+                    // write post-action user code here
                 } else if (command == okCommand) {//GEN-LINE:|7-commandAction|49|208-preAction
-                if (choiceGroup.isSelected(0)) {
-                    ioSettings.saveOptim("true");
-                    contentLoad = true;
-                } else {
-                    ioSettings.saveOptim("false");
-                    contentLoad = false;
-                }
-                if (choiceGroup.isSelected(1)) {
-                    if (remSMS < 0) {
-                        ioSettings.saveRemSMS("-2");
-                        remSMS = -2;
+                    if (choiceGroup.isSelected(0)) {
+                        ioSettings.saveOptim("true");
+                        contentLoad = true;
+                    } else {
+                        ioSettings.saveOptim("false");
+                        contentLoad = false;
                     }
-                } else {
-                    ioSettings.saveRemSMS("-1");
-                    remSMS = -1;
-                }
-                if (choiceGroup.isSelected(2)) {
-                    ioSettings.saveDebug("true");
-                    debug = true;
-                } else {
-                    ioSettings.saveDebug("false");
-                    debug = false;
-                }
+                    if (choiceGroup.isSelected(1)) {
+                        if (remSMS < 0) {
+                            ioSettings.saveRemSMS("-2");
+                            remSMS = -2;
+                        }
+                    } else {
+                        ioSettings.saveRemSMS("-1");
+                        remSMS = -1;
+                    }
+                    if (choiceGroup.isSelected(2)) {
+                        ioSettings.saveDebug("true");
+                        debug = true;
+                    } else {
+                        ioSettings.saveDebug("false");
+                        debug = false;
+                    }
                 switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|50|208-postAction
-                // write post-action user code here
+                    // write post-action user code here
                 }//GEN-BEGIN:|7-commandAction|51|189-preAction
             } else if (displayable == providerSettings) {
                 if (command == back) {//GEN-END:|7-commandAction|51|189-preAction
-                // write pre-action user code here
+                    // write pre-action user code here
                     switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|52|189-postAction
-                // write post-action user code here
+                    // write post-action user code here
                 } else if (command == okCommand) {//GEN-LINE:|7-commandAction|53|232-preAction
-                if (choiceGroup3.getSelectedIndex() != -1) {
-                    provider = choiceGroup3.getSelectedIndex();
-                    ioSettings.saveSetup("" + provider);
-                    if (remSMS != -1) {
-                        remSMS = -2;
-                        ioSettings.saveRemSMS("-2");
+                    if (choiceGroup3.getSelectedIndex() != -1) {
+                        provider = choiceGroup3.getSelectedIndex();
+                        ioSettings.saveSetup("" + provider);
+                        if (remSMS != -1) {
+                            remSMS = -2;
+                            ioSettings.saveRemSMS("-2");
+                        }
                     }
-                }
                 switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|54|232-postAction
 
 
@@ -815,81 +813,81 @@ public class webSMSsend extends MIDlet implements CommandListener {
                 }//GEN-BEGIN:|7-commandAction|55|227-preAction
             } else if (displayable == setup) {
                 if (command == okCommand) {//GEN-END:|7-commandAction|55|227-preAction
-                username = textField5.getString();
-                password = textField4.getString();
-                provider = choiceGroup2.getSelectedIndex();
-                System.out.println("Provider: " + provider);
-                remSMS = -2;
-                contentLoad = false;
-                debug = false;
+                    username = textField5.getString();
+                    password = textField4.getString();
+                    provider = choiceGroup2.getSelectedIndex();
+                    System.out.println("Provider: " + provider);
+                    remSMS = -2;
+                    contentLoad = false;
+                    debug = false;
 
-                if (provider == -1) {
-                    provider = 0;
-                }
-                ioSettings.saveOptim("false");
-                ioSettings.saveDebug("false");
-                ioSettings.saveRemSMS("" + remSMS);
-                ioSettings.saveSetup("" + (provider));
-                ioSettings.saveToRMS(username, password);
-                SyncSettings();
+                    if (provider == -1) {
+                        provider = 0;
+                    }
+                    ioSettings.saveOptim("false");
+                    ioSettings.saveDebug("false");
+                    ioSettings.saveRemSMS("" + remSMS);
+                    ioSettings.saveSetup("" + (provider));
+                    ioSettings.saveToRMS(username, password);
+                    SyncSettings();
                 switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|56|227-postAction
-                // write post-action user code here
+                    // write post-action user code here
                 }//GEN-BEGIN:|7-commandAction|57|104-preAction
             } else if (displayable == smsSend) {
                 if (command == exitCommand2) {//GEN-END:|7-commandAction|57|104-preAction
-                // write pre-action user code here
+                    // write pre-action user code here
                     exitMIDlet();//GEN-LINE:|7-commandAction|58|104-postAction
-                // write post-action user code here
+                    // write post-action user code here
                 } else if (command == okCommand2) {//GEN-LINE:|7-commandAction|59|107-preAction
-                // write pre-action user code here
+                    // write pre-action user code here
                     switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|60|107-postAction
-                stringItem1.setText(getRemSMSText());
+                    stringItem1.setText(getRemSMSText());
                 }//GEN-BEGIN:|7-commandAction|61|183-preAction
             } else if (displayable == smsSettings) {
                 if (command == back) {//GEN-END:|7-commandAction|61|183-preAction
-                // write pre-action user code here
-                    switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|62|183-postAction
-                // write post-action user code here
-                } else if (command == okCommand6) {//GEN-LINE:|7-commandAction|63|270-preAction
-                if (txtSenderName.getString().length() < 5 && choiceGroup4.getSelectedIndex() != 0) {
-                    //Fehlermeldung "Name zu kurz" falls Text als Absender gewählt
-                    stringItem2.setText("Der Absender muss mindestens 5 Buchstaben lang sein");
-                    stringItem2.setLabel("Achtung!");
-                } else {
                     // write pre-action user code here
-                    CharactersCorrect();//GEN-LINE:|7-commandAction|64|270-postAction
+                    switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|62|183-postAction
                     // write post-action user code here
-                }
+                } else if (command == okCommand6) {//GEN-LINE:|7-commandAction|63|270-preAction
+                    if (txtSenderName.getString().length() < 5 && choiceGroup4.getSelectedIndex() != 0) {
+                        //Fehlermeldung "Name zu kurz" falls Text als Absender gewählt
+                        stringItem2.setText("Der Absender muss mindestens 5 Buchstaben lang sein");
+                        stringItem2.setLabel("Achtung!");
+                    } else {
+                        // write pre-action user code here
+                    CharactersCorrect();//GEN-LINE:|7-commandAction|64|270-postAction
+                        // write post-action user code here
+                    }
                 }//GEN-BEGIN:|7-commandAction|65|51-preAction
             } else if (displayable == waitScreen) {
                 if (command == WaitScreen.FAILURE_COMMAND) {//GEN-END:|7-commandAction|65|51-preAction
-                getNotSend().setString("SMS nicht gesendet!");
+                    getNotSend().setString("SMS nicht gesendet!");
                 switchDisplayable(getNotSend(), getMainMenu());//GEN-LINE:|7-commandAction|66|51-postAction
 
                 } else if (command == WaitScreen.SUCCESS_COMMAND) {//GEN-LINE:|7-commandAction|67|50-preAction
-                if (remSMS != -1) {
-                    ioSettings.saveRemSMS("" + remSMS);
-                }
+                    if (remSMS != -1) {
+                        ioSettings.saveRemSMS("" + remSMS);
+                    }
                 switchDisplayable(getSmsSend(), getMainMenu());//GEN-LINE:|7-commandAction|68|50-postAction
-                smsSend.setString("SMS gesendet \n" + getRemSMSText());
-                ClearSMSInput();
+                    smsSend.setString("SMS gesendet \n" + getRemSMSText());
+                    ClearSMSInput();
                 } else if (command == exitCommand1) {//GEN-LINE:|7-commandAction|69|99-preAction
-                // write pre-action user code here
+                    // write pre-action user code here
                     exitMIDlet();//GEN-LINE:|7-commandAction|70|99-postAction
-                // write post-action user code here
+                    // write post-action user code here
                 }//GEN-BEGIN:|7-commandAction|71|312-preAction
             } else if (displayable == waitScreen1) {
                 if (command == WaitScreen.FAILURE_COMMAND) {//GEN-END:|7-commandAction|71|312-preAction
-                // write pre-action user code here
+                    // write pre-action user code here
                     switchDisplayable(getEmailNotSent(), getSendEmailForm());//GEN-LINE:|7-commandAction|72|312-postAction
-                // write post-action user code here
+                    // write post-action user code here
                 } else if (command == WaitScreen.SUCCESS_COMMAND) {//GEN-LINE:|7-commandAction|73|311-preAction
-                // write pre-action user code here
+                    // write pre-action user code here
                     switchDisplayable(getEmailSent(), getDebug());//GEN-LINE:|7-commandAction|74|311-postAction
-                // write post-action user code here
+                    // write post-action user code here
                 }//GEN-BEGIN:|7-commandAction|75|7-postCommandAction
             }//GEN-END:|7-commandAction|75|7-postCommandAction
-        // write post-action user code here
+            // write post-action user code here
         }//GEN-BEGIN:|7-commandAction|76|
         //</editor-fold>//GEN-END:|7-commandAction|76|
 
@@ -900,9 +898,9 @@ public class webSMSsend extends MIDlet implements CommandListener {
          */
         public Command getExitCommand() {
             if (exitCommand == null) {//GEN-END:|18-getter|0|18-preInit
-            // write pre-init user code here
+                // write pre-init user code here
                 exitCommand = new Command("Exit", Command.EXIT, 0);//GEN-LINE:|18-getter|1|18-postInit
-            // write post-init user code here
+                // write post-init user code here
             }//GEN-BEGIN:|18-getter|2|
             return exitCommand;
         }
@@ -922,18 +920,18 @@ public class webSMSsend extends MIDlet implements CommandListener {
                 MainMenu.addCommand(getGoToSettings());
                 MainMenu.addCommand(getEingabeLeeren());
                 MainMenu.setCommandListener(this);//GEN-END:|14-getter|1|14-postInit
-            // write post-init user code here
-            ItemStateListener listener = new ItemStateListener() {
+                // write post-init user code here
+                ItemStateListener listener = new ItemStateListener() {
 
-                public void itemStateChanged(Item item) {
-                    if (item == textField3) {
-                        textField3.setLabel("" + textField3.getString().length()
-                                + " (" + countSMS(textField3.getString()) + " SMS)");
+                    public void itemStateChanged(Item item) {
+                        if (item == textField3) {
+                            textField3.setLabel("" + textField3.getString().length()
+                                    + " (" + countSMS(textField3.getString()) + " SMS)");
+                        }
                     }
-                }
-            };
-            MainMenu.setItemStateListener(listener);
-            RetrieveTempSMS();
+                };
+                MainMenu.setItemStateListener(listener);
+                RetrieveTempSMS();
             }//GEN-BEGIN:|14-getter|2|
             return MainMenu;
         }
@@ -946,9 +944,9 @@ public class webSMSsend extends MIDlet implements CommandListener {
          */
         public Command getGoToSettings() {
             if (goToSettings == null) {//GEN-END:|24-getter|0|24-preInit
-            // write pre-init user code here
+                // write pre-init user code here
                 goToSettings = new Command("Einstellungen", Command.CANCEL, 3);//GEN-LINE:|24-getter|1|24-postInit
-            // write post-init user code here
+                // write post-init user code here
             }//GEN-BEGIN:|24-getter|2|
             return goToSettings;
         }
@@ -961,7 +959,7 @@ public class webSMSsend extends MIDlet implements CommandListener {
          */
         public Command getWriteSMS() {
             if (writeSMS == null) {//GEN-END:|28-getter|0|28-preInit
-            // write pre-init user code here
+                // write pre-init user code here
                 writeSMS = new Command("Senden", Command.OK, 1);//GEN-LINE:|28-getter|1|28-postInit
 
             }//GEN-BEGIN:|28-getter|2|
@@ -976,9 +974,9 @@ public class webSMSsend extends MIDlet implements CommandListener {
          */
         public Command getBack() {
             if (back == null) {//GEN-END:|33-getter|0|33-preInit
-            // write pre-init user code here
+                // write pre-init user code here
                 back = new Command("Zur\u00FCck", Command.BACK, 0);//GEN-LINE:|33-getter|1|33-postInit
-            // write post-init user code here
+                // write post-init user code here
             }//GEN-BEGIN:|33-getter|2|
             return back;
         }
@@ -991,8 +989,8 @@ public class webSMSsend extends MIDlet implements CommandListener {
          */
         public WaitScreen getWaitScreen() {
             if (waitScreen == null) {//GEN-END:|47-getter|0|47-preInit
-            debug("waitscreen erstellen");
-            // write pre-init user code here
+                debug("waitscreen erstellen");
+                // write pre-init user code here
             waitScreen = new WaitScreen(getDisplay());//GEN-BEGIN:|47-getter|1|47-postInit
             waitScreen.setTitle("Sende SMS...");
             waitScreen.addCommand(getExitCommand1());
@@ -1014,12 +1012,12 @@ public class webSMSsend extends MIDlet implements CommandListener {
          */
         public Form getLoginSettings() {
             if (loginSettings == null) {//GEN-END:|58-getter|0|58-preInit
-            // write pre-init user code here
+                // write pre-init user code here
                 loginSettings = new Form("Settings", new Item[] { getTextField1(), getTextField2(), getChoiceGroup1() });//GEN-BEGIN:|58-getter|1|58-postInit
                 loginSettings.addCommand(getBack());
                 loginSettings.addCommand(getOkCommand());
                 loginSettings.setCommandListener(this);//GEN-END:|58-getter|1|58-postInit
-            // write post-init user code here
+                // write post-init user code here
             }//GEN-BEGIN:|58-getter|2|
             return loginSettings;
         }
@@ -1032,9 +1030,9 @@ public class webSMSsend extends MIDlet implements CommandListener {
          */
         public TextField getTextField1() {
             if (textField1 == null) {//GEN-END:|61-getter|0|61-preInit
-            // write pre-init user code here
+                // write pre-init user code here
                 textField1 = new TextField("Benutzername:", " ", 32, TextField.ANY);//GEN-LINE:|61-getter|1|61-postInit
-            // write post-init user code here
+                // write post-init user code here
             }//GEN-BEGIN:|61-getter|2|
             return textField1;
         }
@@ -1047,9 +1045,9 @@ public class webSMSsend extends MIDlet implements CommandListener {
          */
         public TextField getTextField2() {
             if (textField2 == null) {//GEN-END:|62-getter|0|62-preInit
-            // write pre-init user code here
+                // write pre-init user code here
                 textField2 = new TextField("Passwort:", " ", 32, TextField.ANY | TextField.PASSWORD);//GEN-LINE:|62-getter|1|62-postInit
-            // write post-init user code here
+                // write post-init user code here
             }//GEN-BEGIN:|62-getter|2|
             return textField2;
         }
@@ -1062,9 +1060,9 @@ public class webSMSsend extends MIDlet implements CommandListener {
          */
         public Command getOkCommand() {
             if (okCommand == null) {//GEN-END:|84-getter|0|84-preInit
-            // write pre-init user code here
+                // write pre-init user code here
                 okCommand = new Command("Speichern", Command.OK, 0);//GEN-LINE:|84-getter|1|84-postInit
-            // write post-init user code here
+                // write post-init user code here
             }//GEN-BEGIN:|84-getter|2|
             return okCommand;
         }
@@ -1077,13 +1075,13 @@ public class webSMSsend extends MIDlet implements CommandListener {
          */
         public Alert getNotSend() {
             if (notSend == null) {//GEN-END:|90-getter|0|90-preInit
-            // write pre-init user code here
+                // write pre-init user code here
                 notSend = new Alert("Fehler", "", null, null);//GEN-BEGIN:|90-getter|1|90-postInit
                 notSend.addCommand(getExitCommand3());
                 notSend.addCommand(getOkCommand3());
                 notSend.setCommandListener(this);
                 notSend.setTimeout(Alert.FOREVER);//GEN-END:|90-getter|1|90-postInit
-            // write post-init user code here
+                // write post-init user code here
             }//GEN-BEGIN:|90-getter|2|
             return notSend;
         }
@@ -1096,13 +1094,13 @@ public class webSMSsend extends MIDlet implements CommandListener {
          */
         public Alert getSmsSend() {
             if (smsSend == null) {//GEN-END:|91-getter|0|91-preInit
-            // write pre-init user code here
+                // write pre-init user code here
                 smsSend = new Alert("Senden erfolgreich", "SMS gesendet\n"+getRemSMSText(), null, null);//GEN-BEGIN:|91-getter|1|91-postInit
                 smsSend.addCommand(getExitCommand2());
                 smsSend.addCommand(getOkCommand2());
                 smsSend.setCommandListener(this);
                 smsSend.setTimeout(Alert.FOREVER);//GEN-END:|91-getter|1|91-postInit
-            // write post-init user code here
+                // write post-init user code here
             }//GEN-BEGIN:|91-getter|2|
             return smsSend;
         }
@@ -1115,9 +1113,9 @@ public class webSMSsend extends MIDlet implements CommandListener {
          */
         public Command getExitCommand1() {
             if (exitCommand1 == null) {//GEN-END:|98-getter|0|98-preInit
-            // write pre-init user code here
+                // write pre-init user code here
                 exitCommand1 = new Command("Exit", Command.EXIT, 0);//GEN-LINE:|98-getter|1|98-postInit
-            // write post-init user code here
+                // write post-init user code here
             }//GEN-BEGIN:|98-getter|2|
             return exitCommand1;
         }
@@ -1130,9 +1128,9 @@ public class webSMSsend extends MIDlet implements CommandListener {
          */
         public Command getExitCommand2() {
             if (exitCommand2 == null) {//GEN-END:|103-getter|0|103-preInit
-            // write pre-init user code here
+                // write pre-init user code here
                 exitCommand2 = new Command("Exit", Command.EXIT, 0);//GEN-LINE:|103-getter|1|103-postInit
-            // write post-init user code here
+                // write post-init user code here
             }//GEN-BEGIN:|103-getter|2|
             return exitCommand2;
         }
@@ -1145,9 +1143,9 @@ public class webSMSsend extends MIDlet implements CommandListener {
          */
         public Command getOkCommand2() {
             if (okCommand2 == null) {//GEN-END:|106-getter|0|106-preInit
-            // write pre-init user code here
+                // write pre-init user code here
                 okCommand2 = new Command("Ok", Command.OK, 0);//GEN-LINE:|106-getter|1|106-postInit
-            // write post-init user code here
+                // write post-init user code here
             }//GEN-BEGIN:|106-getter|2|
             return okCommand2;
         }
@@ -1160,9 +1158,9 @@ public class webSMSsend extends MIDlet implements CommandListener {
          */
         public Command getExitCommand3() {
             if (exitCommand3 == null) {//GEN-END:|109-getter|0|109-preInit
-            // write pre-init user code here
+                // write pre-init user code here
                 exitCommand3 = new Command("Exit", Command.EXIT, 0);//GEN-LINE:|109-getter|1|109-postInit
-            // write post-init user code here
+                // write post-init user code here
             }//GEN-BEGIN:|109-getter|2|
             return exitCommand3;
         }
@@ -1738,7 +1736,7 @@ public class webSMSsend extends MIDlet implements CommandListener {
         return choiceGroup4;
     }
     //</editor-fold>//GEN-END:|263-getter|2|
-        //</editor-fold>
+    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtSenderName ">//GEN-BEGIN:|266-getter|0|266-preInit
     /**
@@ -1803,7 +1801,7 @@ public class webSMSsend extends MIDlet implements CommandListener {
     }
     //</editor-fold>//GEN-END:|272-getter|2|
 
-        //</editor-fold>
+    //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: BenutzerwahlBestaettigung ">//GEN-BEGIN:|281-getter|0|281-preInit
     /**
      * Returns an initiliazed instance of BenutzerwahlBestaettigung component.
@@ -1916,7 +1914,7 @@ public class webSMSsend extends MIDlet implements CommandListener {
         return stringItem3;
     }
     //</editor-fold>//GEN-END:|302-getter|2|
-        //</editor-fold>
+    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtFehlerbeschreibung ">//GEN-BEGIN:|303-getter|0|303-preInit
     /**
@@ -1932,7 +1930,7 @@ public class webSMSsend extends MIDlet implements CommandListener {
         return txtFehlerbeschreibung;
     }
     //</editor-fold>//GEN-END:|303-getter|2|
-        //</editor-fold>
+    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtCCemail ">//GEN-BEGIN:|304-getter|0|304-preInit
     /**
@@ -2025,7 +2023,7 @@ public class webSMSsend extends MIDlet implements CommandListener {
         return EmailNotSent;
     }
     //</editor-fold>//GEN-END:|318-getter|2|
-        //</editor-fold>
+    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: NoEmail ">//GEN-BEGIN:|321-getter|0|321-preInit
     /**
