@@ -153,7 +153,7 @@ public class webSMSsend extends MIDlet implements CommandListener {
     }
 
     private String getVersion() {
-        return "0.62.6";
+        return "0.62.7";
     }
 
     private String getPasswordField() {
@@ -197,10 +197,7 @@ public class webSMSsend extends MIDlet implements CommandListener {
 
             NetworkHandler connection = new NetworkHandler(username, password, this);
             smsRecv = connection.checkRecv(smsRecv);
-            if (!smsRecv.startsWith("+49")) {
-                throw new Exception("Senden von Auslands-SMS nicht möglich!");
-            }
-            smsRecv = "0".concat(smsRecv.substring(3));
+
             debug("Empfänger: " + smsRecv.substring(0, 6) + "*******");
             
             String url = "http://www.gmx.net/";
