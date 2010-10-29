@@ -507,7 +507,7 @@ public class NetworkHandler {
                      GUI.debug("con.openDataInputStream failed, exception: " + ex.toString());
                      throw ex;
                  }
-             System.out.println(con.getResponseCode());
+             GUI.debug("HTTP Response Code: "+con.getResponseCode());
              if (con.getResponseCode() == HttpConnection.HTTP_OK) {
                  
                  // Get length and process data
