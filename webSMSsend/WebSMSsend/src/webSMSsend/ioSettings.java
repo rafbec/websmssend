@@ -93,6 +93,12 @@ public class ioSettings {
     protected static String getTempSMStext(){
         return getData("TempSMS",2);
     }
+    protected static String getLastSMSto() {
+        return getData("LastSMS", 1);
+    }
+    protected static String getLastSMStext() {
+        return getData("LastSMS", 2);
+    }
     protected static int saveToRMS(String username,String password){
         String[] data={username,password};
         return saveData(MakeFieldName("LoginData"),data,2);
@@ -124,6 +130,10 @@ public class ioSettings {
     protected static int saveTempSMS(String smsTo,String smsText){
         String[] data={smsTo,smsText};
         return saveData(("TempSMS"),data,2);
+    }
+    protected static int saveLastSMS(String smsTo,String smsText){
+        String[] data={smsTo,smsText};
+        return saveData(("LastSMS"),data,2);
     }
     protected static int saveSendPostRequestSettings(int StartLineNumber){
         String[] data={""+StartLineNumber};

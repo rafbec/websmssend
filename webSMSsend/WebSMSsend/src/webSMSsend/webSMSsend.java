@@ -76,6 +76,7 @@ public class webSMSsend extends MIDlet implements CommandListener {
     private Command Clear;
     private Command SendEmail;
     private Command okCommand1;
+    private Command LastSMS;
     private Form MainMenu;
     private TextField textField;
     private StringItem stringItem1;
@@ -653,84 +654,89 @@ public class webSMSsend extends MIDlet implements CommandListener {
                     // write pre-action user code here
                 switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|12|291-postAction
                     // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|13|245-preAction
+            }//GEN-BEGIN:|7-commandAction|13|348-preAction
         } else if (displayable == MainMenu) {
-            if (command == eingabeLeeren) {//GEN-END:|7-commandAction|13|245-preAction
+            if (command == LastSMS) {//GEN-END:|7-commandAction|13|348-preAction
+                // write pre-action user code here
+                textField.setString("" + ioSettings.getLastSMSto());//GEN-BEGIN:|7-commandAction|14|348-postAction
+                textField3.setString("" + ioSettings.getLastSMStext());//GEN-END:|7-commandAction|14|348-postAction
+                // write post-action user code here
+            } else if (command == eingabeLeeren) {//GEN-LINE:|7-commandAction|15|245-preAction
                     // write pre-action user code here
-                ClearSMSInput();//GEN-LINE:|7-commandAction|14|245-postAction
+                ClearSMSInput();//GEN-LINE:|7-commandAction|16|245-postAction
                     // write post-action user code here
-            } else if (command == exitCommand) {//GEN-LINE:|7-commandAction|15|19-preAction
+            } else if (command == exitCommand) {//GEN-LINE:|7-commandAction|17|19-preAction
                     // write pre-action user code here
-                exitMIDlet();//GEN-LINE:|7-commandAction|16|19-postAction
+                exitMIDlet();//GEN-LINE:|7-commandAction|18|19-postAction
                     // write post-action user code here
-            } else if (command == goToSettings) {//GEN-LINE:|7-commandAction|17|82-preAction
+            } else if (command == goToSettings) {//GEN-LINE:|7-commandAction|19|82-preAction
                     // write pre-action user code here
-                switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|18|82-postAction
+                switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|20|82-postAction
 
-            } else if (command == writeSMS) {//GEN-LINE:|7-commandAction|19|29-preAction
+            } else if (command == writeSMS) {//GEN-LINE:|7-commandAction|21|29-preAction
                     recvNB = textField.getString();
                     text = textField3.getString();
                     debug("Senden pressed");
                     if (!password.equals("")) {
-                        switchDisplayable(null, getWaitScreen());//GEN-LINE:|7-commandAction|20|29-postAction
+                        switchDisplayable(null, getWaitScreen());//GEN-LINE:|7-commandAction|22|29-postAction
                     } else {
                         switchDisplayable(null, getLoginScreen());
                         textField6.setString(username);
                     }
 
-            }//GEN-BEGIN:|7-commandAction|21|323-preAction
+            }//GEN-BEGIN:|7-commandAction|23|323-preAction
         } else if (displayable == NoEmail) {
-            if (command == back) {//GEN-END:|7-commandAction|21|323-preAction
+            if (command == back) {//GEN-END:|7-commandAction|23|323-preAction
                     // write pre-action user code here
-                switchDisplayable(null, getSendEmailForm());//GEN-LINE:|7-commandAction|22|323-postAction
+                switchDisplayable(null, getSendEmailForm());//GEN-LINE:|7-commandAction|24|323-postAction
                     // write post-action user code here
-            } else if (command == okCommand1) {//GEN-LINE:|7-commandAction|23|325-preAction
+            } else if (command == okCommand1) {//GEN-LINE:|7-commandAction|25|325-preAction
                     // write pre-action user code here
-                switchDisplayable(null, getWaitScreen1());//GEN-LINE:|7-commandAction|24|325-postAction
+                switchDisplayable(null, getWaitScreen1());//GEN-LINE:|7-commandAction|26|325-postAction
                     // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|25|307-preAction
+            }//GEN-BEGIN:|7-commandAction|27|307-preAction
         } else if (displayable == SendEmailForm) {
-            if (command == back) {//GEN-END:|7-commandAction|25|307-preAction
+            if (command == back) {//GEN-END:|7-commandAction|27|307-preAction
                     // write pre-action user code here
-                switchDisplayable(null, getDebug());//GEN-LINE:|7-commandAction|26|307-postAction
+                switchDisplayable(null, getDebug());//GEN-LINE:|7-commandAction|28|307-postAction
                     // write post-action user code here
-            } else if (command == startEmailClient) {//GEN-LINE:|7-commandAction|27|306-preAction
+            } else if (command == startEmailClient) {//GEN-LINE:|7-commandAction|29|306-preAction
                     // write pre-action user code here
-                isEmailNotEntered();//GEN-LINE:|7-commandAction|28|306-postAction
+                isEmailNotEntered();//GEN-LINE:|7-commandAction|30|306-postAction
                     // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|29|166-preAction
+            }//GEN-BEGIN:|7-commandAction|31|166-preAction
         } else if (displayable == list) {
-            if (command == List.SELECT_COMMAND) {//GEN-END:|7-commandAction|29|166-preAction
+            if (command == List.SELECT_COMMAND) {//GEN-END:|7-commandAction|31|166-preAction
                     // write pre-action user code here
-                listAction();//GEN-LINE:|7-commandAction|30|166-postAction
+                listAction();//GEN-LINE:|7-commandAction|32|166-postAction
                     // write post-action user code here
-            } else if (command == back) {//GEN-LINE:|7-commandAction|31|184-preAction
+            } else if (command == back) {//GEN-LINE:|7-commandAction|33|184-preAction
                     // write pre-action user code here
-                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|32|184-postAction
+                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|34|184-postAction
                     stringItem1.setText(getRemSMSText());
-            } else if (command == nextSettings) {//GEN-LINE:|7-commandAction|33|173-preAction
+            } else if (command == nextSettings) {//GEN-LINE:|7-commandAction|35|173-preAction
                     // write pre-action user code here
-                listAction();//GEN-LINE:|7-commandAction|34|173-postAction
+                listAction();//GEN-LINE:|7-commandAction|36|173-postAction
                     // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|35|238-preAction
+            }//GEN-BEGIN:|7-commandAction|37|238-preAction
         } else if (displayable == loginScreen) {
-            if (command == back) {//GEN-END:|7-commandAction|35|238-preAction
+            if (command == back) {//GEN-END:|7-commandAction|37|238-preAction
 
 
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|36|238-postAction
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|38|238-postAction
                     // write post-action user code here
-            } else if (command == loginScreenSend) {//GEN-LINE:|7-commandAction|37|241-preAction
+            } else if (command == loginScreenSend) {//GEN-LINE:|7-commandAction|39|241-preAction
                     username = textField6.getString();
                     password = textField7.getString();
-                    switchDisplayable(null, getWaitScreen());//GEN-LINE:|7-commandAction|38|241-postAction
+                    switchDisplayable(null, getWaitScreen());//GEN-LINE:|7-commandAction|40|241-postAction
                     // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|39|65-preAction
+            }//GEN-BEGIN:|7-commandAction|41|65-preAction
         } else if (displayable == loginSettings) {
-            if (command == back) {//GEN-END:|7-commandAction|39|65-preAction
+            if (command == back) {//GEN-END:|7-commandAction|41|65-preAction
                     // write pre-action user code here
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|40|65-postAction
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|42|65-postAction
                     // write post-action user code here
-            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|41|85-preAction
+            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|43|85-preAction
 
                     if (choiceGroup1.isSelected(0)) {
                         if (textField2.getString().equals("****")) {
@@ -743,25 +749,25 @@ public class webSMSsend extends MIDlet implements CommandListener {
                     }
                     username = textField1.getString();
                     ioSettings.saveToRMS(username, password);
-                    switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|42|85-postAction
+                    switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|44|85-postAction
                     // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|43|110-preAction
+            }//GEN-BEGIN:|7-commandAction|45|110-preAction
         } else if (displayable == notSend) {
-            if (command == exitCommand3) {//GEN-END:|7-commandAction|43|110-preAction
+            if (command == exitCommand3) {//GEN-END:|7-commandAction|45|110-preAction
                     // write pre-action user code here
-                exitMIDlet();//GEN-LINE:|7-commandAction|44|110-postAction
+                exitMIDlet();//GEN-LINE:|7-commandAction|46|110-postAction
                     // write post-action user code here
-            } else if (command == okCommand3) {//GEN-LINE:|7-commandAction|45|112-preAction
+            } else if (command == okCommand3) {//GEN-LINE:|7-commandAction|47|112-preAction
                     // write pre-action user code here
-                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|46|112-postAction
+                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|48|112-postAction
                     // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|47|187-preAction
+            }//GEN-BEGIN:|7-commandAction|49|187-preAction
         } else if (displayable == optimSettings) {
-            if (command == back) {//GEN-END:|7-commandAction|47|187-preAction
+            if (command == back) {//GEN-END:|7-commandAction|49|187-preAction
                     // write pre-action user code here
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|48|187-postAction
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|50|187-postAction
                     // write post-action user code here
-            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|49|208-preAction
+            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|51|208-preAction
                     if (choiceGroup.isSelected(0)) {
                         ioSettings.saveOptim("true");
                         contentLoad = true;
@@ -785,15 +791,15 @@ public class webSMSsend extends MIDlet implements CommandListener {
                         ioSettings.saveDebug("false");
                         debug = false;
                     }
-                    switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|50|208-postAction
+                    switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|52|208-postAction
                     // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|51|189-preAction
+            }//GEN-BEGIN:|7-commandAction|53|189-preAction
         } else if (displayable == providerSettings) {
-            if (command == back) {//GEN-END:|7-commandAction|51|189-preAction
+            if (command == back) {//GEN-END:|7-commandAction|53|189-preAction
                     // write pre-action user code here
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|52|189-postAction
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|54|189-postAction
                     // write post-action user code here
-            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|53|232-preAction
+            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|55|232-preAction
                     if (choiceGroup3.getSelectedIndex() != -1) {
                         provider = choiceGroup3.getSelectedIndex();
                         ioSettings.saveSetup("" + provider);
@@ -802,14 +808,14 @@ public class webSMSsend extends MIDlet implements CommandListener {
                             ioSettings.saveRemSMS("-2");
                         }
                     }
-                    switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|54|232-postAction
+                    switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|56|232-postAction
 
 
 
 
-            }//GEN-BEGIN:|7-commandAction|55|227-preAction
+            }//GEN-BEGIN:|7-commandAction|57|227-preAction
         } else if (displayable == setup) {
-            if (command == okCommand) {//GEN-END:|7-commandAction|55|227-preAction
+            if (command == okCommand) {//GEN-END:|7-commandAction|57|227-preAction
                     username = textField5.getString();
                     password = textField4.getString();
                     provider = choiceGroup2.getSelectedIndex();
@@ -827,66 +833,68 @@ public class webSMSsend extends MIDlet implements CommandListener {
                     ioSettings.saveSetup("" + (provider));
                     ioSettings.saveToRMS(username, password);
                     SyncSettings();
-                    switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|56|227-postAction
+                    switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|58|227-postAction
                     // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|57|104-preAction
+            }//GEN-BEGIN:|7-commandAction|59|104-preAction
         } else if (displayable == smsSend) {
-            if (command == exitCommand2) {//GEN-END:|7-commandAction|57|104-preAction
+            if (command == exitCommand2) {//GEN-END:|7-commandAction|59|104-preAction
                     // write pre-action user code here
-                exitMIDlet();//GEN-LINE:|7-commandAction|58|104-postAction
+                exitMIDlet();//GEN-LINE:|7-commandAction|60|104-postAction
                     // write post-action user code here
-            } else if (command == okCommand2) {//GEN-LINE:|7-commandAction|59|107-preAction
+            } else if (command == okCommand2) {//GEN-LINE:|7-commandAction|61|107-preAction
                     // write pre-action user code here
-                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|60|107-postAction
+                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|62|107-postAction
                     stringItem1.setText(getRemSMSText());
-            }//GEN-BEGIN:|7-commandAction|61|183-preAction
+            }//GEN-BEGIN:|7-commandAction|63|183-preAction
         } else if (displayable == smsSettings) {
-            if (command == back) {//GEN-END:|7-commandAction|61|183-preAction
+            if (command == back) {//GEN-END:|7-commandAction|63|183-preAction
                     // write pre-action user code here
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|62|183-postAction
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|64|183-postAction
                     // write post-action user code here
-            } else if (command == okCommand6) {//GEN-LINE:|7-commandAction|63|270-preAction
+            } else if (command == okCommand6) {//GEN-LINE:|7-commandAction|65|270-preAction
                     if (txtSenderName.getString().length() < 5 && choiceGroup4.getSelectedIndex() != 0) {
                         //Fehlermeldung "Name zu kurz" falls Text als Absender gewählt
                         stringItem2.setText("Der Absender muss mindestens 5 Buchstaben lang sein");
                         stringItem2.setLabel("Achtung!");
                     } else {
                         // write pre-action user code here
-                        CharactersCorrect();//GEN-LINE:|7-commandAction|64|270-postAction
+                        CharactersCorrect();//GEN-LINE:|7-commandAction|66|270-postAction
                         // write post-action user code here
                     }
-            }//GEN-BEGIN:|7-commandAction|65|51-preAction
+            }//GEN-BEGIN:|7-commandAction|67|51-preAction
         } else if (displayable == waitScreen) {
-            if (command == WaitScreen.FAILURE_COMMAND) {//GEN-END:|7-commandAction|65|51-preAction
+            if (command == WaitScreen.FAILURE_COMMAND) {//GEN-END:|7-commandAction|67|51-preAction
                     getNotSend().setString("SMS nicht gesendet!");
-                    switchDisplayable(getNotSend(), getMainMenu());//GEN-LINE:|7-commandAction|66|51-postAction
+                    switchDisplayable(getNotSend(), getMainMenu());//GEN-LINE:|7-commandAction|68|51-postAction
 
-            } else if (command == WaitScreen.SUCCESS_COMMAND) {//GEN-LINE:|7-commandAction|67|50-preAction
+            } else if (command == WaitScreen.SUCCESS_COMMAND) {//GEN-LINE:|7-commandAction|69|50-preAction
                     if (remSMS != -1) {
                         ioSettings.saveRemSMS("" + remSMS);
                     }
-                    switchDisplayable(getSmsSend(), getMainMenu());//GEN-LINE:|7-commandAction|68|50-postAction
+                    switchDisplayable(getSmsSend(), getMainMenu());//GEN-LINE:|7-commandAction|70|50-postAction
                     smsSend.setString("SMS gesendet \n" + getRemSMSText());
+                    //Save LastSMS
+                    ioSettings.saveLastSMS(textField.getString(), textField3.getString());
                     ClearSMSInput();
-            } else if (command == exitCommand1) {//GEN-LINE:|7-commandAction|69|99-preAction
+            } else if (command == exitCommand1) {//GEN-LINE:|7-commandAction|71|99-preAction
                     // write pre-action user code here
-                exitMIDlet();//GEN-LINE:|7-commandAction|70|99-postAction
+                exitMIDlet();//GEN-LINE:|7-commandAction|72|99-postAction
                     // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|71|312-preAction
+            }//GEN-BEGIN:|7-commandAction|73|312-preAction
         } else if (displayable == waitScreen1) {
-            if (command == WaitScreen.FAILURE_COMMAND) {//GEN-END:|7-commandAction|71|312-preAction
+            if (command == WaitScreen.FAILURE_COMMAND) {//GEN-END:|7-commandAction|73|312-preAction
                     // write pre-action user code here
-                switchDisplayable(getEmailNotSent(), getSendEmailForm());//GEN-LINE:|7-commandAction|72|312-postAction
+                switchDisplayable(getEmailNotSent(), getSendEmailForm());//GEN-LINE:|7-commandAction|74|312-postAction
                     // write post-action user code here
-            } else if (command == WaitScreen.SUCCESS_COMMAND) {//GEN-LINE:|7-commandAction|73|311-preAction
+            } else if (command == WaitScreen.SUCCESS_COMMAND) {//GEN-LINE:|7-commandAction|75|311-preAction
                     // write pre-action user code here
-                switchDisplayable(getEmailSent(), getDebug());//GEN-LINE:|7-commandAction|74|311-postAction
+                switchDisplayable(getEmailSent(), getDebug());//GEN-LINE:|7-commandAction|76|311-postAction
                     // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|75|7-postCommandAction
-        }//GEN-END:|7-commandAction|75|7-postCommandAction
+            }//GEN-BEGIN:|7-commandAction|77|7-postCommandAction
+        }//GEN-END:|7-commandAction|77|7-postCommandAction
             // write post-action user code here
-    }//GEN-BEGIN:|7-commandAction|76|
-    //</editor-fold>//GEN-END:|7-commandAction|76|
+    }//GEN-BEGIN:|7-commandAction|78|
+    //</editor-fold>//GEN-END:|7-commandAction|78|
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitCommand ">//GEN-BEGIN:|18-getter|0|18-preInit
     /**
@@ -916,6 +924,7 @@ public class webSMSsend extends MIDlet implements CommandListener {
             MainMenu.addCommand(getWriteSMS());
             MainMenu.addCommand(getGoToSettings());
             MainMenu.addCommand(getEingabeLeeren());
+            MainMenu.addCommand(getLastSMS());
             MainMenu.setCommandListener(this);//GEN-END:|14-getter|1|14-postInit
                 // write post-init user code here
                 ItemStateListener listener = new ItemStateListener() {
@@ -929,63 +938,64 @@ public class webSMSsend extends MIDlet implements CommandListener {
                 };
                 MainMenu.setItemStateListener(listener);
                 RetrieveTempSMS();
+
         }//GEN-BEGIN:|14-getter|2|
         return MainMenu;
     }
     //</editor-fold>//GEN-END:|14-getter|2|
 
-        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: goToSettings ">//GEN-BEGIN:|24-getter|0|24-preInit
-        /**
-         * Returns an initiliazed instance of goToSettings component.
-         * @return the initialized component instance
-         */
-        public Command getGoToSettings() {
-            if (goToSettings == null) {//GEN-END:|24-getter|0|24-preInit
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: goToSettings ">//GEN-BEGIN:|24-getter|0|24-preInit
+    /**
+     * Returns an initiliazed instance of goToSettings component.
+     * @return the initialized component instance
+     */
+    public Command getGoToSettings() {
+        if (goToSettings == null) {//GEN-END:|24-getter|0|24-preInit
                 // write pre-init user code here
-                goToSettings = new Command("Einstellungen", Command.CANCEL, 3);//GEN-LINE:|24-getter|1|24-postInit
+            goToSettings = new Command("Einstellungen", Command.CANCEL, 2);//GEN-LINE:|24-getter|1|24-postInit
                 // write post-init user code here
-            }//GEN-BEGIN:|24-getter|2|
-            return goToSettings;
-        }
-        //</editor-fold>//GEN-END:|24-getter|2|
+        }//GEN-BEGIN:|24-getter|2|
+        return goToSettings;
+    }
+    //</editor-fold>//GEN-END:|24-getter|2|
 
-        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: writeSMS ">//GEN-BEGIN:|28-getter|0|28-preInit
-        /**
-         * Returns an initiliazed instance of writeSMS component.
-         * @return the initialized component instance
-         */
-        public Command getWriteSMS() {
-            if (writeSMS == null) {//GEN-END:|28-getter|0|28-preInit
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: writeSMS ">//GEN-BEGIN:|28-getter|0|28-preInit
+    /**
+     * Returns an initiliazed instance of writeSMS component.
+     * @return the initialized component instance
+     */
+    public Command getWriteSMS() {
+        if (writeSMS == null) {//GEN-END:|28-getter|0|28-preInit
                 // write pre-init user code here
-                writeSMS = new Command("Senden", Command.OK, 1);//GEN-LINE:|28-getter|1|28-postInit
+            writeSMS = new Command("Senden", Command.OK, 1);//GEN-LINE:|28-getter|1|28-postInit
 
-            }//GEN-BEGIN:|28-getter|2|
-            return writeSMS;
-        }
-        //</editor-fold>//GEN-END:|28-getter|2|
+        }//GEN-BEGIN:|28-getter|2|
+        return writeSMS;
+    }
+    //</editor-fold>//GEN-END:|28-getter|2|
 
-        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: back ">//GEN-BEGIN:|33-getter|0|33-preInit
-        /**
-         * Returns an initiliazed instance of back component.
-         * @return the initialized component instance
-         */
-        public Command getBack() {
-            if (back == null) {//GEN-END:|33-getter|0|33-preInit
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: back ">//GEN-BEGIN:|33-getter|0|33-preInit
+    /**
+     * Returns an initiliazed instance of back component.
+     * @return the initialized component instance
+     */
+    public Command getBack() {
+        if (back == null) {//GEN-END:|33-getter|0|33-preInit
                 // write pre-init user code here
-                back = new Command("Zur\u00FCck", Command.BACK, 0);//GEN-LINE:|33-getter|1|33-postInit
+            back = new Command("Zur\u00FCck", Command.BACK, 0);//GEN-LINE:|33-getter|1|33-postInit
                 // write post-init user code here
-            }//GEN-BEGIN:|33-getter|2|
-            return back;
-        }
-        //</editor-fold>//GEN-END:|33-getter|2|
+        }//GEN-BEGIN:|33-getter|2|
+        return back;
+    }
+    //</editor-fold>//GEN-END:|33-getter|2|
 
-        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: waitScreen ">//GEN-BEGIN:|47-getter|0|47-preInit
-        /**
-         * Returns an initiliazed instance of waitScreen component.
-         * @return the initialized component instance
-         */
-        public WaitScreen getWaitScreen() {
-            if (waitScreen == null) {//GEN-END:|47-getter|0|47-preInit
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: waitScreen ">//GEN-BEGIN:|47-getter|0|47-preInit
+    /**
+     * Returns an initiliazed instance of waitScreen component.
+     * @return the initialized component instance
+     */
+    public WaitScreen getWaitScreen() {
+        if (waitScreen == null) {//GEN-END:|47-getter|0|47-preInit
                 debug("waitscreen erstellen");
                 // write pre-init user code here
                 waitScreen = new WaitScreen(getDisplay());//GEN-BEGIN:|47-getter|1|47-postInit
@@ -997,222 +1007,229 @@ public class webSMSsend extends MIDlet implements CommandListener {
                 waitScreen.setTask(getTask());//GEN-END:|47-getter|1|47-postInit
 
 
-            }//GEN-BEGIN:|47-getter|2|
-            return waitScreen;
-        }
-        //</editor-fold>//GEN-END:|47-getter|2|
+        }//GEN-BEGIN:|47-getter|2|
+        return waitScreen;
+    }
+    //</editor-fold>//GEN-END:|47-getter|2|
 
-        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: loginSettings ">//GEN-BEGIN:|58-getter|0|58-preInit
-        /**
-         * Returns an initiliazed instance of loginSettings component.
-         * @return the initialized component instance
-         */
-        public Form getLoginSettings() {
-            if (loginSettings == null) {//GEN-END:|58-getter|0|58-preInit
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: loginSettings ">//GEN-BEGIN:|58-getter|0|58-preInit
+    /**
+     * Returns an initiliazed instance of loginSettings component.
+     * @return the initialized component instance
+     */
+    public Form getLoginSettings() {
+        if (loginSettings == null) {//GEN-END:|58-getter|0|58-preInit
                 // write pre-init user code here
-                loginSettings = new Form("Settings", new Item[] { getTextField1(), getTextField2(), getChoiceGroup1() });//GEN-BEGIN:|58-getter|1|58-postInit
-                loginSettings.addCommand(getBack());
-                loginSettings.addCommand(getOkCommand());
-                loginSettings.setCommandListener(this);//GEN-END:|58-getter|1|58-postInit
+            loginSettings = new Form("Settings", new Item[] { getTextField1(), getTextField2(), getChoiceGroup1() });//GEN-BEGIN:|58-getter|1|58-postInit
+            loginSettings.addCommand(getBack());
+            loginSettings.addCommand(getOkCommand());
+            loginSettings.setCommandListener(this);//GEN-END:|58-getter|1|58-postInit
                 // write post-init user code here
-            }//GEN-BEGIN:|58-getter|2|
-            return loginSettings;
-        }
-        //</editor-fold>//GEN-END:|58-getter|2|
+        }//GEN-BEGIN:|58-getter|2|
+        return loginSettings;
+    }
+    //</editor-fold>//GEN-END:|58-getter|2|
 
-        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: textField1 ">//GEN-BEGIN:|61-getter|0|61-preInit
-        /**
-         * Returns an initiliazed instance of textField1 component.
-         * @return the initialized component instance
-         */
-        public TextField getTextField1() {
-            if (textField1 == null) {//GEN-END:|61-getter|0|61-preInit
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: textField1 ">//GEN-BEGIN:|61-getter|0|61-preInit
+    /**
+     * Returns an initiliazed instance of textField1 component.
+     * @return the initialized component instance
+     */
+    public TextField getTextField1() {
+        if (textField1 == null) {//GEN-END:|61-getter|0|61-preInit
                 // write pre-init user code here
-                textField1 = new TextField("Benutzername:", " ", 32, TextField.ANY);//GEN-LINE:|61-getter|1|61-postInit
+            textField1 = new TextField("Benutzername:", " ", 32, TextField.ANY);//GEN-LINE:|61-getter|1|61-postInit
                 // write post-init user code here
-            }//GEN-BEGIN:|61-getter|2|
-            return textField1;
-        }
-        //</editor-fold>//GEN-END:|61-getter|2|
+        }//GEN-BEGIN:|61-getter|2|
+        return textField1;
+    }
+    //</editor-fold>//GEN-END:|61-getter|2|
 
-        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: textField2 ">//GEN-BEGIN:|62-getter|0|62-preInit
-        /**
-         * Returns an initiliazed instance of textField2 component.
-         * @return the initialized component instance
-         */
-        public TextField getTextField2() {
-            if (textField2 == null) {//GEN-END:|62-getter|0|62-preInit
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: textField2 ">//GEN-BEGIN:|62-getter|0|62-preInit
+    /**
+     * Returns an initiliazed instance of textField2 component.
+     * @return the initialized component instance
+     */
+    public TextField getTextField2() {
+        if (textField2 == null) {//GEN-END:|62-getter|0|62-preInit
                 // write pre-init user code here
-                textField2 = new TextField("Passwort:", " ", 32, TextField.ANY | TextField.PASSWORD);//GEN-LINE:|62-getter|1|62-postInit
+            textField2 = new TextField("Passwort:", " ", 32, TextField.ANY | TextField.PASSWORD);//GEN-LINE:|62-getter|1|62-postInit
                 // write post-init user code here
-            }//GEN-BEGIN:|62-getter|2|
-            return textField2;
-        }
-        //</editor-fold>//GEN-END:|62-getter|2|
+        }//GEN-BEGIN:|62-getter|2|
+        return textField2;
+    }
+    //</editor-fold>//GEN-END:|62-getter|2|
 
-        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommand ">//GEN-BEGIN:|84-getter|0|84-preInit
-        /**
-         * Returns an initiliazed instance of okCommand component.
-         * @return the initialized component instance
-         */
-        public Command getOkCommand() {
-            if (okCommand == null) {//GEN-END:|84-getter|0|84-preInit
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommand ">//GEN-BEGIN:|84-getter|0|84-preInit
+    /**
+     * Returns an initiliazed instance of okCommand component.
+     * @return the initialized component instance
+     */
+    public Command getOkCommand() {
+        if (okCommand == null) {//GEN-END:|84-getter|0|84-preInit
                 // write pre-init user code here
-                okCommand = new Command("Speichern", Command.OK, 0);//GEN-LINE:|84-getter|1|84-postInit
+            okCommand = new Command("Speichern", Command.OK, 0);//GEN-LINE:|84-getter|1|84-postInit
                 // write post-init user code here
-            }//GEN-BEGIN:|84-getter|2|
-            return okCommand;
-        }
-        //</editor-fold>//GEN-END:|84-getter|2|
+        }//GEN-BEGIN:|84-getter|2|
+        return okCommand;
+    }
+    //</editor-fold>//GEN-END:|84-getter|2|
 
-        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: notSend ">//GEN-BEGIN:|90-getter|0|90-preInit
-        /**
-         * Returns an initiliazed instance of notSend component.
-         * @return the initialized component instance
-         */
-        public Alert getNotSend() {
-            if (notSend == null) {//GEN-END:|90-getter|0|90-preInit
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: notSend ">//GEN-BEGIN:|90-getter|0|90-preInit
+    /**
+     * Returns an initiliazed instance of notSend component.
+     * @return the initialized component instance
+     */
+    public Alert getNotSend() {
+        if (notSend == null) {//GEN-END:|90-getter|0|90-preInit
                 // write pre-init user code here
-                notSend = new Alert("Fehler", "", null, null);//GEN-BEGIN:|90-getter|1|90-postInit
-                notSend.addCommand(getExitCommand3());
-                notSend.addCommand(getOkCommand3());
-                notSend.setCommandListener(this);
-                notSend.setTimeout(Alert.FOREVER);//GEN-END:|90-getter|1|90-postInit
+            notSend = new Alert("Fehler", "", null, null);//GEN-BEGIN:|90-getter|1|90-postInit
+            notSend.addCommand(getExitCommand3());
+            notSend.addCommand(getOkCommand3());
+            notSend.setCommandListener(this);
+            notSend.setTimeout(Alert.FOREVER);//GEN-END:|90-getter|1|90-postInit
                 // write post-init user code here
-            }//GEN-BEGIN:|90-getter|2|
-            return notSend;
-        }
-        //</editor-fold>//GEN-END:|90-getter|2|
+            try {
+                AlertType.WARNING.playSound(Display.getDisplay(this));
+                Thread.sleep(500);
+                AlertType.WARNING.playSound(Display.getDisplay(this));
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+        }//GEN-BEGIN:|90-getter|2|
+        return notSend;
+    }
+    //</editor-fold>//GEN-END:|90-getter|2|
 
-        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: smsSend ">//GEN-BEGIN:|91-getter|0|91-preInit
-        /**
-         * Returns an initiliazed instance of smsSend component.
-         * @return the initialized component instance
-         */
-        public Alert getSmsSend() {
-            if (smsSend == null) {//GEN-END:|91-getter|0|91-preInit
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: smsSend ">//GEN-BEGIN:|91-getter|0|91-preInit
+    /**
+     * Returns an initiliazed instance of smsSend component.
+     * @return the initialized component instance
+     */
+    public Alert getSmsSend() {
+        if (smsSend == null) {//GEN-END:|91-getter|0|91-preInit
                 // write pre-init user code here
-                smsSend = new Alert("Senden erfolgreich", "SMS gesendet\n"+getRemSMSText(), null, null);//GEN-BEGIN:|91-getter|1|91-postInit
-                smsSend.addCommand(getExitCommand2());
-                smsSend.addCommand(getOkCommand2());
-                smsSend.setCommandListener(this);
-                smsSend.setTimeout(Alert.FOREVER);//GEN-END:|91-getter|1|91-postInit
+            smsSend = new Alert("Senden erfolgreich", "SMS gesendet\n"+getRemSMSText(), null, null);//GEN-BEGIN:|91-getter|1|91-postInit
+            smsSend.addCommand(getExitCommand2());
+            smsSend.addCommand(getOkCommand2());
+            smsSend.setCommandListener(this);
+            smsSend.setTimeout(Alert.FOREVER);//GEN-END:|91-getter|1|91-postInit
                 // write post-init user code here
-            }//GEN-BEGIN:|91-getter|2|
-            return smsSend;
-        }
-        //</editor-fold>//GEN-END:|91-getter|2|
+        }//GEN-BEGIN:|91-getter|2|
+        return smsSend;
+    }
+    //</editor-fold>//GEN-END:|91-getter|2|
 
-        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitCommand1 ">//GEN-BEGIN:|98-getter|0|98-preInit
-        /**
-         * Returns an initiliazed instance of exitCommand1 component.
-         * @return the initialized component instance
-         */
-        public Command getExitCommand1() {
-            if (exitCommand1 == null) {//GEN-END:|98-getter|0|98-preInit
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitCommand1 ">//GEN-BEGIN:|98-getter|0|98-preInit
+    /**
+     * Returns an initiliazed instance of exitCommand1 component.
+     * @return the initialized component instance
+     */
+    public Command getExitCommand1() {
+        if (exitCommand1 == null) {//GEN-END:|98-getter|0|98-preInit
                 // write pre-init user code here
-                exitCommand1 = new Command("Exit", Command.EXIT, 0);//GEN-LINE:|98-getter|1|98-postInit
+            exitCommand1 = new Command("Exit", Command.EXIT, 0);//GEN-LINE:|98-getter|1|98-postInit
                 // write post-init user code here
-            }//GEN-BEGIN:|98-getter|2|
-            return exitCommand1;
-        }
-        //</editor-fold>//GEN-END:|98-getter|2|
+        }//GEN-BEGIN:|98-getter|2|
+        return exitCommand1;
+    }
+    //</editor-fold>//GEN-END:|98-getter|2|
 
-        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitCommand2 ">//GEN-BEGIN:|103-getter|0|103-preInit
-        /**
-         * Returns an initiliazed instance of exitCommand2 component.
-         * @return the initialized component instance
-         */
-        public Command getExitCommand2() {
-            if (exitCommand2 == null) {//GEN-END:|103-getter|0|103-preInit
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitCommand2 ">//GEN-BEGIN:|103-getter|0|103-preInit
+    /**
+     * Returns an initiliazed instance of exitCommand2 component.
+     * @return the initialized component instance
+     */
+    public Command getExitCommand2() {
+        if (exitCommand2 == null) {//GEN-END:|103-getter|0|103-preInit
                 // write pre-init user code here
-                exitCommand2 = new Command("Exit", Command.EXIT, 0);//GEN-LINE:|103-getter|1|103-postInit
+            exitCommand2 = new Command("Exit", Command.EXIT, 0);//GEN-LINE:|103-getter|1|103-postInit
                 // write post-init user code here
-            }//GEN-BEGIN:|103-getter|2|
-            return exitCommand2;
-        }
-        //</editor-fold>//GEN-END:|103-getter|2|
+        }//GEN-BEGIN:|103-getter|2|
+        return exitCommand2;
+    }
+    //</editor-fold>//GEN-END:|103-getter|2|
 
-        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommand2 ">//GEN-BEGIN:|106-getter|0|106-preInit
-        /**
-         * Returns an initiliazed instance of okCommand2 component.
-         * @return the initialized component instance
-         */
-        public Command getOkCommand2() {
-            if (okCommand2 == null) {//GEN-END:|106-getter|0|106-preInit
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommand2 ">//GEN-BEGIN:|106-getter|0|106-preInit
+    /**
+     * Returns an initiliazed instance of okCommand2 component.
+     * @return the initialized component instance
+     */
+    public Command getOkCommand2() {
+        if (okCommand2 == null) {//GEN-END:|106-getter|0|106-preInit
                 // write pre-init user code here
-                okCommand2 = new Command("Ok", Command.OK, 0);//GEN-LINE:|106-getter|1|106-postInit
+            okCommand2 = new Command("Ok", Command.OK, 0);//GEN-LINE:|106-getter|1|106-postInit
                 // write post-init user code here
-            }//GEN-BEGIN:|106-getter|2|
-            return okCommand2;
-        }
-        //</editor-fold>//GEN-END:|106-getter|2|
+        }//GEN-BEGIN:|106-getter|2|
+        return okCommand2;
+    }
+    //</editor-fold>//GEN-END:|106-getter|2|
 
-        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitCommand3 ">//GEN-BEGIN:|109-getter|0|109-preInit
-        /**
-         * Returns an initiliazed instance of exitCommand3 component.
-         * @return the initialized component instance
-         */
-        public Command getExitCommand3() {
-            if (exitCommand3 == null) {//GEN-END:|109-getter|0|109-preInit
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitCommand3 ">//GEN-BEGIN:|109-getter|0|109-preInit
+    /**
+     * Returns an initiliazed instance of exitCommand3 component.
+     * @return the initialized component instance
+     */
+    public Command getExitCommand3() {
+        if (exitCommand3 == null) {//GEN-END:|109-getter|0|109-preInit
                 // write pre-init user code here
-                exitCommand3 = new Command("Exit", Command.EXIT, 0);//GEN-LINE:|109-getter|1|109-postInit
+            exitCommand3 = new Command("Exit", Command.EXIT, 0);//GEN-LINE:|109-getter|1|109-postInit
                 // write post-init user code here
-            }//GEN-BEGIN:|109-getter|2|
-            return exitCommand3;
-        }
-        //</editor-fold>//GEN-END:|109-getter|2|
+        }//GEN-BEGIN:|109-getter|2|
+        return exitCommand3;
+    }
+    //</editor-fold>//GEN-END:|109-getter|2|
 
-        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommand3 ">//GEN-BEGIN:|111-getter|0|111-preInit
-        /**
-         * Returns an initiliazed instance of okCommand3 component.
-         * @return the initialized component instance
-         */
-        public Command getOkCommand3() {
-            if (okCommand3 == null) {//GEN-END:|111-getter|0|111-preInit
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommand3 ">//GEN-BEGIN:|111-getter|0|111-preInit
+    /**
+     * Returns an initiliazed instance of okCommand3 component.
+     * @return the initialized component instance
+     */
+    public Command getOkCommand3() {
+        if (okCommand3 == null) {//GEN-END:|111-getter|0|111-preInit
             // write pre-init user code here
-                okCommand3 = new Command("Ok", Command.OK, 0);//GEN-LINE:|111-getter|1|111-postInit
+            okCommand3 = new Command("Ok", Command.OK, 0);//GEN-LINE:|111-getter|1|111-postInit
             // write post-init user code here
-            }//GEN-BEGIN:|111-getter|2|
-            return okCommand3;
-        }
-        //</editor-fold>//GEN-END:|111-getter|2|
+        }//GEN-BEGIN:|111-getter|2|
+        return okCommand3;
+    }
+    //</editor-fold>//GEN-END:|111-getter|2|
 
-        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: About ">//GEN-BEGIN:|116-getter|0|116-preInit
-        /**
-         * Returns an initiliazed instance of About component.
-         * @return the initialized component instance
-         */
-        public Alert getAbout() {
-            if (About == null) {//GEN-END:|116-getter|0|116-preInit
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: About ">//GEN-BEGIN:|116-getter|0|116-preInit
+    /**
+     * Returns an initiliazed instance of About component.
+     * @return the initialized component instance
+     */
+    public Alert getAbout() {
+        if (About == null) {//GEN-END:|116-getter|0|116-preInit
             // write pre-init user code here
-                About = new Alert("About", "© 2009 Max H\u00E4nze\n© 2010 Christian Morlok\n© 2010 RedRocket\nLizenz: GNU GPL 3.0\nVersion: "+getVersion(), null, null);//GEN-BEGIN:|116-getter|1|116-postInit
-                About.setTimeout(Alert.FOREVER);//GEN-END:|116-getter|1|116-postInit
+            About = new Alert("About", "© 2009 Max H\u00E4nze\n© 2010 Christian Morlok\n© 2010 RedRocket\nLizenz: GNU GPL 3.0\nVersion: "+getVersion(), null, null);//GEN-BEGIN:|116-getter|1|116-postInit
+            About.setTimeout(Alert.FOREVER);//GEN-END:|116-getter|1|116-postInit
             // write post-init user code here
-            }//GEN-BEGIN:|116-getter|2|
-            return About;
-        }
-        //</editor-fold>//GEN-END:|116-getter|2|
+        }//GEN-BEGIN:|116-getter|2|
+        return About;
+    }
+    //</editor-fold>//GEN-END:|116-getter|2|
 
-        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: task ">//GEN-BEGIN:|140-getter|0|140-preInit
-        /**
-         * Returns an initiliazed instance of task component.
-         * @return the initialized component instance
-         */
-        public SimpleCancellableTask getTask() {
-            if (task == null) {//GEN-END:|140-getter|0|140-preInit
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: task ">//GEN-BEGIN:|140-getter|0|140-preInit
+    /**
+     * Returns an initiliazed instance of task component.
+     * @return the initialized component instance
+     */
+    public SimpleCancellableTask getTask() {
+        if (task == null) {//GEN-END:|140-getter|0|140-preInit
             // write pre-init user code here
-                task = new SimpleCancellableTask();//GEN-BEGIN:|140-getter|1|140-execute
-                task.setExecutable(new org.netbeans.microedition.util.Executable() {
-                    public void execute() throws Exception {//GEN-END:|140-getter|1|140-execute
+            task = new SimpleCancellableTask();//GEN-BEGIN:|140-getter|1|140-execute
+            task.setExecutable(new org.netbeans.microedition.util.Executable() {
+                public void execute() throws Exception {//GEN-END:|140-getter|1|140-execute
                     sendSMS(recvNB, text);
-                    }//GEN-BEGIN:|140-getter|2|140-postInit
-                });//GEN-END:|140-getter|2|140-postInit
+                }//GEN-BEGIN:|140-getter|2|140-postInit
+            });//GEN-END:|140-getter|2|140-postInit
             // write post-init user code here
-            }//GEN-BEGIN:|140-getter|3|
-            return task;
-        }
-        //</editor-fold>//GEN-END:|140-getter|3|
+        }//GEN-BEGIN:|140-getter|3|
+        return task;
+    }
+    //</editor-fold>//GEN-END:|140-getter|3|
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: textField ">//GEN-BEGIN:|156-getter|0|156-preInit
     /**
@@ -1433,339 +1450,339 @@ public class webSMSsend extends MIDlet implements CommandListener {
     }
     //</editor-fold>//GEN-END:|211-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: eingabeLeeren ">//GEN-BEGIN:|212-getter|0|212-preInit
-    /**
-     * Returns an initiliazed instance of eingabeLeeren component.
-     * @return the initialized component instance
-     */
-    public Command getEingabeLeeren() {
-        if (eingabeLeeren == null) {//GEN-END:|212-getter|0|212-preInit
+        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: eingabeLeeren ">//GEN-BEGIN:|212-getter|0|212-preInit
+        /**
+         * Returns an initiliazed instance of eingabeLeeren component.
+         * @return the initialized component instance
+         */
+        public Command getEingabeLeeren() {
+            if (eingabeLeeren == null) {//GEN-END:|212-getter|0|212-preInit
             // write pre-init user code here
-            eingabeLeeren = new Command("Eingabe l\u00F6schen", Command.CANCEL, 4);//GEN-LINE:|212-getter|1|212-postInit
+                eingabeLeeren = new Command("Eingabe l\u00F6schen", Command.CANCEL, 3);//GEN-LINE:|212-getter|1|212-postInit
             // write post-init user code here
-        }//GEN-BEGIN:|212-getter|2|
-        return eingabeLeeren;
-    }
-    //</editor-fold>//GEN-END:|212-getter|2|
+            }//GEN-BEGIN:|212-getter|2|
+            return eingabeLeeren;
+        }
+        //</editor-fold>//GEN-END:|212-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: stringItem1 ">//GEN-BEGIN:|215-getter|0|215-preInit
-    /**
-     * Returns an initiliazed instance of stringItem1 component.
-     * @return the initialized component instance
-     */
-    public StringItem getStringItem1() {
-        if (stringItem1 == null) {//GEN-END:|215-getter|0|215-preInit
+        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: stringItem1 ">//GEN-BEGIN:|215-getter|0|215-preInit
+        /**
+         * Returns an initiliazed instance of stringItem1 component.
+         * @return the initialized component instance
+         */
+        public StringItem getStringItem1() {
+            if (stringItem1 == null) {//GEN-END:|215-getter|0|215-preInit
             // write pre-init user code here
-            stringItem1 = new StringItem(" ", null);//GEN-LINE:|215-getter|1|215-postInit
+                stringItem1 = new StringItem(" ", null);//GEN-LINE:|215-getter|1|215-postInit
             // write post-init user code here
-        }//GEN-BEGIN:|215-getter|2|
-        return stringItem1;
-    }
-    //</editor-fold>//GEN-END:|215-getter|2|
+            }//GEN-BEGIN:|215-getter|2|
+            return stringItem1;
+        }
+        //</editor-fold>//GEN-END:|215-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: setup ">//GEN-BEGIN:|217-getter|0|217-preInit
-    /**
-     * Returns an initiliazed instance of setup component.
-     * @return the initialized component instance
-     */
-    public Form getSetup() {
-        if (setup == null) {//GEN-END:|217-getter|0|217-preInit
+        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: setup ">//GEN-BEGIN:|217-getter|0|217-preInit
+        /**
+         * Returns an initiliazed instance of setup component.
+         * @return the initialized component instance
+         */
+        public Form getSetup() {
+            if (setup == null) {//GEN-END:|217-getter|0|217-preInit
             // write pre-init user code here
-            setup = new Form("Setup", new Item[] { getTextField5(), getTextField4(), getChoiceGroup2() });//GEN-BEGIN:|217-getter|1|217-postInit
-            setup.addCommand(getOkCommand());
-            setup.setCommandListener(this);//GEN-END:|217-getter|1|217-postInit
+                setup = new Form("Setup", new Item[] { getTextField5(), getTextField4(), getChoiceGroup2() });//GEN-BEGIN:|217-getter|1|217-postInit
+                setup.addCommand(getOkCommand());
+                setup.setCommandListener(this);//GEN-END:|217-getter|1|217-postInit
             // write post-init user code here
-        }//GEN-BEGIN:|217-getter|2|
-        return setup;
-    }
-    //</editor-fold>//GEN-END:|217-getter|2|
+            }//GEN-BEGIN:|217-getter|2|
+            return setup;
+        }
+        //</editor-fold>//GEN-END:|217-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: textField4 ">//GEN-BEGIN:|219-getter|0|219-preInit
-    /**
-     * Returns an initiliazed instance of textField4 component.
-     * @return the initialized component instance
-     */
-    public TextField getTextField4() {
-        if (textField4 == null) {//GEN-END:|219-getter|0|219-preInit
+        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: textField4 ">//GEN-BEGIN:|219-getter|0|219-preInit
+        /**
+         * Returns an initiliazed instance of textField4 component.
+         * @return the initialized component instance
+         */
+        public TextField getTextField4() {
+            if (textField4 == null) {//GEN-END:|219-getter|0|219-preInit
             // write pre-init user code here
-            textField4 = new TextField("Passwort:", null, 32, TextField.ANY | TextField.PASSWORD);//GEN-LINE:|219-getter|1|219-postInit
+                textField4 = new TextField("Passwort:", null, 32, TextField.ANY | TextField.PASSWORD);//GEN-LINE:|219-getter|1|219-postInit
             // write post-init user code here
-        }//GEN-BEGIN:|219-getter|2|
-        return textField4;
-    }
-    //</editor-fold>//GEN-END:|219-getter|2|
+            }//GEN-BEGIN:|219-getter|2|
+            return textField4;
+        }
+        //</editor-fold>//GEN-END:|219-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: choiceGroup2 ">//GEN-BEGIN:|220-getter|0|220-preInit
-    /**
-     * Returns an initiliazed instance of choiceGroup2 component.
-     * @return the initialized component instance
-     */
-    public ChoiceGroup getChoiceGroup2() {
-        if (choiceGroup2 == null) {//GEN-END:|220-getter|0|220-preInit
+        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: choiceGroup2 ">//GEN-BEGIN:|220-getter|0|220-preInit
+        /**
+         * Returns an initiliazed instance of choiceGroup2 component.
+         * @return the initialized component instance
+         */
+        public ChoiceGroup getChoiceGroup2() {
+            if (choiceGroup2 == null) {//GEN-END:|220-getter|0|220-preInit
             // write pre-init user code here
-            choiceGroup2 = new ChoiceGroup("Anbieter", Choice.EXCLUSIVE);//GEN-BEGIN:|220-getter|1|220-postInit
-            choiceGroup2.append("O2-Internet-Pack", null);
-            choiceGroup2.append("GMX", null);
-            choiceGroup2.setSelectedFlags(new boolean[] { false, false });
-            choiceGroup2.setFont(0, getFont());
-            choiceGroup2.setFont(1, getFont());//GEN-END:|220-getter|1|220-postInit
+                choiceGroup2 = new ChoiceGroup("Anbieter", Choice.EXCLUSIVE);//GEN-BEGIN:|220-getter|1|220-postInit
+                choiceGroup2.append("O2-Internet-Pack", null);
+                choiceGroup2.append("GMX", null);
+                choiceGroup2.setSelectedFlags(new boolean[] { false, false });
+                choiceGroup2.setFont(0, getFont());
+                choiceGroup2.setFont(1, getFont());//GEN-END:|220-getter|1|220-postInit
             // write post-init user code here
-        }//GEN-BEGIN:|220-getter|2|
-        return choiceGroup2;
-    }
-    //</editor-fold>//GEN-END:|220-getter|2|
+            }//GEN-BEGIN:|220-getter|2|
+            return choiceGroup2;
+        }
+        //</editor-fold>//GEN-END:|220-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: textField5 ">//GEN-BEGIN:|226-getter|0|226-preInit
-    /**
-     * Returns an initiliazed instance of textField5 component.
-     * @return the initialized component instance
-     */
-    public TextField getTextField5() {
-        if (textField5 == null) {//GEN-END:|226-getter|0|226-preInit
+        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: textField5 ">//GEN-BEGIN:|226-getter|0|226-preInit
+        /**
+         * Returns an initiliazed instance of textField5 component.
+         * @return the initialized component instance
+         */
+        public TextField getTextField5() {
+            if (textField5 == null) {//GEN-END:|226-getter|0|226-preInit
             // write pre-init user code here
-            textField5 = new TextField("Benutzername:", null, 32, TextField.ANY);//GEN-LINE:|226-getter|1|226-postInit
+                textField5 = new TextField("Benutzername:", null, 32, TextField.ANY);//GEN-LINE:|226-getter|1|226-postInit
             // write post-init user code here
-        }//GEN-BEGIN:|226-getter|2|
-        return textField5;
-    }
-    //</editor-fold>//GEN-END:|226-getter|2|
+            }//GEN-BEGIN:|226-getter|2|
+            return textField5;
+        }
+        //</editor-fold>//GEN-END:|226-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: choiceGroup3 ">//GEN-BEGIN:|229-getter|0|229-preInit
-    /**
-     * Returns an initiliazed instance of choiceGroup3 component.
-     * @return the initialized component instance
-     */
-    public ChoiceGroup getChoiceGroup3() {
-        if (choiceGroup3 == null) {//GEN-END:|229-getter|0|229-preInit
+        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: choiceGroup3 ">//GEN-BEGIN:|229-getter|0|229-preInit
+        /**
+         * Returns an initiliazed instance of choiceGroup3 component.
+         * @return the initialized component instance
+         */
+        public ChoiceGroup getChoiceGroup3() {
+            if (choiceGroup3 == null) {//GEN-END:|229-getter|0|229-preInit
             // write pre-init user code here
-            choiceGroup3 = new ChoiceGroup("Bei einem Wechsel: \u00C4ndern der Zugangsdaten nicht vergessen!", Choice.EXCLUSIVE);//GEN-BEGIN:|229-getter|1|229-postInit
-            choiceGroup3.append("O2-Internet-Pack", null);
-            choiceGroup3.append("GMX", null);
-            choiceGroup3.setSelectedFlags(new boolean[] { false, false });
-            choiceGroup3.setFont(0, getFont());
-            choiceGroup3.setFont(1, getFont());//GEN-END:|229-getter|1|229-postInit
+                choiceGroup3 = new ChoiceGroup("Bei einem Wechsel: \u00C4ndern der Zugangsdaten nicht vergessen!", Choice.EXCLUSIVE);//GEN-BEGIN:|229-getter|1|229-postInit
+                choiceGroup3.append("O2-Internet-Pack", null);
+                choiceGroup3.append("GMX", null);
+                choiceGroup3.setSelectedFlags(new boolean[] { false, false });
+                choiceGroup3.setFont(0, getFont());
+                choiceGroup3.setFont(1, getFont());//GEN-END:|229-getter|1|229-postInit
             // write post-init user code here
-        }//GEN-BEGIN:|229-getter|2|
-        return choiceGroup3;
-    }
-    //</editor-fold>//GEN-END:|229-getter|2|
+            }//GEN-BEGIN:|229-getter|2|
+            return choiceGroup3;
+        }
+        //</editor-fold>//GEN-END:|229-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: loginScreenSend ">//GEN-BEGIN:|240-getter|0|240-preInit
-    /**
-     * Returns an initiliazed instance of loginScreenSend component.
-     * @return the initialized component instance
-     */
-    public Command getLoginScreenSend() {
-        if (loginScreenSend == null) {//GEN-END:|240-getter|0|240-preInit
+        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: loginScreenSend ">//GEN-BEGIN:|240-getter|0|240-preInit
+        /**
+         * Returns an initiliazed instance of loginScreenSend component.
+         * @return the initialized component instance
+         */
+        public Command getLoginScreenSend() {
+            if (loginScreenSend == null) {//GEN-END:|240-getter|0|240-preInit
             // write pre-init user code here
-            loginScreenSend = new Command("Ok", Command.OK, 0);//GEN-LINE:|240-getter|1|240-postInit
+                loginScreenSend = new Command("Ok", Command.OK, 0);//GEN-LINE:|240-getter|1|240-postInit
             // write post-init user code here
-        }//GEN-BEGIN:|240-getter|2|
-        return loginScreenSend;
-    }
-    //</editor-fold>//GEN-END:|240-getter|2|
+            }//GEN-BEGIN:|240-getter|2|
+            return loginScreenSend;
+        }
+        //</editor-fold>//GEN-END:|240-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: loginScreen ">//GEN-BEGIN:|235-getter|0|235-preInit
-    /**
-     * Returns an initiliazed instance of loginScreen component.
-     * @return the initialized component instance
-     */
-    public Form getLoginScreen() {
-        if (loginScreen == null) {//GEN-END:|235-getter|0|235-preInit
+        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: loginScreen ">//GEN-BEGIN:|235-getter|0|235-preInit
+        /**
+         * Returns an initiliazed instance of loginScreen component.
+         * @return the initialized component instance
+         */
+        public Form getLoginScreen() {
+            if (loginScreen == null) {//GEN-END:|235-getter|0|235-preInit
             // write pre-init user code here
-            loginScreen = new Form("Login", new Item[] { getTextField6(), getTextField7() });//GEN-BEGIN:|235-getter|1|235-postInit
-            loginScreen.addCommand(getBack());
-            loginScreen.addCommand(getLoginScreenSend());
-            loginScreen.setCommandListener(this);//GEN-END:|235-getter|1|235-postInit
+                loginScreen = new Form("Login", new Item[] { getTextField6(), getTextField7() });//GEN-BEGIN:|235-getter|1|235-postInit
+                loginScreen.addCommand(getBack());
+                loginScreen.addCommand(getLoginScreenSend());
+                loginScreen.setCommandListener(this);//GEN-END:|235-getter|1|235-postInit
             // write post-init user code here
-        }//GEN-BEGIN:|235-getter|2|
-        return loginScreen;
-    }
-    //</editor-fold>//GEN-END:|235-getter|2|
+            }//GEN-BEGIN:|235-getter|2|
+            return loginScreen;
+        }
+        //</editor-fold>//GEN-END:|235-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: textField6 ">//GEN-BEGIN:|236-getter|0|236-preInit
-    /**
-     * Returns an initiliazed instance of textField6 component.
-     * @return the initialized component instance
-     */
-    public TextField getTextField6() {
-        if (textField6 == null) {//GEN-END:|236-getter|0|236-preInit
+        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: textField6 ">//GEN-BEGIN:|236-getter|0|236-preInit
+        /**
+         * Returns an initiliazed instance of textField6 component.
+         * @return the initialized component instance
+         */
+        public TextField getTextField6() {
+            if (textField6 == null) {//GEN-END:|236-getter|0|236-preInit
             // write pre-init user code here
-            textField6 = new TextField("Benutzername:", null, 32, TextField.ANY);//GEN-LINE:|236-getter|1|236-postInit
+                textField6 = new TextField("Benutzername:", null, 32, TextField.ANY);//GEN-LINE:|236-getter|1|236-postInit
             // write post-init user code here
-        }//GEN-BEGIN:|236-getter|2|
-        return textField6;
-    }
-    //</editor-fold>//GEN-END:|236-getter|2|
+            }//GEN-BEGIN:|236-getter|2|
+            return textField6;
+        }
+        //</editor-fold>//GEN-END:|236-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: textField7 ">//GEN-BEGIN:|237-getter|0|237-preInit
-    /**
-     * Returns an initiliazed instance of textField7 component.
-     * @return the initialized component instance
-     */
-    public TextField getTextField7() {
-        if (textField7 == null) {//GEN-END:|237-getter|0|237-preInit
+        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: textField7 ">//GEN-BEGIN:|237-getter|0|237-preInit
+        /**
+         * Returns an initiliazed instance of textField7 component.
+         * @return the initialized component instance
+         */
+        public TextField getTextField7() {
+            if (textField7 == null) {//GEN-END:|237-getter|0|237-preInit
             // write pre-init user code here
-            textField7 = new TextField("Passwort:", null, 32, TextField.ANY | TextField.PASSWORD);//GEN-LINE:|237-getter|1|237-postInit
+                textField7 = new TextField("Passwort:", null, 32, TextField.ANY | TextField.PASSWORD);//GEN-LINE:|237-getter|1|237-postInit
             // write post-init user code here
-        }//GEN-BEGIN:|237-getter|2|
-        return textField7;
-    }
-    //</editor-fold>//GEN-END:|237-getter|2|
+            }//GEN-BEGIN:|237-getter|2|
+            return textField7;
+        }
+        //</editor-fold>//GEN-END:|237-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: image1 ">//GEN-BEGIN:|244-getter|0|244-preInit
-    /**
-     * Returns an initiliazed instance of image1 component.
-     * @return the initialized component instance
-     */
-    public Image getImage1() {
-        if (image1 == null) {//GEN-END:|244-getter|0|244-preInit
+        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: image1 ">//GEN-BEGIN:|244-getter|0|244-preInit
+        /**
+         * Returns an initiliazed instance of image1 component.
+         * @return the initialized component instance
+         */
+        public Image getImage1() {
+            if (image1 == null) {//GEN-END:|244-getter|0|244-preInit
             // write pre-init user code here
-            try {//GEN-BEGIN:|244-getter|1|244-@java.io.IOException
-                image1 = Image.createImage("/webSMSsend/sendIcon.png");
-            } catch (java.io.IOException e) {//GEN-END:|244-getter|1|244-@java.io.IOException
+                try {//GEN-BEGIN:|244-getter|1|244-@java.io.IOException
+                    image1 = Image.createImage("/webSMSsend/sendIcon.png");
+                } catch (java.io.IOException e) {//GEN-END:|244-getter|1|244-@java.io.IOException
                 e.printStackTrace();
-            }//GEN-LINE:|244-getter|2|244-postInit
+                }//GEN-LINE:|244-getter|2|244-postInit
             // write post-init user code here
-        }//GEN-BEGIN:|244-getter|3|
-        return image1;
-    }
-    //</editor-fold>//GEN-END:|244-getter|3|
+            }//GEN-BEGIN:|244-getter|3|
+            return image1;
+        }
+        //</editor-fold>//GEN-END:|244-getter|3|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: textField3 ">//GEN-BEGIN:|247-getter|0|247-preInit
-    /**
-     * Returns an initiliazed instance of textField3 component.
-     * @return the initialized component instance
-     */
-    public TextField getTextField3() {
-        if (textField3 == null) {//GEN-END:|247-getter|0|247-preInit
+        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: textField3 ">//GEN-BEGIN:|247-getter|0|247-preInit
+        /**
+         * Returns an initiliazed instance of textField3 component.
+         * @return the initialized component instance
+         */
+        public TextField getTextField3() {
+            if (textField3 == null) {//GEN-END:|247-getter|0|247-preInit
             // write pre-init user code here
-            textField3 = new TextField("Eingabe:", null, 1800, TextField.ANY);//GEN-BEGIN:|247-getter|1|247-postInit
-            textField3.setLayout(ImageItem.LAYOUT_CENTER | Item.LAYOUT_VEXPAND);//GEN-END:|247-getter|1|247-postInit
+                textField3 = new TextField("Eingabe:", null, 1800, TextField.ANY);//GEN-BEGIN:|247-getter|1|247-postInit
+                textField3.setLayout(ImageItem.LAYOUT_CENTER | Item.LAYOUT_VEXPAND);//GEN-END:|247-getter|1|247-postInit
             // write post-init user code here
-        }//GEN-BEGIN:|247-getter|2|
-        return textField3;
-    }
-    //</editor-fold>//GEN-END:|247-getter|2|
+            }//GEN-BEGIN:|247-getter|2|
+            return textField3;
+        }
+        //</editor-fold>//GEN-END:|247-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommand5 ">//GEN-BEGIN:|253-getter|0|253-preInit
-    /**
-     * Returns an initiliazed instance of okCommand5 component.
-     * @return the initialized component instance
-     */
-    public Command getOkCommand5() {
-        if (okCommand5 == null) {//GEN-END:|253-getter|0|253-preInit
+        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommand5 ">//GEN-BEGIN:|253-getter|0|253-preInit
+        /**
+         * Returns an initiliazed instance of okCommand5 component.
+         * @return the initialized component instance
+         */
+        public Command getOkCommand5() {
+            if (okCommand5 == null) {//GEN-END:|253-getter|0|253-preInit
             // write pre-init user code here
-            okCommand5 = new Command("Ok", Command.OK, 0);//GEN-LINE:|253-getter|1|253-postInit
+                okCommand5 = new Command("Ok", Command.OK, 0);//GEN-LINE:|253-getter|1|253-postInit
             // write post-init user code here
-        }//GEN-BEGIN:|253-getter|2|
-        return okCommand5;
-    }
-    //</editor-fold>//GEN-END:|253-getter|2|
+            }//GEN-BEGIN:|253-getter|2|
+            return okCommand5;
+        }
+        //</editor-fold>//GEN-END:|253-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: ChooseAccount ">//GEN-BEGIN:|248-getter|0|248-preInit
-    /**
-     * Returns an initiliazed instance of ChooseAccount component.
-     * @return the initialized component instance
-     */
-    public List getChooseAccount() {
-        if (ChooseAccount == null) {//GEN-END:|248-getter|0|248-preInit
+        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: ChooseAccount ">//GEN-BEGIN:|248-getter|0|248-preInit
+        /**
+         * Returns an initiliazed instance of ChooseAccount component.
+         * @return the initialized component instance
+         */
+        public List getChooseAccount() {
+            if (ChooseAccount == null) {//GEN-END:|248-getter|0|248-preInit
             // write pre-init user code here
-            ChooseAccount = new List("Benutzerkonto ausw\u00E4hlen", Choice.IMPLICIT);//GEN-BEGIN:|248-getter|1|248-postInit
-            ChooseAccount.append("Benutzerkonto 1", null);
-            ChooseAccount.append("Benutzerkonto 2", null);
-            ChooseAccount.append("Benutzerkonto 3", null);
-            ChooseAccount.addCommand(getOkCommand5());
-            ChooseAccount.addCommand(getBack());
-            ChooseAccount.setCommandListener(this);
-            ChooseAccount.setSelectedFlags(new boolean[] { true, false, false });//GEN-END:|248-getter|1|248-postInit
+                ChooseAccount = new List("Benutzerkonto ausw\u00E4hlen", Choice.IMPLICIT);//GEN-BEGIN:|248-getter|1|248-postInit
+                ChooseAccount.append("Benutzerkonto 1", null);
+                ChooseAccount.append("Benutzerkonto 2", null);
+                ChooseAccount.append("Benutzerkonto 3", null);
+                ChooseAccount.addCommand(getOkCommand5());
+                ChooseAccount.addCommand(getBack());
+                ChooseAccount.setCommandListener(this);
+                ChooseAccount.setSelectedFlags(new boolean[] { true, false, false });//GEN-END:|248-getter|1|248-postInit
             // write post-init user code here
-        }//GEN-BEGIN:|248-getter|2|
-        return ChooseAccount;
-    }
-    //</editor-fold>//GEN-END:|248-getter|2|
+            }//GEN-BEGIN:|248-getter|2|
+            return ChooseAccount;
+        }
+        //</editor-fold>//GEN-END:|248-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Method: ChooseAccountAction ">//GEN-BEGIN:|248-action|0|248-preAction
-    /**
-     * Performs an action assigned to the selected list element in the ChooseAccount component.
-     */
-    public void ChooseAccountAction() {//GEN-END:|248-action|0|248-preAction
+        //<editor-fold defaultstate="collapsed" desc=" Generated Method: ChooseAccountAction ">//GEN-BEGIN:|248-action|0|248-preAction
+        /**
+         * Performs an action assigned to the selected list element in the ChooseAccount component.
+         */
+        public void ChooseAccountAction() {//GEN-END:|248-action|0|248-preAction
         // enter pre-action user code here
-        String __selectedString = getChooseAccount().getString(getChooseAccount().getSelectedIndex());//GEN-BEGIN:|248-action|1|251-preAction
-        if (__selectedString != null) {
-            if (__selectedString.equals("Benutzerkonto 1")) {//GEN-END:|248-action|1|251-preAction
+            String __selectedString = getChooseAccount().getString(getChooseAccount().getSelectedIndex());//GEN-BEGIN:|248-action|1|251-preAction
+            if (__selectedString != null) {
+                if (__selectedString.equals("Benutzerkonto 1")) {//GEN-END:|248-action|1|251-preAction
                 // write pre-action user code here
 //GEN-LINE:|248-action|2|251-postAction
                 // write post-action user code here
                 ioSettings.saveActiveAccount("0");
-            } else if (__selectedString.equals("Benutzerkonto 2")) {//GEN-LINE:|248-action|3|252-preAction
+                } else if (__selectedString.equals("Benutzerkonto 2")) {//GEN-LINE:|248-action|3|252-preAction
                 // write pre-action user code here
 //GEN-LINE:|248-action|4|252-postAction
                 // write post-action user code here
                 ioSettings.saveActiveAccount("1");
-            } else if (__selectedString.equals("Benutzerkonto 3")) {//GEN-LINE:|248-action|5|284-preAction
+                } else if (__selectedString.equals("Benutzerkonto 3")) {//GEN-LINE:|248-action|5|284-preAction
                 // write pre-action user code here
 //GEN-LINE:|248-action|6|284-postAction
                 // write post-action user code here
                 ioSettings.saveActiveAccount("2");
-            }//GEN-BEGIN:|248-action|7|248-postAction
-        }//GEN-END:|248-action|7|248-postAction
+                }//GEN-BEGIN:|248-action|7|248-postAction
+            }//GEN-END:|248-action|7|248-postAction
         // enter post-action user code here
         //theoretisch wäre ioSettings.saveActiveAccount(""+getChooseAccount().getSelectedIndex()); sinnvoller
         SyncSettings();
-    }//GEN-BEGIN:|248-action|8|
-    //</editor-fold>//GEN-END:|248-action|8|
+        }//GEN-BEGIN:|248-action|8|
+        //</editor-fold>//GEN-END:|248-action|8|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: choiceGroup4 ">//GEN-BEGIN:|263-getter|0|263-preInit
-    /**
-     * Returns an initiliazed instance of choiceGroup4 component.
-     * @return the initialized component instance
-     */
-    public ChoiceGroup getChoiceGroup4() {
-        if (choiceGroup4 == null) {//GEN-END:|263-getter|0|263-preInit
+        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: choiceGroup4 ">//GEN-BEGIN:|263-getter|0|263-preInit
+        /**
+         * Returns an initiliazed instance of choiceGroup4 component.
+         * @return the initialized component instance
+         */
+        public ChoiceGroup getChoiceGroup4() {
+            if (choiceGroup4 == null) {//GEN-END:|263-getter|0|263-preInit
             // write pre-init user code here
-            choiceGroup4 = new ChoiceGroup("Als Absender verwenden:", Choice.EXCLUSIVE);//GEN-BEGIN:|263-getter|1|263-postInit
-            choiceGroup4.append("Meine Mobil-Telefonnummer", null);
-            choiceGroup4.append("Text:", null);
-            choiceGroup4.setSelectedFlags(new boolean[] { false, false });//GEN-END:|263-getter|1|263-postInit
+                choiceGroup4 = new ChoiceGroup("Als Absender verwenden:", Choice.EXCLUSIVE);//GEN-BEGIN:|263-getter|1|263-postInit
+                choiceGroup4.append("Meine Mobil-Telefonnummer", null);
+                choiceGroup4.append("Text:", null);
+                choiceGroup4.setSelectedFlags(new boolean[] { false, false });//GEN-END:|263-getter|1|263-postInit
             // write post-init user code here
-        }//GEN-BEGIN:|263-getter|2|
-        return choiceGroup4;
-    }
-    //</editor-fold>//GEN-END:|263-getter|2|
+            }//GEN-BEGIN:|263-getter|2|
+            return choiceGroup4;
+        }
+        //</editor-fold>//GEN-END:|263-getter|2|
     //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtSenderName ">//GEN-BEGIN:|266-getter|0|266-preInit
-    /**
-     * Returns an initiliazed instance of txtSenderName component.
-     * @return the initialized component instance
-     */
-    public TextField getTxtSenderName() {
-        if (txtSenderName == null) {//GEN-END:|266-getter|0|266-preInit
+        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtSenderName ">//GEN-BEGIN:|266-getter|0|266-preInit
+        /**
+         * Returns an initiliazed instance of txtSenderName component.
+         * @return the initialized component instance
+         */
+        public TextField getTxtSenderName() {
+            if (txtSenderName == null) {//GEN-END:|266-getter|0|266-preInit
             // write pre-init user code here
-            txtSenderName = new TextField("", "", 10, TextField.ANY);//GEN-BEGIN:|266-getter|1|266-postInit
-            txtSenderName.setLayout(ImageItem.LAYOUT_DEFAULT);//GEN-END:|266-getter|1|266-postInit
+                txtSenderName = new TextField("", "", 10, TextField.ANY);//GEN-BEGIN:|266-getter|1|266-postInit
+                txtSenderName.setLayout(ImageItem.LAYOUT_DEFAULT);//GEN-END:|266-getter|1|266-postInit
             // write post-init user code here
-        }//GEN-BEGIN:|266-getter|2|
-        return txtSenderName;
-    }
-    //</editor-fold>//GEN-END:|266-getter|2|
+            }//GEN-BEGIN:|266-getter|2|
+            return txtSenderName;
+        }
+        //</editor-fold>//GEN-END:|266-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: stringItem ">//GEN-BEGIN:|268-getter|0|268-preInit
-    /**
-     * Returns an initiliazed instance of stringItem component.
-     * @return the initialized component instance
-     */
-    public StringItem getStringItem() {
-        if (stringItem == null) {//GEN-END:|268-getter|0|268-preInit
+        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: stringItem ">//GEN-BEGIN:|268-getter|0|268-preInit
+        /**
+         * Returns an initiliazed instance of stringItem component.
+         * @return the initialized component instance
+         */
+        public StringItem getStringItem() {
+            if (stringItem == null) {//GEN-END:|268-getter|0|268-preInit
             // write pre-init user code here
-            stringItem = new StringItem("F\u00FCr O2-Internet-Pack:", null, Item.PLAIN);//GEN-BEGIN:|268-getter|1|268-postInit
-            stringItem.setLayout(ImageItem.LAYOUT_DEFAULT | ImageItem.LAYOUT_NEWLINE_AFTER);//GEN-END:|268-getter|1|268-postInit
+                stringItem = new StringItem("F\u00FCr O2-Internet-Pack:", null, Item.PLAIN);//GEN-BEGIN:|268-getter|1|268-postInit
+                stringItem.setLayout(ImageItem.LAYOUT_DEFAULT | ImageItem.LAYOUT_NEWLINE_AFTER);//GEN-END:|268-getter|1|268-postInit
             // write post-init user code here
-        }//GEN-BEGIN:|268-getter|2|
-        return stringItem;
-    }
-    //</editor-fold>//GEN-END:|268-getter|2|
+            }//GEN-BEGIN:|268-getter|2|
+            return stringItem;
+        }
+        //</editor-fold>//GEN-END:|268-getter|2|
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommand6 ">//GEN-BEGIN:|269-getter|0|269-preInit
     /**
@@ -2112,6 +2129,21 @@ public class webSMSsend extends MIDlet implements CommandListener {
         return WrongCharacter;
     }
     //</editor-fold>//GEN-END:|340-getter|2|
+
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: LastSMS ">//GEN-BEGIN:|347-getter|0|347-preInit
+    /**
+     * Returns an initiliazed instance of LastSMS component.
+     * @return the initialized component instance
+     */
+    public Command getLastSMS() {
+        if (LastSMS == null) {//GEN-END:|347-getter|0|347-preInit
+            // write pre-init user code here
+            LastSMS = new Command("Letzte SMS", Command.CANCEL, 4);//GEN-LINE:|347-getter|1|347-postInit
+            // write post-init user code here
+        }//GEN-BEGIN:|347-getter|2|
+        return LastSMS;
+    }
+    //</editor-fold>//GEN-END:|347-getter|2|
 
     /**
      * Returns a display instance.
