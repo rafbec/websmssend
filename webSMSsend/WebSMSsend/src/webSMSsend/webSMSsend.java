@@ -32,7 +32,7 @@ import org.netbeans.microedition.lcdui.WaitScreen;
 import org.netbeans.microedition.util.SimpleCancellableTask;
 
 //</editor-fold>
-//<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitCommand ">
+
 public class webSMSsend extends MIDlet implements CommandListener {
 
     //FOR DEBUG ONLY!! SMS will not be sent if true
