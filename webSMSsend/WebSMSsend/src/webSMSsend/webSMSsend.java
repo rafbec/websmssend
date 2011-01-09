@@ -236,7 +236,7 @@ public class webSMSsend extends MIDlet implements CommandListener {
 
             waitScreen.setText("Login erfolgreich...");
             debug("Login erfolgreich");
-            url = connection.getRegexStringMatch("<a href=\"(http://service.gmx.net/de/cgi/g.fcgi/sms\\?cc=subnavi_sms_mms&amp;sid=.*)\">SMS und MMS</a></li>", "<li>", 0, 1);
+            url = connection.getRegexStringMatch("<a href=\"(https?://service.gmx.net/de/cgi/g.fcgi/sms\\?cc=subnavi_sms_mms&amp;sid=.*)\">SMS und MMS</a></li>", "<li>", 0, 1);
             debug("Lade SMS-Manager-URL: " + url);
             connection.httpHandler("GET", url, "service.gmx.net", "", true);
             //http://service.gmx.net/de/cgi/g.fcgi/sms?cc=subnavi_smsmms&sid=babhdee.1254499929.29227.jr09oorphd.73.ign
@@ -249,7 +249,7 @@ public class webSMSsend extends MIDlet implements CommandListener {
             connection.httpHandler("GET", url, "service.gmx.net", "", true);
 
             waitScreen.setText("Senden wird vorbereitet...");
-            url = connection.getRegexStringMatch("url = \"(http://www.sms-manager.info/wsm/login_action.jsp\\?resCustId=.*&password=.*&destination=&customer=GMX)\"", "\n", 0, 1);
+            url = connection.getRegexStringMatch("url = \"(https?://www.sms-manager.info/wsm/login_action.jsp\\?resCustId=.*&password=.*&destination=&customer=GMX)\"", "\n", 0, 1);
             String customID = connection.getRegexMatch(url, "resCustId=(.*)&password", 1);
             debug("Senden wird vorbereitet: " + url);
             connection.httpHandler("GET", url, "www.sms-manager.info", "", true);
