@@ -4,6 +4,7 @@
     Copyright 2009 Max Hänze --- maximum.blogsite.org
     Copyright 2010 Christian Morlok --- cmorlok.de
     Copyright 2010 redrocketracoon@googlemail.com
+    Copyright 2011 schirinowski@gmail.com
     This file is part of WebSMSsend.
 
     WebSMSsend is free software: you can redistribute it and/or modify
@@ -453,7 +454,7 @@ public class NetworkHandler {
              con.setRequestProperty("Host",host);
              con.setRequestProperty("Accept","text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
              con.setRequestProperty("Accept-Language","de-de");
-             con.setRequestProperty("Accept-Encoding","deflate");
+             con.setRequestProperty("Accept-Encoding","identity");
              con.setRequestProperty("Accept-Charset","ISO-8859-15,utf-8;q=0.7,*;q=0.7");
              con.setRequestProperty("Keep-Alive","300");
              con.setRequestProperty("cookie", cookie);
