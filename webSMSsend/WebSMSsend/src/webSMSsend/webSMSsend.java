@@ -3,7 +3,8 @@
  *
 Copyright 2009 Max Hänze --- maximum.blogsite.org
 Copyright 2010 Christian Morlok --- cmorlok.de
-modifziert 2010 von RedRocket ---
+modifiziert 2010 von RedRocket ---
+modifiziert 2011 von schirinowski@gmail.com
 This file is part of WebSMSsend.
 
 WebSMSsend is free software: you can redistribute it and/or modify
@@ -200,7 +201,7 @@ public class webSMSsend extends MIDlet implements CommandListener {
             smsRecv = connection.checkRecv(smsRecv);
 
             debug("Empfänger: " + smsRecv.substring(0, 6) + "*******");
-            
+
             String url = "http://www.gmx.net/";
             waitScreen.setText("Login wird geladen...");
             debug("Login wird geladen...");
@@ -256,7 +257,7 @@ public class webSMSsend extends MIDlet implements CommandListener {
 
             try {
                 if (remSMS != -1) {
-                    String sendSMSstring = connection.getRegexStringMatch("noch (.*) von (.+)", "\n", 0, 1);
+                    String sendSMSstring = connection.getRegexStringMatch("noch (.*) von (.+)", "/", 0, 1);
                     remSMS = Integer.parseInt(sendSMSstring);
                     debug("" + remSMS);
                 }
@@ -515,7 +516,7 @@ public class webSMSsend extends MIDlet implements CommandListener {
         if (simulation) {
             debug = true;
         }
-        System.out.println("AcitveAccount: " + ActiveAccount);
+        System.out.println("ActiveAccount: " + ActiveAccount);
     }
 
     private void SaveTempSMS() {
