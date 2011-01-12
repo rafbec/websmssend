@@ -73,14 +73,14 @@ public class EmailClient {
          while (((c = is.read()) != -1) ) {
             sb.append((char) c);
          }
-        parent.debug("SMTP server response - " + sb.toString());
+        parent.Debug("SMTP server response - " + sb.toString());
         if (sb.toString().indexOf("Message accepted")!=-1){
             i=1; //successfull
         } else{
             throw new IOException("E-Mail not send");
         }
       } catch(IOException e) {
-        parent.debug("Cannot connect to SMTP server. Ping the server to make sure it is running...\n"+e.toString()+e.getMessage());
+        parent.Debug("Cannot connect to SMTP server. Ping the server to make sure it is running...\n"+e.toString()+e.getMessage());
         throw e;
       } finally {
          try {

@@ -34,7 +34,7 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
 
 //</editor-fold>
 
-public class webSMSsend extends MIDlet implements CommandListener {
+public class webSMSsend extends MIDlet implements CommandListener, IGui {
 
     //FOR DEBUG ONLY!! SMS will not be sent if true
     public static boolean simulation = false;
@@ -174,20 +174,30 @@ public class webSMSsend extends MIDlet implements CommandListener {
         }
     }
 
-    private int countSMS(String smsText) {  //ceiled division
+    public int CountSMS(String smsText) {  //ceiled division
         return (smsText.length() >= 0) ? ((smsText.length() + 160 - 1) / 160) : (smsText.length() / 160);
     }
 
+    public void SetWaitScreenText(String Text) {
+        if (waitScreen != null)
+            waitScreen.setText(Text);
+    }
+
     public int sendSMS(String smsRecv, String smsText) throws Exception {
+        String sendername_="";
         if (provider == 0) {
-            return sendSMSO2(smsRecv, smsText);
+            if (SenderMode==1) sendername_ = SenderName;
+            ISmsConnector connector = new O2();
+            connector.Initialize(username, password, GUI);
+            connector.Send(smsRecv, smsText, sendername_, simulation);
+            return 0;
         } else {
             return sendSMSGMX(smsRecv, smsText);
         }
     }
 
     public int sendSMSGMX(String smsRecv, String smsText) throws Exception {
-        debug("SendSMSGMX()");
+        Debug("SendSMSGMX()");
         if (smsRecv.equals("")) {
             waitScreen.setText("kein Empfänger angegeben!");
             Thread.sleep(1500);
@@ -200,11 +210,11 @@ public class webSMSsend extends MIDlet implements CommandListener {
             NetworkHandler connection = new NetworkHandler(username, password, this);
             smsRecv = connection.checkRecv(smsRecv);
 
-            debug("Empfänger: " + smsRecv.substring(0, 6) + "*******");
+            Debug("Empfänger: " + smsRecv.substring(0, 6) + "*******");
 
             String url = "http://www.gmx.net/";
             waitScreen.setText("Login wird geladen...");
-            debug("Login wird geladen...");
+            Debug("Login wird geladen...");
             String localCookie = connection.getCookie();
             String postReq = "AREA=1&EXT=&EXT2=&uinguserid=&dlevel=c&id="
                     + URLEncoder.encode(username) + "&p=" + URLEncoder.encode(password);
@@ -218,11 +228,11 @@ public class webSMSsend extends MIDlet implements CommandListener {
                         throw ex;
                     }
                     waitScreen.setText("Netzwerkfehler, starte erneut...");
-                    debug("Netzwerkfehler: " + ex.toString() + ex.getMessage());
+                    Debug("Netzwerkfehler: " + ex.toString() + ex.getMessage());
                     Thread.sleep(3000);
                 } catch (Exception ex) {
                     waitScreen.setText(ex.getMessage());
-                    debug("Netzwerkfehler: " + ex.toString() + ex.getMessage());
+                    Debug("Netzwerkfehler: " + ex.toString() + ex.getMessage());
                     Thread.sleep(3000);
                     throw ex;
                 }
@@ -231,54 +241,54 @@ public class webSMSsend extends MIDlet implements CommandListener {
 
             if (localCookie.equals(connection.getCookie())) {
                 Exception ex = new Exception("Zugangsdaten falsch!");
-                debug("Zugangsdaten falsch!");
+                Debug("Zugangsdaten falsch!");
                 throw ex;
             }
 
             waitScreen.setText("Login erfolgreich...");
-            debug("Login erfolgreich");
+            Debug("Login erfolgreich");
             url = connection.getRegexStringMatch("<a href=\"(https?://service.gmx.net/de/cgi/g.fcgi/sms\\?cc=subnavi_sms_mms&amp;sid=.*)\">SMS und MMS</a></li>", "<li>", 0, 1);
-            debug("Lade SMS-Manager-URL: " + url);
+            Debug("Lade SMS-Manager-URL: " + url);
             connection.httpHandler("GET", url, "service.gmx.net", "", true);
             //http://service.gmx.net/de/cgi/g.fcgi/sms?cc=subnavi_smsmms&sid=babhdee.1254499929.29227.jr09oorphd.73.ign
             waitScreen.setText("Lade SMS-Manager...");
             String sid = connection.getRegexMatch(url, "sid=(.*)", 1);//connection.getRegexStringMatch("<a href=\"http://service.gmx.net/de/cgi/g.fcgi/sms\\?sid=(.*)\">SMS und MMS</a></li>","<li>",0,1);
-            debug("Cookie: " + connection.getCookie());
+            Debug("Cookie: " + connection.getCookie());
 
             url = "http://service.gmx.net/de/cgi/g.fcgi/sms/manager/popup?sid=" + sid;
-            debug("httpHandler('GET'" + url);
+            Debug("httpHandler('GET'" + url);
             connection.httpHandler("GET", url, "service.gmx.net", "", true);
 
             waitScreen.setText("Senden wird vorbereitet...");
             url = connection.getRegexStringMatch("url = \"(https?://www.sms-manager.info/wsm/login_action.jsp\\?resCustId=.*&password=.*&destination=&customer=GMX)\"", "\n", 0, 1);
             String customID = connection.getRegexMatch(url, "resCustId=(.*)&password", 1);
-            debug("Senden wird vorbereitet: " + url);
+            Debug("Senden wird vorbereitet: " + url);
             connection.httpHandler("GET", url, "www.sms-manager.info", "", true);
 
             try {
                 if (remSMS != -1) {
                     String sendSMSstring = connection.getRegexStringMatch("noch (.*) von (.+)", "/", 0, 1);
                     remSMS = Integer.parseInt(sendSMSstring);
-                    debug("" + remSMS);
+                    Debug("" + remSMS);
                 }
             } catch (Exception ex) {
-                debug("Failed to receive remaining SMS: " + ex.toString() + ex.getMessage());
+                Debug("Failed to receive remaining SMS: " + ex.toString() + ex.getMessage());
             }
 
             waitScreen.setText("SMS wird gesendet...");
             if (connection.getRegexStringMatch("<input type=\"radio\".* (.*)>", "\n", 0, 1).equals("checked")) {
                 postReq = "senderType=number&senderId=&receiver=" + URLEncoder.encode(smsRecv) + "&message="
                         + URLEncoderISO8859.encode(smsText) + "&sendLater=0";
-                debug("Absender Nummer erkannt, postReq: " + postReq);
+                Debug("Absender Nummer erkannt, postReq: " + postReq);
             } else {
                 postReq = "senderType=text&senderId=SMS&receiver=" + URLEncoder.encode(smsRecv) + "&message="
                         + URLEncoderISO8859.encode(smsText) + "&sendLater=0";
-                debug("Absender nicht hinterlegt, postReq: " + postReq);
+                Debug("Absender nicht hinterlegt, postReq: " + postReq);
             }
             url = "http://www.sms-manager.info/wsm/send_sms_action.jsp?wsmCustomerId=" + customID;
             connection.httpHandler("POST", url, "www.sms-manager.info", postReq, true);
-            debug("SMS gesendet");
-            int SMSneeded = countSMS(smsText);
+            Debug("SMS gesendet");
+            int SMSneeded = CountSMS(smsText);
             if (remSMS > 0) {
                 remSMS = remSMS - SMSneeded; //Counting amount of used SMS
             }
@@ -332,175 +342,24 @@ public class webSMSsend extends MIDlet implements CommandListener {
 
         } catch (IOException ex) {
             waitScreen.setText(ex.getMessage());
-            debug(ex.toString() + " " + ex.getMessage());
+            Debug(ex.toString() + " " + ex.getMessage());
             Thread.sleep(7000);
             ex.printStackTrace();
             throw ex;
         } catch (Exception ex) {
             waitScreen.setText(ex.getMessage());
-            debug(ex.toString() + " " + ex.getMessage());
+            Debug(ex.toString() + " " + ex.getMessage());
             Thread.sleep(7000);
             ex.printStackTrace();
             throw ex;
         } catch (Throwable e) {
             waitScreen.setText(e.getMessage());
-            debug(e.toString() + " " + e.getMessage());
+            Debug(e.toString() + " " + e.getMessage());
             Thread.sleep(7000);
             e.printStackTrace();
             throw new Exception("Fehler!");
         }
         return 0;
-    }
-
-    public int sendSMSO2(String smsRecv, String smsText) throws Exception {
-        try {
-            debug("starte sendSMS02()");
-            long totaltime = System.currentTimeMillis();
-            if (smsRecv.equals("")) {
-                waitScreen.setText("kein Empfänger angegeben!");
-                Thread.sleep(1000);
-                throw new Exception("kein Empfänger!");
-            }
-            if (smsText.equals("")) {
-                waitScreen.setText("kein SMS-Text angegeben!");
-                Thread.sleep(1000);
-                throw new Exception("leere SMS!");
-            }
-            waitScreen.setText("Einstellungen werden geladen...");
-            Thread.sleep(500);
-            String url;
-
-            NetworkHandler connection = new NetworkHandler(username, password, this);
-            waitScreen.setText("Login wird geladen...");
-
-            smsRecv = connection.checkRecv(smsRecv);
-            debug("Login wird geladen: smsRecv: " + smsRecv);
-            url = "https://login.o2online.de/loginRegistration/loginAction"
-                    + ".do?_flowId=" + "login&o2_type=asp&o2_label=login/co"
-                    + "mcenter-login&scheme=http&" + "port=80&server=email."
-                    + "o2online.de&url=%2Fssomanager.osp%3FAPIID" + "%3DAUT"
-                    + "H-WEBSSO%26TargetApp%3D%2Fsms_new.osp%3F%26o2_type%3"
-                    + "Durl" + "%26o2_label%3Dweb2sms-o2online";
-            for (int i = 0; i < 2; i++) {
-                try {
-                    connection.httpHandler("GET", url, "login.o2online.de", "", true);
-                    //      continue;
-                    break;
-                } catch (CertificateException ex) {
-                    debug(ex.toString());
-                    if (i == 1) {
-                        throw ex;
-                    }
-                    debug("SSL-Fehler, starte erneut...");
-                    waitScreen.setText("SSL-Fehler, starte erneut...");
-                    Thread.sleep(3000);
-                } catch (IOException ex) {
-                    debug("IOException: " + ex.toString());
-                    if (i == 1) {
-                        throw ex;
-                    }
-                    debug("Netzwerkfehler, starte erneut...");
-                    waitScreen.setText("Netzwerkfehler, starte erneut...");
-                    Thread.sleep(3000);
-                } catch (Exception ex) {
-                    debug("Keine Verbindung möglich :" + ex.toString() + " " + ex.getMessage());
-                    waitScreen.setText("Keine Verbindung möglich :" + ex.toString() + "\n" + ex.getMessage());
-                    Thread.sleep(3000);
-                    throw ex;
-                }
-            }
-
-            String flowExecutionKey;
-
-            flowExecutionKey = connection.getFlowExecutionKey();
-
-            waitScreen.setText("Zugangsdaten werden gesendet...");
-            debug("Zugangsdaten werden gesendet: Flow ExecutionKey: " + flowExecutionKey);
-            url = "https://login.o2online.de/loginRegistration/loginAction.do";
-            connection.httpHandler("POST", url, "login.o2online.de", "_flowExecutionKey="
-                    + URLEncoder.encode(flowExecutionKey)
-                    + "&loginName=" + URLEncoder.encode(connection.getUsername().trim())
-                    + "&password=" + URLEncoder.encode(connection.getPassword().trim())
-                    + "&_eventId=login", false);//False
-
-            waitScreen.setText("Zugangsdaten werden geprüft...");
-            url = "https://email.o2online.de/ssomanager.osp?APIID=AUTH-WEBSSO&"
-                    + "TargetApp=/sms_new.osp%3f&o2_type=url&o2_label=web2sms-o2online";
-            String localCookie = connection.getCookie();
-            connection.httpHandler("GET", url, "email.o2online.de", "", false);//false
-
-            if (localCookie.equals(connection.getCookie())) {
-                Exception ex = new Exception("Zugangsdaten falsch!");
-                throw ex;
-            }
-            waitScreen.setText("Senden wird vorbereitet...");
-            url = "https://email.o2online.de/smscenter_new.osp?Autocompletion=1&MsgContentID=-1";
-            long starttime = System.currentTimeMillis();
-            connection.httpHandler("GET", url, "email.o2online.de", "", true);
-            long httphandlertime = System.currentTimeMillis() - starttime;
-            debug("Fertig mit connection.httpHandler, Dauer: " + httphandlertime + " ms");
-            //System.out.println(connection.getContent()+"\n\n\n");
-            String postRequest = "";
-            waitScreen.setText("SMS wird gesendet...");
-            url = "https://email.o2online.de/smscenter_send.osp";
-
-            //Build SMS send request and get remaining SMS.
-
-            String[] returnValue;
-            starttime = System.currentTimeMillis();
-            returnValue = connection.getSendPostRequest((remSMS != -1), SenderMode); //Sendermode: 0=phone number 1=text
-            debug("Fertig mit getSendPostRequest, Dauer: " + (System.currentTimeMillis() - starttime) + " ms" + "HttpHandler: " + httphandlertime + " ms");
-            postRequest = returnValue[0];
-
-            try {
-                if (remSMS != -1) {
-                    remSMS = Integer.parseInt(returnValue[1]);
-                }
-            } catch (Exception ex) {
-                debug("Failed to receive remaining SMS: " + ex.toString() + ex.getMessage());
-            }
-
-
-            if (SenderMode == SENDERMODE_TEXT) { //Text as Sender
-                postRequest = postRequest + "SMSTo=" + URLEncoder.encode(smsRecv) + "&SMSText="
-                        + URLEncoder.encode(smsText) + "&SMSFrom="
-                        + URLEncoder.encode(SenderName) + "&Frequency=5";
-            } else {
-                postRequest = postRequest + "SMSTo=" + URLEncoder.encode(smsRecv) + "&SMSText="
-                        + URLEncoder.encode(smsText) + "&SMSFrom=&Frequency=5";
-            }
-
-            if (!simulation) {
-                connection.httpHandler("POST", url, "email.o2online.de", postRequest, false);//false
-            }
-            //if (remSMS>0) remSMS--;
-            int SMSneeded = countSMS(smsText);
-            if (remSMS > 0) {
-                remSMS = remSMS - SMSneeded; //Counting amount of used SMS
-            }
-            debug("Die SMS ist Zeichen lang: " + smsText.length());
-            debug("Anzahl SMS: " + SMSneeded);
-            debug("Fertig mit sendSMS02, Dauer: " + (System.currentTimeMillis() - totaltime) + " ms");
-            waitScreen.setText("SMS wurde versandt!");
-            return 0;
-
-        } catch (OutOfMemoryError ex) {
-            waitScreen.setText("Systemspeicher voll!");
-            debug("Systemspeicher voll!" + ex.getMessage());
-            Thread.sleep(7000);
-            throw ex;
-        } catch (Exception ex) {
-            waitScreen.setText(ex.toString() + ": " + ex.getMessage());
-            debug(ex.toString() + ": " + ex.getMessage());
-            ex.printStackTrace();
-            Thread.sleep(7000);
-            throw ex;
-        } catch (Throwable e) {
-            waitScreen.setText("Unklarer Fehler: " + e.toString());
-            debug("Unklarer Fehler: " + e.toString());
-            Thread.sleep(10000);
-            throw new Exception("Fehler!");
-        }
     }
 
     private void SyncSettings() {
@@ -677,7 +536,7 @@ public class webSMSsend extends MIDlet implements CommandListener {
             } else if (command == writeSMS) {//GEN-LINE:|7-commandAction|21|29-preAction
                     recvNB = textField.getString();
                     text = textField3.getString();
-                    debug("Senden pressed");
+                    Debug("Senden pressed");
                     if (!password.equals("")) {
                         switchDisplayable(null, getWaitScreen());//GEN-LINE:|7-commandAction|22|29-postAction
                     } else {
@@ -933,7 +792,7 @@ public class webSMSsend extends MIDlet implements CommandListener {
                     public void itemStateChanged(Item item) {
                         if (item == textField3) {
                             textField3.setLabel("" + textField3.getString().length()
-                                    + " (" + countSMS(textField3.getString()) + " SMS)");
+                                    + " (" + CountSMS(textField3.getString()) + " SMS)");
                             SaveTempSMS();
                         }
                     }
@@ -998,7 +857,7 @@ public class webSMSsend extends MIDlet implements CommandListener {
      */
     public WaitScreen getWaitScreen() {
         if (waitScreen == null) {//GEN-END:|47-getter|0|47-preInit
-                debug("waitscreen erstellen");
+                Debug("waitscreen erstellen");
                 // write pre-init user code here
                 waitScreen = new WaitScreen(getDisplay());//GEN-BEGIN:|47-getter|1|47-postInit
                 waitScreen.setTitle("Sende SMS...");
@@ -2195,15 +2054,17 @@ public class webSMSsend extends MIDlet implements CommandListener {
         SaveTempSMS();
     }
 
-    void debug(String msg) {
+    public void Debug(String debugText) {
         if (debug) {
             try {
                 long currentTime = System.currentTimeMillis() - startTime;
-                getDebug().insert(currentTime + ": " + msg + "\n", getDebug().size());
-                System.out.println(currentTime + ": " + msg);
+                getDebug().insert(currentTime + ": " + debugText + "\n", getDebug().size());
+                System.out.println(currentTime + ": " + debugText);
             } catch (Exception ex) {
                 getDebug().setString("Textbox voll: " + getDebug().size() + " Zeichen --> lösche Inhalt\n");
             }
         }
     }
+
+
 }
