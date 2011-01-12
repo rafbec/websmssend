@@ -49,7 +49,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     boolean debug;
     DebugOutputStream debugOutputStream;
     PrintStream debugPrintStream;
-    int remSMS;
+    int remSMS, maxFreeSMS;
     private long startTime = 0;
     int ActiveAccount; //0=Account1 1=Account2 etc.
     String SenderName; //Name bei Text als Absender
@@ -155,7 +155,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     }
 
     private String getVersion() {
-        return "0.62.7";
+        return "0.62.8";
     }
 
     private String getPasswordField() {
@@ -168,7 +168,8 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
 
     private String getRemSMSText() {
         if (remSMS != -1 & remSMS != -2) {
-            return "verbleibende Frei-SMS: " + remSMS + "\nBenutzerkonto " + (ActiveAccount + 1);
+            return "Verbleibende Frei-SMS: " + remSMS + "/" + maxFreeSMS
+                    + "\nBenutzerkonto " + (ActiveAccount + 1);
         } else {
             return "";
         }
@@ -183,182 +184,23 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             waitScreen.setText(Text);
     }
 
-    public int sendSMS(String smsRecv, String smsText) throws Exception {
-        String sendername_="";
-        if (provider == 0) {
-            if (SenderMode==1) sendername_ = SenderName;
-            ISmsConnector connector = new O2();
-            connector.Initialize(username, password, GUI);
-            connector.Send(smsRecv, smsText, sendername_, simulation);
-            return 0;
-        } else {
-            return sendSMSGMX(smsRecv, smsText);
-        }
+    public void setRemSMS(int remSMS, int maxFreeSMS) {
+        this.remSMS = remSMS;
+        this.maxFreeSMS = maxFreeSMS;
     }
 
-    public int sendSMSGMX(String smsRecv, String smsText) throws Exception {
-        Debug("SendSMSGMX()");
-        if (smsRecv.equals("")) {
-            waitScreen.setText("kein Empfänger angegeben!");
-            Thread.sleep(1500);
-            throw new Exception("kein Empfänger!");
+    public int sendSMS(String smsRecv, String smsText) throws Exception {
+        String sendername_ = "";
+        ISmsConnector connector;
+        if (provider == 0) {
+            if (SenderMode==1)
+                sendername_ = SenderName;
+            connector = new O2();
+        } else {
+            connector = new GMX();
         }
-        try {
-            waitScreen.setText("Einstellungen werden geladen...");
-            Thread.sleep(500);
-
-            NetworkHandler connection = new NetworkHandler(username, password, this);
-            smsRecv = connection.checkRecv(smsRecv);
-
-            Debug("Empfänger: " + smsRecv.substring(0, 6) + "*******");
-
-            String url = "http://www.gmx.net/";
-            waitScreen.setText("Login wird geladen...");
-            Debug("Login wird geladen...");
-            String localCookie = connection.getCookie();
-            String postReq = "AREA=1&EXT=&EXT2=&uinguserid=&dlevel=c&id="
-                    + URLEncoder.encode(username) + "&p=" + URLEncoder.encode(password);
-            for (int i = 0; i < 2; i++) {
-                try {
-                    connection.httpHandler("POST", "http://service.gmx.net/de/cgi/login", "service.gmx.net", postReq, true);
-                    continue;
-
-                } catch (IOException ex) {
-                    if (i == 1) {
-                        throw ex;
-                    }
-                    waitScreen.setText("Netzwerkfehler, starte erneut...");
-                    Debug("Netzwerkfehler: " + ex.toString() + ex.getMessage());
-                    Thread.sleep(3000);
-                } catch (Exception ex) {
-                    waitScreen.setText(ex.getMessage());
-                    Debug("Netzwerkfehler: " + ex.toString() + ex.getMessage());
-                    Thread.sleep(3000);
-                    throw ex;
-                }
-            }
-            //System.out.println(connection.getContent());
-
-            if (localCookie.equals(connection.getCookie())) {
-                Exception ex = new Exception("Zugangsdaten falsch!");
-                Debug("Zugangsdaten falsch!");
-                throw ex;
-            }
-
-            waitScreen.setText("Login erfolgreich...");
-            Debug("Login erfolgreich");
-            url = connection.getRegexStringMatch("<a href=\"(https?://service.gmx.net/de/cgi/g.fcgi/sms\\?cc=subnavi_sms_mms&amp;sid=.*)\">SMS und MMS</a></li>", "<li>", 0, 1);
-            Debug("Lade SMS-Manager-URL: " + url);
-            connection.httpHandler("GET", url, "service.gmx.net", "", true);
-            //http://service.gmx.net/de/cgi/g.fcgi/sms?cc=subnavi_smsmms&sid=babhdee.1254499929.29227.jr09oorphd.73.ign
-            waitScreen.setText("Lade SMS-Manager...");
-            String sid = connection.getRegexMatch(url, "sid=(.*)", 1);//connection.getRegexStringMatch("<a href=\"http://service.gmx.net/de/cgi/g.fcgi/sms\\?sid=(.*)\">SMS und MMS</a></li>","<li>",0,1);
-            Debug("Cookie: " + connection.getCookie());
-
-            url = "http://service.gmx.net/de/cgi/g.fcgi/sms/manager/popup?sid=" + sid;
-            Debug("httpHandler('GET'" + url);
-            connection.httpHandler("GET", url, "service.gmx.net", "", true);
-
-            waitScreen.setText("Senden wird vorbereitet...");
-            url = connection.getRegexStringMatch("url = \"(https?://www.sms-manager.info/wsm/login_action.jsp\\?resCustId=.*&password=.*&destination=&customer=GMX)\"", "\n", 0, 1);
-            String customID = connection.getRegexMatch(url, "resCustId=(.*)&password", 1);
-            Debug("Senden wird vorbereitet: " + url);
-            connection.httpHandler("GET", url, "www.sms-manager.info", "", true);
-
-            try {
-                if (remSMS != -1) {
-                    String sendSMSstring = connection.getRegexStringMatch("noch (.*) von (.+)", "/", 0, 1);
-                    remSMS = Integer.parseInt(sendSMSstring);
-                    Debug("" + remSMS);
-                }
-            } catch (Exception ex) {
-                Debug("Failed to receive remaining SMS: " + ex.toString() + ex.getMessage());
-            }
-
-            waitScreen.setText("SMS wird gesendet...");
-            if (connection.getRegexStringMatch("<input type=\"radio\".* (.*)>", "\n", 0, 1).equals("checked")) {
-                postReq = "senderType=number&senderId=&receiver=" + URLEncoder.encode(smsRecv) + "&message="
-                        + URLEncoderISO8859.encode(smsText) + "&sendLater=0";
-                Debug("Absender Nummer erkannt, postReq: " + postReq);
-            } else {
-                postReq = "senderType=text&senderId=SMS&receiver=" + URLEncoder.encode(smsRecv) + "&message="
-                        + URLEncoderISO8859.encode(smsText) + "&sendLater=0";
-                Debug("Absender nicht hinterlegt, postReq: " + postReq);
-            }
-            url = "http://www.sms-manager.info/wsm/send_sms_action.jsp?wsmCustomerId=" + customID;
-            connection.httpHandler("POST", url, "www.sms-manager.info", postReq, true);
-            Debug("SMS gesendet");
-            int SMSneeded = CountSMS(smsText);
-            if (remSMS > 0) {
-                remSMS = remSMS - SMSneeded; //Counting amount of used SMS
-            }
-
-
-            /*waitScreen.setText("Abmelden...");
-            try{
-            connection.httpHandler("GET", logoutUrl, "service.gmx.net", "", true);
-            }catch (Exception e){
-            waitScreen.setText("Abmeldung fehlgeschlagen!");
-            Thread.sleep(500);
-
-            }*/
-            /*
-             *
-             * SMS-manager is used!
-             *
-             *
-             *
-             *
-            String postCodeName;
-            //System.out.println(connection.getContent());
-            postCodeName="_"+connection.getRegexStringMatch("input type=\"hidden\" name=\"_(.*)\" value=\"_(.*)\" ", "/><", 0, 1);
-            String postCodeValue;
-            postCodeValue="_"+connection.getRegexStringMatch("input type=\"hidden\" name=\"_(.*)\" value=\"_(.*)\" ", "/><", 0, 2);
-            String sid=connection.getRegexMatch(url, ".*sid=(.*)", 1);
-            postReq="sid="+sid+"&fromaddrbk=0&"+postCodeName+"="+postCodeValue+"&number="
-            +smsRecv+"&from="+"none"/*URLEncoder.encode(username)
-             *//*+"&message="+URLEncoder.encode(smsText)
-            +"&buttonSubmit.x=108&buttonSubmit.y=14";
-            //System.out.println(postReq);
-            waitScreen.setText("SMS wird gesendet...");
-            url="http://service.gmx.net/de/cgi/g.fcgi/sms/send";
-            connection.httpHandler("POST", url, "service.gmx.net", postReq, true);
-
-            if (remSMS>0){
-            int sms=Integer.parseInt(connection.getRegexStringMatch(" *\\(Zeichenanzahl: (.*)\\)", '\n'+"", 0, 1));
-            remSMS=remSMS-(sms/160+1);
-            }
-            //System.out.println(connection.getContent());
-            postReq="sid="+sid+"&buttonSubmit=Ja%2C+SMS+senden";
-            url="http://service.gmx.net/de/cgi/g.fcgi/sms/confirm";
-            //connection.httpHandler("POST", url, "service.gmx.net", postReq, true);
-
-
-            url=connection.getRegexStringMatch("a href=\"(http://service.gmx.net/de/cgi/nph-logout\\?CUSTOMERNO=.*)\"", "><", 0, 1);
-            //System.out.println(url);
-            connection.httpHandler("GET", url, "service.gmx.net", "", true);
-            //System.out.println(connection.getContent());
-             */
-
-        } catch (IOException ex) {
-            waitScreen.setText(ex.getMessage());
-            Debug(ex.toString() + " " + ex.getMessage());
-            Thread.sleep(7000);
-            ex.printStackTrace();
-            throw ex;
-        } catch (Exception ex) {
-            waitScreen.setText(ex.getMessage());
-            Debug(ex.toString() + " " + ex.getMessage());
-            Thread.sleep(7000);
-            ex.printStackTrace();
-            throw ex;
-        } catch (Throwable e) {
-            waitScreen.setText(e.getMessage());
-            Debug(e.toString() + " " + e.getMessage());
-            Thread.sleep(7000);
-            e.printStackTrace();
-            throw new Exception("Fehler!");
-        }
+        connector.Initialize(username, password, GUI);
+        connector.Send(smsRecv, smsText, sendername_, simulation);
         return 0;
     }
 
@@ -732,7 +574,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                         ioSettings.saveRemSMS("" + remSMS);
                     }
                     switchDisplayable(getSmsSend(), getMainMenu());//GEN-LINE:|7-commandAction|70|50-postAction
-                    smsSend.setString("SMS gesendet \n" + getRemSMSText());
+                    smsSend.setString("SMS gesendet\n" + getRemSMSText());
                     //Save LastSMS
                     ioSettings.saveLastSMS(textField.getString(), textField3.getString());
                     ClearSMSInput();
@@ -1373,40 +1215,40 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     }
     //</editor-fold>//GEN-END:|219-getter|2|
 
-        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: choiceGroup2 ">//GEN-BEGIN:|220-getter|0|220-preInit
-        /**
-         * Returns an initiliazed instance of choiceGroup2 component.
-         * @return the initialized component instance
-         */
-        public ChoiceGroup getChoiceGroup2() {
-            if (choiceGroup2 == null) {//GEN-END:|220-getter|0|220-preInit
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: choiceGroup2 ">//GEN-BEGIN:|220-getter|0|220-preInit
+    /**
+     * Returns an initiliazed instance of choiceGroup2 component.
+     * @return the initialized component instance
+     */
+    public ChoiceGroup getChoiceGroup2() {
+        if (choiceGroup2 == null) {//GEN-END:|220-getter|0|220-preInit
             // write pre-init user code here
-                choiceGroup2 = new ChoiceGroup("Anbieter", Choice.EXCLUSIVE);//GEN-BEGIN:|220-getter|1|220-postInit
-                choiceGroup2.append("O2-Internet-Pack", null);
-                choiceGroup2.append("GMX", null);
-                choiceGroup2.setSelectedFlags(new boolean[] { false, false });
-                choiceGroup2.setFont(0, getFont());
-                choiceGroup2.setFont(1, getFont());//GEN-END:|220-getter|1|220-postInit
+            choiceGroup2 = new ChoiceGroup("Anbieter", Choice.EXCLUSIVE);//GEN-BEGIN:|220-getter|1|220-postInit
+            choiceGroup2.append("O2-Internet-Pack", null);
+            choiceGroup2.append("GMX", null);
+            choiceGroup2.setSelectedFlags(new boolean[] { false, false });
+            choiceGroup2.setFont(0, getFont());
+            choiceGroup2.setFont(1, getFont());//GEN-END:|220-getter|1|220-postInit
             // write post-init user code here
-            }//GEN-BEGIN:|220-getter|2|
-            return choiceGroup2;
-        }
-        //</editor-fold>//GEN-END:|220-getter|2|
+        }//GEN-BEGIN:|220-getter|2|
+        return choiceGroup2;
+    }
+    //</editor-fold>//GEN-END:|220-getter|2|
 
-        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: textField5 ">//GEN-BEGIN:|226-getter|0|226-preInit
-        /**
-         * Returns an initiliazed instance of textField5 component.
-         * @return the initialized component instance
-         */
-        public TextField getTextField5() {
-            if (textField5 == null) {//GEN-END:|226-getter|0|226-preInit
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: textField5 ">//GEN-BEGIN:|226-getter|0|226-preInit
+    /**
+     * Returns an initiliazed instance of textField5 component.
+     * @return the initialized component instance
+     */
+    public TextField getTextField5() {
+        if (textField5 == null) {//GEN-END:|226-getter|0|226-preInit
             // write pre-init user code here
-                textField5 = new TextField("Benutzername:", null, 32, TextField.ANY);//GEN-LINE:|226-getter|1|226-postInit
+            textField5 = new TextField("Benutzername:", null, 32, TextField.ANY);//GEN-LINE:|226-getter|1|226-postInit
             // write post-init user code here
-            }//GEN-BEGIN:|226-getter|2|
-            return textField5;
-        }
-        //</editor-fold>//GEN-END:|226-getter|2|
+        }//GEN-BEGIN:|226-getter|2|
+        return textField5;
+    }
+    //</editor-fold>//GEN-END:|226-getter|2|
 
         //<editor-fold defaultstate="collapsed" desc=" Generated Getter: choiceGroup3 ">//GEN-BEGIN:|229-getter|0|229-preInit
         /**
@@ -1712,35 +1554,35 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         }
         //</editor-fold>//GEN-END:|287-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: Clear ">//GEN-BEGIN:|293-getter|0|293-preInit
-    /**
-     * Returns an initiliazed instance of Clear component.
-     * @return the initialized component instance
-     */
-    public Command getClear() {
-        if (Clear == null) {//GEN-END:|293-getter|0|293-preInit
+        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: Clear ">//GEN-BEGIN:|293-getter|0|293-preInit
+        /**
+         * Returns an initiliazed instance of Clear component.
+         * @return the initialized component instance
+         */
+        public Command getClear() {
+            if (Clear == null) {//GEN-END:|293-getter|0|293-preInit
             // write pre-init user code here
-            Clear = new Command("Leeren", Command.SCREEN, 0);//GEN-LINE:|293-getter|1|293-postInit
+                Clear = new Command("Leeren", Command.SCREEN, 0);//GEN-LINE:|293-getter|1|293-postInit
             // write post-init user code here
-        }//GEN-BEGIN:|293-getter|2|
-        return Clear;
-    }
-    //</editor-fold>//GEN-END:|293-getter|2|
+            }//GEN-BEGIN:|293-getter|2|
+            return Clear;
+        }
+        //</editor-fold>//GEN-END:|293-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: SendEmail ">//GEN-BEGIN:|297-getter|0|297-preInit
-    /**
-     * Returns an initiliazed instance of SendEmail component.
-     * @return the initialized component instance
-     */
-    public Command getSendEmail() {
-        if (SendEmail == null) {//GEN-END:|297-getter|0|297-preInit
+        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: SendEmail ">//GEN-BEGIN:|297-getter|0|297-preInit
+        /**
+         * Returns an initiliazed instance of SendEmail component.
+         * @return the initialized component instance
+         */
+        public Command getSendEmail() {
+            if (SendEmail == null) {//GEN-END:|297-getter|0|297-preInit
             // write pre-init user code here
-            SendEmail = new Command("E-Mail senden", Command.OK, 0);//GEN-LINE:|297-getter|1|297-postInit
+                SendEmail = new Command("E-Mail senden", Command.OK, 0);//GEN-LINE:|297-getter|1|297-postInit
             // write post-init user code here
-        }//GEN-BEGIN:|297-getter|2|
-        return SendEmail;
-    }
-    //</editor-fold>//GEN-END:|297-getter|2|
+            }//GEN-BEGIN:|297-getter|2|
+            return SendEmail;
+        }
+        //</editor-fold>//GEN-END:|297-getter|2|
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: startEmailClient ">//GEN-BEGIN:|305-getter|0|305-preInit
     /**
@@ -2065,6 +1907,4 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             }
         }
     }
-
-
 }

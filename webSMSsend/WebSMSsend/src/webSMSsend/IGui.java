@@ -12,5 +12,6 @@ package webSMSsend;
 public interface IGui {
 public void Debug(String debugText);
 public void SetWaitScreenText(String Text);
+public void setRemSMS(int remSMS, int maxFreeSMS);
 public int CountSMS(String SmsText);
 }
