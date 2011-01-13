@@ -168,8 +168,14 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
 
     private String getRemSMSText() {
         if (remSMS != -1 & remSMS != -2) {
-            return "Verbleibende Frei-SMS: " + remSMS + "/" + maxFreeSMS
-                    + "\nBenutzerkonto " + (ActiveAccount + 1);
+            if (provider == 0) { //O2
+                return "Verbleibende Frei-SMS: " + remSMS
+                        + "\nBenutzerkonto " + (ActiveAccount + 1);
+            } else if (provider == 1) { //GMX
+                return "Verbleibende Frei-SMS: " + remSMS + "/" + maxFreeSMS
+                        + "\nBenutzerkonto " + (ActiveAccount + 1);
+            }
+            return "";
         } else {
             return "";
         }
