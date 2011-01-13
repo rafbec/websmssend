@@ -209,6 +209,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         password = ioSettings.getPassword();
         provider = ioSettings.getSetup();
         remSMS = ioSettings.getRemSMS();
+        maxFreeSMS = ioSettings.getMaxFreeSMS();
         contentLoad = ioSettings.getContentLoad().equals("true");
         ActiveAccount = Integer.parseInt(ioSettings.getActiveAccount());
         SenderMode = ioSettings.getSenderMode();
@@ -479,11 +480,11 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                     }
                     if (choiceGroup.isSelected(1)) {
                         if (remSMS < 0) {
-                            ioSettings.saveRemSMS("-2");
+                            ioSettings.saveRemSMS("-2","");
                             remSMS = -2;
                         }
                     } else {
-                        ioSettings.saveRemSMS("-1");
+                        ioSettings.saveRemSMS("-1","");
                         remSMS = -1;
                     }
                     if (choiceGroup.isSelected(2)) {
@@ -507,7 +508,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                         ioSettings.saveSetup("" + provider);
                         if (remSMS != -1) {
                             remSMS = -2;
-                            ioSettings.saveRemSMS("-2");
+                            ioSettings.saveRemSMS("" + remSMS,"");
                         }
                     }
                     switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|56|232-postAction
@@ -531,7 +532,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                     }
                     ioSettings.saveOptim("false");
                     ioSettings.saveDebug("false");
-                    ioSettings.saveRemSMS("" + remSMS);
+                    ioSettings.saveRemSMS("" + remSMS, "");
                     ioSettings.saveSetup("" + (provider));
                     ioSettings.saveToRMS(username, password);
                     SyncSettings();
@@ -571,7 +572,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
 
             } else if (command == WaitScreen.SUCCESS_COMMAND) {//GEN-LINE:|7-commandAction|69|50-preAction
                     if (remSMS != -1) {
-                        ioSettings.saveRemSMS("" + remSMS);
+                        ioSettings.saveRemSMS("" + remSMS, "" + maxFreeSMS);
                     }
                     switchDisplayable(getSmsSend(), getMainMenu());//GEN-LINE:|7-commandAction|70|50-postAction
                     smsSend.setString("SMS gesendet\n" + getRemSMSText());
@@ -1250,25 +1251,25 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     }
     //</editor-fold>//GEN-END:|226-getter|2|
 
-        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: choiceGroup3 ">//GEN-BEGIN:|229-getter|0|229-preInit
-        /**
-         * Returns an initiliazed instance of choiceGroup3 component.
-         * @return the initialized component instance
-         */
-        public ChoiceGroup getChoiceGroup3() {
-            if (choiceGroup3 == null) {//GEN-END:|229-getter|0|229-preInit
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: choiceGroup3 ">//GEN-BEGIN:|229-getter|0|229-preInit
+    /**
+     * Returns an initiliazed instance of choiceGroup3 component.
+     * @return the initialized component instance
+     */
+    public ChoiceGroup getChoiceGroup3() {
+        if (choiceGroup3 == null) {//GEN-END:|229-getter|0|229-preInit
             // write pre-init user code here
-                choiceGroup3 = new ChoiceGroup("Bei einem Wechsel: \u00C4ndern der Zugangsdaten nicht vergessen!", Choice.EXCLUSIVE);//GEN-BEGIN:|229-getter|1|229-postInit
-                choiceGroup3.append("O2-Internet-Pack", null);
-                choiceGroup3.append("GMX", null);
-                choiceGroup3.setSelectedFlags(new boolean[] { false, false });
-                choiceGroup3.setFont(0, getFont());
-                choiceGroup3.setFont(1, getFont());//GEN-END:|229-getter|1|229-postInit
+            choiceGroup3 = new ChoiceGroup("Bei einem Wechsel: \u00C4ndern der Zugangsdaten nicht vergessen!", Choice.EXCLUSIVE);//GEN-BEGIN:|229-getter|1|229-postInit
+            choiceGroup3.append("O2-Internet-Pack", null);
+            choiceGroup3.append("GMX", null);
+            choiceGroup3.setSelectedFlags(new boolean[] { false, false });
+            choiceGroup3.setFont(0, getFont());
+            choiceGroup3.setFont(1, getFont());//GEN-END:|229-getter|1|229-postInit
             // write post-init user code here
-            }//GEN-BEGIN:|229-getter|2|
-            return choiceGroup3;
-        }
-        //</editor-fold>//GEN-END:|229-getter|2|
+        }//GEN-BEGIN:|229-getter|2|
+        return choiceGroup3;
+    }
+    //</editor-fold>//GEN-END:|229-getter|2|
 
         //<editor-fold defaultstate="collapsed" desc=" Generated Getter: loginScreenSend ">//GEN-BEGIN:|240-getter|0|240-preInit
         /**
@@ -1584,69 +1585,69 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         }
         //</editor-fold>//GEN-END:|297-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: startEmailClient ">//GEN-BEGIN:|305-getter|0|305-preInit
-    /**
-     * Returns an initiliazed instance of startEmailClient component.
-     * @return the initialized component instance
-     */
-    public Command getStartEmailClient() {
-        if (startEmailClient == null) {//GEN-END:|305-getter|0|305-preInit
+        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: startEmailClient ">//GEN-BEGIN:|305-getter|0|305-preInit
+        /**
+         * Returns an initiliazed instance of startEmailClient component.
+         * @return the initialized component instance
+         */
+        public Command getStartEmailClient() {
+            if (startEmailClient == null) {//GEN-END:|305-getter|0|305-preInit
             // write pre-init user code here
-            startEmailClient = new Command("Senden", Command.OK, 0);//GEN-LINE:|305-getter|1|305-postInit
+                startEmailClient = new Command("Senden", Command.OK, 0);//GEN-LINE:|305-getter|1|305-postInit
             // write post-init user code here
-        }//GEN-BEGIN:|305-getter|2|
-        return startEmailClient;
-    }
-    //</editor-fold>//GEN-END:|305-getter|2|
+            }//GEN-BEGIN:|305-getter|2|
+            return startEmailClient;
+        }
+        //</editor-fold>//GEN-END:|305-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: SendEmailForm ">//GEN-BEGIN:|301-getter|0|301-preInit
-    /**
-     * Returns an initiliazed instance of SendEmailForm component.
-     * @return the initialized component instance
-     */
-    public Form getSendEmailForm() {
-        if (SendEmailForm == null) {//GEN-END:|301-getter|0|301-preInit
+        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: SendEmailForm ">//GEN-BEGIN:|301-getter|0|301-preInit
+        /**
+         * Returns an initiliazed instance of SendEmailForm component.
+         * @return the initialized component instance
+         */
+        public Form getSendEmailForm() {
+            if (SendEmailForm == null) {//GEN-END:|301-getter|0|301-preInit
             // write pre-init user code here
-            SendEmailForm = new Form("Debug Meldungen versenden", new Item[] { getStringItem3(), getTxtCCemail(), getTxtFehlerbeschreibung() });//GEN-BEGIN:|301-getter|1|301-postInit
-            SendEmailForm.addCommand(getStartEmailClient());
-            SendEmailForm.addCommand(getBack());
-            SendEmailForm.setCommandListener(this);//GEN-END:|301-getter|1|301-postInit
+                SendEmailForm = new Form("Debug Meldungen versenden", new Item[] { getStringItem3(), getTxtCCemail(), getTxtFehlerbeschreibung() });//GEN-BEGIN:|301-getter|1|301-postInit
+                SendEmailForm.addCommand(getStartEmailClient());
+                SendEmailForm.addCommand(getBack());
+                SendEmailForm.setCommandListener(this);//GEN-END:|301-getter|1|301-postInit
             // write post-init user code here
-        }//GEN-BEGIN:|301-getter|2|
-        return SendEmailForm;
-    }
-    //</editor-fold>//GEN-END:|301-getter|2|
+            }//GEN-BEGIN:|301-getter|2|
+            return SendEmailForm;
+        }
+        //</editor-fold>//GEN-END:|301-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: stringItem3 ">//GEN-BEGIN:|302-getter|0|302-preInit
-    /**
-     * Returns an initiliazed instance of stringItem3 component.
-     * @return the initialized component instance
-     */
-    public StringItem getStringItem3() {
-        if (stringItem3 == null) {//GEN-END:|302-getter|0|302-preInit
+        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: stringItem3 ">//GEN-BEGIN:|302-getter|0|302-preInit
+        /**
+         * Returns an initiliazed instance of stringItem3 component.
+         * @return the initialized component instance
+         */
+        public StringItem getStringItem3() {
+            if (stringItem3 == null) {//GEN-END:|302-getter|0|302-preInit
             // write pre-init user code here
-            stringItem3 = new StringItem("Hier k\u00F6nnen die Debug-Meldungen mit einer Fehlerbeschreibung an die Entwickler weitergeleitet werden. Zum Antworten und f\u00FCr Nachfragen wird eine E-Mail-Adresse ben\u00F6tigt!", null, Item.PLAIN);//GEN-LINE:|302-getter|1|302-postInit
+                stringItem3 = new StringItem("Hier k\u00F6nnen die Debug-Meldungen mit einer Fehlerbeschreibung an die Entwickler weitergeleitet werden. Zum Antworten und f\u00FCr Nachfragen wird eine E-Mail-Adresse ben\u00F6tigt!", null, Item.PLAIN);//GEN-LINE:|302-getter|1|302-postInit
             // write post-init user code here
-        }//GEN-BEGIN:|302-getter|2|
-        return stringItem3;
-    }
-    //</editor-fold>//GEN-END:|302-getter|2|
+            }//GEN-BEGIN:|302-getter|2|
+            return stringItem3;
+        }
+        //</editor-fold>//GEN-END:|302-getter|2|
     //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtFehlerbeschreibung ">//GEN-BEGIN:|303-getter|0|303-preInit
-    /**
-     * Returns an initiliazed instance of txtFehlerbeschreibung component.
-     * @return the initialized component instance
-     */
-    public TextField getTxtFehlerbeschreibung() {
-        if (txtFehlerbeschreibung == null) {//GEN-END:|303-getter|0|303-preInit
+        //<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtFehlerbeschreibung ">//GEN-BEGIN:|303-getter|0|303-preInit
+        /**
+         * Returns an initiliazed instance of txtFehlerbeschreibung component.
+         * @return the initialized component instance
+         */
+        public TextField getTxtFehlerbeschreibung() {
+            if (txtFehlerbeschreibung == null) {//GEN-END:|303-getter|0|303-preInit
             // write pre-init user code here
-            txtFehlerbeschreibung = new TextField("Fehlerbeschreibung:", null, 1000, TextField.ANY);//GEN-LINE:|303-getter|1|303-postInit
+                txtFehlerbeschreibung = new TextField("Fehlerbeschreibung:", null, 1000, TextField.ANY);//GEN-LINE:|303-getter|1|303-postInit
             // write post-init user code here
-        }//GEN-BEGIN:|303-getter|2|
-        return txtFehlerbeschreibung;
-    }
-    //</editor-fold>//GEN-END:|303-getter|2|
+            }//GEN-BEGIN:|303-getter|2|
+            return txtFehlerbeschreibung;
+        }
+        //</editor-fold>//GEN-END:|303-getter|2|
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtCCemail ">//GEN-BEGIN:|304-getter|0|304-preInit

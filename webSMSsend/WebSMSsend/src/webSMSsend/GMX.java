@@ -3,7 +3,7 @@
  *
     Copyright 2011 schirinowski@gmail.com
     This file is part of WebSMSsend.
-    The following code is based on parts of the LessIsMore package by fkoest.
+    The following code is based on parts of the LessIsMore package by fkoester.
     For details on LessIsMore see <http://wiki.evolvis.org/lessismore/index.php/LessIsMore>
     and <https://evolvis.org/scm/viewvc.php/lessismore/LessIsMore-MIDlet-Prototype/trunk/src/org/evolvis/lessismore/>
 
@@ -93,7 +93,7 @@ public class GMX extends SmsConnector {
 
         senderPhoneNumber = senderPhoneNumberObj.toString();
         customerID = customerIDObj.toString();
-        int remSMS = Integer.parseInt(freeMaxMonth);
+        int remSMS = Integer.parseInt(freeRemainingMonth);
 
         if(customerID == null)
             throw new Exception("No customer ID!");
@@ -113,8 +113,11 @@ public class GMX extends SmsConnector {
         }
 
         int SMSneeded = CountSMS(smsText);
-        if (remSMS > 0) {
+        if (remSMS - SMSneeded > 0) {
             remSMS = remSMS - SMSneeded; //Counting amount of used SMS
+        }
+        else {
+            remSMS = 0;
         }
         gui_.setRemSMS(remSMS, Integer.parseInt(freeMaxMonth));
         System.out.println(result);

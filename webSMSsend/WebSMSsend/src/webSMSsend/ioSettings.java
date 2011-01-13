@@ -50,6 +50,15 @@ public class ioSettings {
             return Integer.parseInt(data);
         }
     }
+    protected static int getMaxFreeSMS(){
+        String data = getData(MakeFieldName("remSMS"),2);
+        if (data.equals("")){
+            return 0;
+        }
+        else{
+            return Integer.parseInt(data);
+        }
+    }
     protected static int getSetup(){
         String data = getData(MakeFieldName("setup"),1);
         if (data.equals("")){
@@ -111,9 +120,9 @@ public class ioSettings {
         String[] data={debug};
         return saveData(MakeFieldName("debug"),data,1);
     }
-    protected static int saveRemSMS(String remSMS){
-        String[] data={remSMS};
-        return saveData(MakeFieldName("remSMS"),data,1);
+    protected static int saveRemSMS(String remSMS, String maxFreeSMS){
+        String[] data={remSMS, maxFreeSMS};
+        return saveData(MakeFieldName("remSMS"),data,2);
     }
     protected static int saveSetup(String provider){
         String[] data={provider};
