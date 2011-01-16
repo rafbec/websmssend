@@ -153,6 +153,7 @@ public class O2 extends SmsConnector {
             gui_.Debug("Anzahl SMS: " + SMSneeded);
             gui_.Debug("Fertig mit sendSMS02, Dauer: " + (System.currentTimeMillis() - totaltime) + " ms");
             gui_.SetWaitScreenText("SMS wurde versandt!");
+            gui_.setRemSMS(remsms_, 0);
 
         } catch (OutOfMemoryError ex) {
             gui_.SetWaitScreenText("Systemspeicher voll!");

@@ -156,7 +156,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     }
 
     private String getVersion() {
-        return "0.62.8";
+        return "0.63.0";
     }
 
     private String getPasswordField() {
