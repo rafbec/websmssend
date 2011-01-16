@@ -58,7 +58,7 @@ public class GMX extends SmsConnector {
             long totaltime = System.currentTimeMillis();
 
             if (smsRecv.equals("")) {
-                throw new Exception("Kein Empfänger angegeben");
+                throw new Exception("Kein Empf\u00E4nger angegeben");
             }
             if (smsText.equals("")) {
                 throw new Exception("Kein SMS-Text angegeben");
@@ -75,9 +75,9 @@ public class GMX extends SmsConnector {
 
             //#if DefaultConfiguration
             // Output only on developer site, message contains sensitive data
-            gui_.Debug("Empfänger-Handynummer: " + smsRecv);
+            gui_.Debug("Empf\u00E4nger-Handynummer: " + smsRecv);
             //#else
-//#             gui_.Debug("Empfänger-Handynummer: " + smsRecv.substring(0, 6) + "*******");
+//#             gui_.Debug("Empf\u00E4nger-Handynummer: " + smsRecv.substring(0, 6) + "*******");
             //#endif
 
             Hashtable params = new Hashtable();
@@ -157,23 +157,23 @@ public class GMX extends SmsConnector {
                 }
                 gui_.Debug("Die SMS ist Zeichen lang: " + smsText.length());
                 gui_.Debug("Anzahl SMS: " + SMSneeded);
-                outputMessage("SMS wurde versandt!");
+                outputMessage("SMS wurde versandt");
             }
 
             gui_.setRemSMS(remSMS, Integer.parseInt(freeMaxMonth));
             
             gui_.Debug("Fertig mit " + getClass().getName() + ".Send(), Dauer: " + (System.currentTimeMillis() - totaltime) + " ms");
         } catch (OutOfMemoryError ex) {
-            outputMessage("SMS nicht gesendet\nSystemspeicher voll" + ex.getMessage());
+            outputMessage("Systemspeicher voll. " + ex.getMessage());
             Thread.sleep(3000);
             throw ex;
         } catch (Exception ex) {
-            outputMessage("SMS nicht gesendet\n" + ex.getMessage());
+            outputMessage("SMS nicht gesendet: " + ex.getMessage());
             ex.printStackTrace();
             Thread.sleep(3000);
             throw ex;
         } catch (Throwable e) {
-            outputMessage("SMS nicht gesendet\nUnklarer Fehler: " + e.toString());
+            outputMessage("Unklarer Fehler: " + e.toString());
             Thread.sleep(10000);
             throw new Exception("Fehler!");
         }
@@ -228,7 +228,7 @@ public class GMX extends SmsConnector {
         //#endif
 
         if (asString.indexOf("<WR TYPE=\"RSPNS\"") < 0) {
-            throw new RuntimeException("Keine gültige Serverantwort empfangen");
+            throw new RuntimeException("Keine g\u00FCltige Serverantwort empfangen");
         }
 
         String line = asString.substring(asString.indexOf("<WR TYPE=\"RSPNS\""), asString.indexOf("</WR>") + 5);

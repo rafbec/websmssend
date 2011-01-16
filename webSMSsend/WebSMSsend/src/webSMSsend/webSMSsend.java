@@ -354,7 +354,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         } else if (displayable == Debug) {
             if (command == Clear) {//GEN-END:|7-commandAction|7|294-preAction
                     // write pre-action user code here
-                getDebug().setString(getDebug().size() +" Zeichen gelöscht");//GEN-LINE:|7-commandAction|8|294-postAction
+                getDebug().setString(getDebug().size() +" Zeichen gel\u00F6scht");//GEN-LINE:|7-commandAction|8|294-postAction
                     // write post-action user code here
             } else if (command == SendEmail) {//GEN-LINE:|7-commandAction|9|298-preAction
                     // write pre-action user code here
@@ -1938,7 +1938,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                 getDebug().insert(currentTime + ": " + debugText + "\n", getDebug().size());
                 System.out.println(currentTime + ": " + debugText);
             } catch (Exception ex) {
-                getDebug().setString("Textbox voll: " + getDebug().size() + " Zeichen --> lösche Inhalt\n");
+                getDebug().setString("Textbox voll: " + getDebug().size() + " Zeichen --> l\u00F6sche Inhalt\n");
             }
         }
     }

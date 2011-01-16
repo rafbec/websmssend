@@ -29,9 +29,9 @@ public class O2 extends SmsConnector {
             gui_.Debug("starte sendSMS02()");
             long totaltime = System.currentTimeMillis();
             if (smsRecv.equals("")) {
-                gui_.SetWaitScreenText("kein Empfänger angegeben!");
+                gui_.SetWaitScreenText("kein Empf\u00E4nger angegeben!");
                 Thread.sleep(1000);
-                throw new Exception("kein Empfänger!");
+                throw new Exception("kein Empf\u00E4nger!");
             }
             if (smsText.equals("")) {
                 gui_.SetWaitScreenText("kein SMS-Text angegeben!");
@@ -75,8 +75,8 @@ public class O2 extends SmsConnector {
                     gui_.SetWaitScreenText("Netzwerkfehler, starte erneut...");
                     Thread.sleep(3000);
                 } catch (Exception ex) {
-                    gui_.Debug("Keine Verbindung möglich :" + ex.toString() + " " + ex.getMessage());
-                    gui_.SetWaitScreenText("Keine Verbindung möglich :" + ex.toString() + "\n" + ex.getMessage());
+                    gui_.Debug("Keine Verbindung m\u00F6glich :" + ex.toString() + " " + ex.getMessage());
+                    gui_.SetWaitScreenText("Keine Verbindung m\u00F6glich :" + ex.toString() + "\n" + ex.getMessage());
                     Thread.sleep(3000);
                     throw ex;
                 }
@@ -95,7 +95,7 @@ public class O2 extends SmsConnector {
                     + "&password=" + URLEncoder.encode(connection.getPassword().trim())
                     + "&_eventId=login", false);//False
 
-            gui_.SetWaitScreenText("Zugangsdaten werden geprüft...");
+            gui_.SetWaitScreenText("Zugangsdaten werden gepr\u00FCft...");
             url = "https://email.o2online.de/ssomanager.osp?APIID=AUTH-WEBSSO&"
                     + "TargetApp=/sms_new.osp%3f&o2_type=url&o2_label=web2sms-o2online";
             String localCookie = connection.getCookie();
