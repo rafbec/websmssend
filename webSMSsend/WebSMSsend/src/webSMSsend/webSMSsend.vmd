@@ -470,7 +470,7 @@
                     <Property name="codeGenerated" typeID="Pboolean" value="Vtrue"/>
                     <Property name="title" typeID="Pjava.lang.String" value="VAbout"/>
                     <Property name="commandListener" typeID="C#CommandListener" value="R7"/>
-                    <Property name="string" typeID="Pjava.lang.String" value="U&quot;© 2009 Max H\u00E4nze\n© 2010 Christian Morlok\n© 2010 RedRocket\nLizenz: GNU GPL 3.0\nVersion: &quot;+getVersion()"/>
+                    <Property name="string" typeID="Pjava.lang.String" value="U&quot;© 2009 Max H\u00E4nze\n© 2010 Christian Morlok\n© 2010-2011 RedRocket\n© 2011 Schirinowski\nLizenz: GNU GPL 3.0\nVersion: &quot;+getVersion()"/>
                     <Property name="timeout" typeID="Pint" value="V-2"/>
                 </Component>
                 <Component componentID="165" typeID="Cjavax.microedition.lcdui.List">
