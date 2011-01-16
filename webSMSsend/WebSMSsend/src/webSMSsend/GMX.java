@@ -53,180 +53,235 @@ public class GMX extends SmsConnector {
     }
 
     public void Send(String smsRecv, String smsText, String senderName, boolean simulation) throws Exception {
-        NetworkHandler connection = new NetworkHandler(username_, password_,gui_);
-        smsRecv = connection.checkRecv(smsRecv);
+        try {
+            gui_.Debug("Starte " + getClass().getName() + ".Send()");
+            long totaltime = System.currentTimeMillis();
 
-        Hashtable params = new Hashtable();
-        params.put("email_address", username_);
-        params.put("password", password_);
+            if (smsRecv.equals("")) {
+                throw new Exception("Kein Empfänger angegeben");
+            }
+            if (smsText.equals("")) {
+                throw new Exception("Kein SMS-Text angegeben");
+            }
+            
+            /** @todo checkRecv() aus NetworkHandler auslagern, hat m. E. nichts mit
+             * der eigentlichen Aufgabe der Datenübertragung übers Netzwerk zu tun.
+             * Der ideale Ort wäre in SmsConnector als statische Methode, da
+             * sowohl GMX als auch O2 diese Methode nutzen
+             */
+            // Format the receiver's phone number if necessary
+            NetworkHandler connection = new NetworkHandler(username_, password_,gui_);
+            smsRecv = connection.checkRecv(smsRecv);
 
-        gui_.SetWaitScreenText("Login wird geladen...");
-        Hashtable result = sendPackage("GET_CUSTOMER", "1.10", params, true);
+            //#if DefaultConfiguration
+            // Output only on developer site, message contains sensitive data
+            gui_.Debug("Empfänger-Handynummer: " + smsRecv);
+            //#else
+//#             gui_.Debug("Empfänger-Handynummer: " + smsRecv.substring(0, 6) + "*******");
+            //#endif
 
-        if(result == null)
-            throw new Exception("Fehler");
+            Hashtable params = new Hashtable();
+            params.put("email_address", username_);
+            params.put("password", password_);
 
-        Object returnCode = result.get("rslt");
+            outputMessage("Login...");
+            Hashtable result = sendPackage("GET_CUSTOMER", "1.10", params, true);
 
-        if(returnCode == null)
-            throw new RuntimeException("Could not parse response");
+            if(result == null)
+                throw new Exception("Login-Fehler");
 
-        if(returnCode.equals("0"))
-                System.out.println("Success!");
-        else if(returnCode.equals("25"))
-            throw new Exception("Invalid E-Mail/password");
-        else
-            System.out.println("Unknown Return code: "+returnCode);
+            Object returnCode = result.get("rslt");
 
-        Object customerIDObj = result.get("customer_id");
-        Object senderPhoneNumberObj = result.get("cell_phone");
-        // Maximum number of free SMS a user can send
-        String freeMaxMonth = result.get("free_max_month").toString();
-        // Number of free SMS remaining the current month
-        String freeRemainingMonth = result.get("free_rem_month").toString();
+            if(returnCode == null)
+                throw new RuntimeException("Konnte Server-Antwort nicht lesen");
 
-        System.out.println("Customer ID: "+customerIDObj);
-        System.out.println("Sender Phone Number: "+senderPhoneNumberObj);
-
-        if(senderPhoneNumberObj == null || freeMaxMonth == null || freeRemainingMonth == null)
-            throw new Exception("Fehler beim Holen");
-
-        senderPhoneNumber = senderPhoneNumberObj.toString();
-        customerID = customerIDObj.toString();
-        int remSMS = Integer.parseInt(freeRemainingMonth);
-
-        if(customerID == null)
-            throw new Exception("No customer ID!");
-
-        if(senderPhoneNumber == null)
-            throw new Exception("No Sender Number!");
-
-        params.put("customer_id", customerID);
-        params.put("receivers", "\\<TBL ROWS=\"1\" COLS=\"3\"\\>receiver_id\\\\;receiver_name\\\\;receiver_number\\\\;1\\\\;Bla\\\\;" + smsRecv + "\\\\;\\</TBL\\>");
-        params.put("sms_text", smsText);
-        params.put("send_option", "sms");
-        params.put("sms_sender", senderPhoneNumber);
-
-        if (!simulation) {
-            gui_.SetWaitScreenText("SMS wird gesendet...");
-            result = sendPackage("SEND_SMS", "1.01", params, false);
-        }
-
-        int SMSneeded = CountSMS(smsText);
-        if (remSMS - SMSneeded > 0) {
-            remSMS = remSMS - SMSneeded; //Counting amount of used SMS
-        }
-        else {
-            remSMS = 0;
-        }
-        gui_.setRemSMS(remSMS, Integer.parseInt(freeMaxMonth));
-        System.out.println(result);
-    }
-
-    private Hashtable sendPackage(String method, String version, Hashtable params, boolean gmxFlag) {
-
-		try {
-
-			HttpConnection connection = (HttpConnection) Connector.open(WEBSERVICE_URL, Connector.READ_WRITE );
-
-			if(connection == null)
-				throw new RuntimeException("Could not establish connection");
-
-			connection.setRequestMethod(HttpConnection.POST);
-			connection.setRequestProperty("Accept", "*/*");
-			connection.setRequestProperty("Content-Type", "text/plain");
-			connection.setRequestProperty("Content-Encoding", "wr-cs");
-			connection.setRequestProperty("User-Agent", "Mozilla/3.0 (compatible)");
-
-
-			Writer writer = new OutputStreamWriter(connection.openOutputStream());
-
-			String request = createRequest(method, version, params, gmxFlag);
-
-			System.out.println("Request :" + request);
-
-			writer.write(request);
-			writer.flush();
-
-			int responseCode = connection.getResponseCode();
-            if (responseCode != HttpConnection.HTTP_OK) {
-                throw new IOException("HTTP response code: " + responseCode);
+            if(returnCode.equals("0")) {
+                outputMessage("Login erfolgreich");
+            }
+            else if(returnCode.equals("25")) {
+                throw new Exception("E-Mail/Freischaltcode falsch");
+            }
+            else {
+                outputMessage("Unbekannte Serverantwort: "+returnCode);
             }
 
-            Reader reader = new InputStreamReader(connection.openInputStream());
+            Object customerIDObj = result.get("customer_id");
+            Object senderPhoneNumberObj = result.get("cell_phone");
+            // Maximum number of free SMS a user can send
+            String freeMaxMonth = result.get("free_max_month").toString();
+            // Number of free SMS remaining the current month
+            String freeRemainingMonth = result.get("free_rem_month").toString();
 
-            int length = (int)connection.getLength();
+            outputMessage("Senden wird vorbereitet...");
+            
+            //#if DefaultConfiguration
+            // Output only on developer site, message contains sensitive data
+            gui_.Debug("Kundennummer: "+customerIDObj);
+            gui_.Debug("Absender-Handynummer: "+senderPhoneNumberObj);
+            //#else
+//#             gui_.Debug("Kundennummer: "+customerIDObj.toString().substring(0, 4) + "*******");
+//#             gui_.Debug("Absender-Handynummer: "+senderPhoneNumberObj.toString().substring(0, 6) + "*******");
+            //#endif
+            
+            if(senderPhoneNumberObj == null || freeMaxMonth == null || freeRemainingMonth == null)
+                throw new Exception("Fehler beim Lesen der Serverantwort");
 
-            System.out.println("Receiving " + length + "bytes...");
+            senderPhoneNumber = senderPhoneNumberObj.toString();
+            customerID = customerIDObj.toString();
+            int remSMS = Integer.parseInt(freeRemainingMonth);
 
-            char[] buffer = new char[length];
+            if(customerID == null)
+                throw new Exception("Keine Kundennummer empfangen");
 
-            reader.read(buffer, 0, length);
+            if(senderPhoneNumber == null)
+                throw new Exception("Keine Absender-Handynummer empfangen");
 
-            String asString = String.valueOf(buffer);
+            params.put("customer_id", customerID);
+            params.put("receivers", "\\<TBL ROWS=\"1\" COLS=\"3\"\\>receiver_id\\\\;receiver_name\\\\;receiver_number\\\\;1\\\\;Bla\\\\;" + smsRecv + "\\\\;\\</TBL\\>");
+            params.put("sms_text", smsText);
+            params.put("send_option", "sms");
+            params.put("sms_sender", senderPhoneNumber);
 
-            System.out.println("Response: " + asString);
+            if (!simulation) {
+                outputMessage("SMS wird gesendet...");
+                result = sendPackage("SEND_SMS", "1.01", params, false);
 
-			if(asString.indexOf("<WR TYPE=\"RSPNS\"") < 0) {
+                //Counting amount of used SMS
+                int SMSneeded = CountSMS(smsText);
+                // Check if there are free SMS left
+                if (remSMS - SMSneeded > 0) {
+                    remSMS = remSMS - SMSneeded;
+                }
+                else {
+                    remSMS = 0;
+                }
+                gui_.Debug("Die SMS ist Zeichen lang: " + smsText.length());
+                gui_.Debug("Anzahl SMS: " + SMSneeded);
+                outputMessage("SMS wurde versandt!");
+            }
 
-				throw new RuntimeException("No valid response!");
-			}
+            gui_.setRemSMS(remSMS, Integer.parseInt(freeMaxMonth));
+            
+            gui_.Debug("Fertig mit " + getClass().getName() + ".Send(), Dauer: " + (System.currentTimeMillis() - totaltime) + " ms");
+        } catch (OutOfMemoryError ex) {
+            outputMessage("SMS nicht gesendet\nSystemspeicher voll" + ex.getMessage());
+            Thread.sleep(3000);
+            throw ex;
+        } catch (Exception ex) {
+            outputMessage("SMS nicht gesendet\n" + ex.getMessage());
+            ex.printStackTrace();
+            Thread.sleep(3000);
+            throw ex;
+        } catch (Throwable e) {
+            outputMessage("SMS nicht gesendet\nUnklarer Fehler: " + e.toString());
+            Thread.sleep(10000);
+            throw new Exception("Fehler!");
+        }
+    }
 
-			String line = asString.substring(asString.indexOf("<WR TYPE=\"RSPNS\""), asString.indexOf("</WR>")+5);
+    private Hashtable sendPackage(String method, String version, Hashtable params, boolean gmxFlag) throws Exception {
+        HttpConnection connection = (HttpConnection) Connector.open(WEBSERVICE_URL, Connector.READ_WRITE);
 
-			writer.close();
-			reader.close();
+        if (connection == null) {
+            throw new RuntimeException("Konnte keine Verbindung zum Server aufbauen");
+        }
 
-			return parseResponse(line);
+        connection.setRequestMethod(HttpConnection.POST);
+        connection.setRequestProperty("Accept", "*/*");
+        connection.setRequestProperty("Content-Type", "text/plain");
+        connection.setRequestProperty("Content-Encoding", "wr-cs");
+        connection.setRequestProperty("User-Agent", "Mozilla/3.0 (compatible)");
 
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+        Writer writer = new OutputStreamWriter(connection.openOutputStream());
 
-			throw new RuntimeException(e.getClass() + ": " + e.getMessage());
-		}
-	}
+        //#if DefaultConfiguration
+        // Output only on developer site, message contains sensitive data
+        gui_.Debug("Erstelle Serveranfrage mit folgenden Parametern: " + params);
+        //#endif
+        
+        String request = createRequest(method, version, params, gmxFlag);
+        //#if DefaultConfiguration
+        // Output only on developer site, message contains sensitive data
+        gui_.Debug("Serveranfrage: " + request);
+        //#endif
 
-	private String createRequest(String method, String version, Hashtable params, boolean gmxFlag) {
+        writer.write(request);
+        writer.flush();
 
-		StringBuffer request = new StringBuffer();
+        int responseCode = connection.getResponseCode();
+        if (responseCode != HttpConnection.HTTP_OK) {
+            throw new IOException("HTTP Antwort-Code: " + responseCode);
+        }
 
-		request.append("<WR TYPE=\"RQST\" NAME=\"" + method + "\" VER=\""+ version +"\" PROGVER=\"1.13.04\">" + (gmxFlag ? "gmx=1\\p" : ""));
+        Reader reader = new InputStreamReader(connection.openInputStream());
 
-		Enumeration paramKeys = params.keys();
+        int length = (int) connection.getLength();
+        gui_.Debug("Empfange " + length + " Bytes...");
 
-		while(paramKeys.hasMoreElements()) {
-			Object key = paramKeys.nextElement();
-			Object value = params.get(key);
-			request.append(key + "=" + value + "\\p");
-		}
+        char[] buffer = new char[length];
+        reader.read(buffer, 0, length);
+        String asString = String.valueOf(buffer);
 
-		request.append("</WR>");
+        //#if DefaultConfiguration
+        // Output only during development, message contains sensitive data
+        gui_.Debug("Serverantwort: " + asString);
+        //#endif
 
-		return request.toString();
-	}
+        if (asString.indexOf("<WR TYPE=\"RSPNS\"") < 0) {
+            throw new RuntimeException("Keine gültige Serverantwort empfangen");
+        }
 
-	private Hashtable parseResponse(String response) {
+        String line = asString.substring(asString.indexOf("<WR TYPE=\"RSPNS\""), asString.indexOf("</WR>") + 5);
 
-		Hashtable result = new Hashtable();
+        writer.close();
+        reader.close();
 
-		String dataString = response.substring(response.indexOf('>')+1, response.indexOf("</WR>"));
+        return parseResponse(line);
+    }
 
-		while(dataString.length() > 0) {
+    private String createRequest(String method, String version, Hashtable params, boolean gmxFlag) {
+        StringBuffer request = new StringBuffer();
+        request.append("<WR TYPE=\"RQST\" NAME=\"" + method + "\" VER=\"" + version + "\" PROGVER=\"1.13.04\">" + (gmxFlag ? "gmx=1\\p" : ""));
 
-			int posKeyEnd = dataString.indexOf("=");
-			int posValueEnd = dataString.indexOf("\\p");
+        Enumeration paramKeys = params.keys();
+        while (paramKeys.hasMoreElements()) {
+            Object key = paramKeys.nextElement();
+            Object value = params.get(key);
+            request.append(key + "=" + value + "\\p");
+        }
 
-			String key = dataString.substring(0, posKeyEnd);
-			String value = dataString.substring(posKeyEnd+1, posValueEnd);
+        request.append("</WR>");
+        return request.toString();
+    }
 
-			result.put(key, value);
+    private Hashtable parseResponse(String response) {
+        Hashtable result = new Hashtable();
+        String dataString = response.substring(response.indexOf('>') + 1, response.indexOf("</WR>"));
 
-			dataString = dataString.substring(posValueEnd+2);
-		}
+        while (dataString.length() > 0) {
+            int posKeyEnd = dataString.indexOf("=");
+            int posValueEnd = dataString.indexOf("\\p");
 
-		return result;
-	}
+            String key = dataString.substring(0, posKeyEnd);
+            String value = dataString.substring(posKeyEnd + 1, posValueEnd);
 
+            result.put(key, value);
 
+            dataString = dataString.substring(posValueEnd + 2);
+        }
+        //#if DefaultConfiguration
+        // Output only during development, message contains sensitive data
+        gui_.Debug("Serverantwort geparsed: " + result);
+        //#endif
+        return result;
+    }
+
+    /**
+     * Shows a message on the phone screen and prints it also to the debug
+     * stream.
+     */
+    private void outputMessage(String msg) {
+        gui_.SetWaitScreenText(msg);
+        gui_.Debug(msg);
+    }
 }
