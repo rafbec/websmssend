@@ -169,14 +169,11 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
 
     private String getRemSMSText() {
         if (remSMS != -1 & remSMS != -2) {
-            if (provider == 0) { //O2
-                return "Verbleibende Frei-SMS: " + remSMS
-                        + "\nBenutzerkonto " + (ActiveAccount + 1);
-            } else if (provider == 1) { //GMX
-                return "Verbleibende Frei-SMS: " + remSMS + "/" + maxFreeSMS
-                        + "\nBenutzerkonto " + (ActiveAccount + 1);
+            StringBuffer remSMStext = new StringBuffer("Verbleibende Frei-SMS: " + remSMS);
+            if (provider == 1) { //GMX specific
+                remSMStext.append("/" + maxFreeSMS);
             }
-            return "";
+            return remSMStext.append("\nBenutzerkonto " + (ActiveAccount + 1)).toString();
         } else {
             return "";
         }
@@ -189,6 +186,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     public void SetWaitScreenText(String Text) {
         if (waitScreen != null)
             waitScreen.setText(Text);
+        /** @todo Soll hier gleichzeitig ein Debug()-Aufruf stattfinden? Würde
+         * aus meiner Sicht Sinn machen und Code in GMX() und O2() reduzieren.
+         */
     }
 
     public void setRemSMS(int remSMS, int maxFreeSMS) {
@@ -856,7 +856,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     public Command getExitCommand2() {
         if (exitCommand2 == null) {//GEN-END:|103-getter|0|103-preInit
                 // write pre-init user code here
-            exitCommand2 = new Command("Beenden", "<null>", Command.EXIT, 0);//GEN-LINE:|103-getter|1|103-postInit
+            exitCommand2 = new Command("Beenden", Command.EXIT, 0);//GEN-LINE:|103-getter|1|103-postInit
                 // write post-init user code here
         }//GEN-BEGIN:|103-getter|2|
         return exitCommand2;
@@ -1189,6 +1189,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         if (stringItem1 == null) {//GEN-END:|215-getter|0|215-preInit
             // write pre-init user code here
             stringItem1 = new StringItem("", "", Item.PLAIN);//GEN-BEGIN:|215-getter|1|215-postInit
+            stringItem1.setLayout(ImageItem.LAYOUT_LEFT | Item.LAYOUT_TOP | Item.LAYOUT_VCENTER | Item.LAYOUT_VSHRINK | Item.LAYOUT_EXPAND);
             stringItem1.setFont(getSmallFont());//GEN-END:|215-getter|1|215-postInit
             stringItem1.setLayout(ImageItem.LAYOUT_LEFT | Item.LAYOUT_TOP | Item.LAYOUT_VCENTER | Item.LAYOUT_VSHRINK);
             // write post-init user code here
