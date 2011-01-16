@@ -44,6 +44,8 @@ import javax.microedition.io.HttpConnection;
 public class GMX extends SmsConnector {
 
     public static final String WEBSERVICE_URL = "http://app5.wr-gmbh.de/WRServer/WRServer.dll/WR";
+    // Maximum SMS length according to http://www.gmx.net/gmx-sms
+    public static final int maxSMSLength = 760;
 
     String customerID;
     String senderPhoneNumber;
@@ -62,6 +64,10 @@ public class GMX extends SmsConnector {
             }
             if (smsText.equals("")) {
                 throw new Exception("Kein SMS-Text angegeben");
+            }
+
+            if (smsText.length() > 760) {
+                throw new Exception("SMS-Text zu lang (max. 760 Zeichen)");
             }
             
             /** @todo checkRecv() aus NetworkHandler auslagern, hat m. E. nichts mit

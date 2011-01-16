@@ -179,8 +179,21 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         }
     }
 
-    public int CountSMS(String smsText) {  //ceiled division
-        return (smsText.length() >= 0) ? ((smsText.length() + 160 - 1) / 160) : (smsText.length() / 160);
+    public int CountSMS(String smsText) {
+        if (provider == 1) { //GMX specific
+            // Algorithm copied from the GMX SMS-Manager web application's
+            // JavaScript definitions on
+            // https://www.sms-manager.info/wsm/sms_center.jsp
+            if (smsText.length() > 160) {
+                return (int) Math.floor((smsText.length() + 151) / 152);
+            } else {
+                return 1;
+            }
+        }
+        else {
+            //ceiled division
+            return (smsText.length() >= 0) ? ((smsText.length() + 160 - 1) / 160) : (smsText.length() / 160);
+        }
     }
 
     public void SetWaitScreenText(String Text) {
@@ -636,20 +649,25 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             MainMenu.addCommand(getEingabeLeeren());
             MainMenu.addCommand(getLastSMS());
             MainMenu.setCommandListener(this);//GEN-END:|14-getter|1|14-postInit
-                // write post-init user code here
-                ItemStateListener listener = new ItemStateListener() {
+            // write post-init user code here
+            ItemStateListener listener = new ItemStateListener() {
 
-                    public void itemStateChanged(Item item) {
-                        if (item == textField3) {
-                            textField3.setLabel("" + textField3.getString().length()
-                                    + " (" + CountSMS(textField3.getString()) + " SMS)");
-                            SaveTempSMS();
+                public void itemStateChanged(Item item) {
+                    if (item == textField3) {
+                        StringBuffer smsInputLabel = new StringBuffer("" + textField3.getString().length()
+                                + " (" + CountSMS(textField3.getString()) + " SMS)");
+                        if (provider == 1 && textField3.size() > GMX.maxSMSLength) { // GMX specific
+                            smsInputLabel.append("\nSMS ist zu lang! Max. ")
+                                    .append(GMX.maxSMSLength)
+                                    .append(" Zeichen!");
                         }
+                        textField3.setLabel(smsInputLabel.toString());
+                        SaveTempSMS();
                     }
-                };
-                MainMenu.setItemStateListener(listener);
-                RetrieveTempSMS();
-
+                }
+            };
+            MainMenu.setItemStateListener(listener);
+            RetrieveTempSMS();
         }//GEN-BEGIN:|14-getter|2|
         return MainMenu;
     }
