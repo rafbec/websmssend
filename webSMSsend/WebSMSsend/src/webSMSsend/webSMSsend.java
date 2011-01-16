@@ -159,6 +159,14 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         return "0.63.0";
     }
 
+    private String getPasswordFieldLabel() {
+        if (provider == 1) { //GMX specific
+            return "SMS-Manager Freischaltcode:";
+        } else {
+            return "Passwort:";
+        }
+    }
+
     private String getPasswordField() {
         if (!ioSettings.getPassword().equals("")) {
             return "****";
@@ -242,7 +250,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     }
 
     private void SaveTempSMS() {
-        ioSettings.saveTempSMS(textField.getString(), textField3.getString());
+        if (getMainMenu() != null) {
+            ioSettings.saveTempSMS(textField.getString(), textField3.getString());
+        }
     }
 
     private void RetrieveTempSMS() {
@@ -523,15 +533,20 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                 switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|54|189-postAction
                     // write post-action user code here
             } else if (command == okCommand) {//GEN-LINE:|7-commandAction|55|232-preAction
-                    if (choiceGroup3.getSelectedIndex() != -1) {
-                        provider = choiceGroup3.getSelectedIndex();
-                        ioSettings.saveSetup("" + provider);
-                        if (remSMS != -1) {
-                            remSMS = -2;
-                            ioSettings.saveRemSMS("" + remSMS,"");
-                        }
+                if (choiceGroup3.getSelectedIndex() != -1) {
+                    provider = choiceGroup3.getSelectedIndex();
+                    ioSettings.saveSetup("" + provider);
+                    if (remSMS != -1) {
+                        remSMS = -2;
+                        ioSettings.saveRemSMS("" + remSMS, "");
                     }
-                    switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|56|232-postAction
+
+                    // Set appropriate password field label
+                    if (getLoginSettings() != null) {
+                        textField2.setLabel(getPasswordFieldLabel());
+                    }
+                }
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|56|232-postAction
 
 
 
@@ -783,7 +798,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     public TextField getTextField2() {
         if (textField2 == null) {//GEN-END:|62-getter|0|62-preInit
                 // write pre-init user code here
-            textField2 = new TextField("Passwort:", " ", 32, TextField.ANY | TextField.PASSWORD);//GEN-BEGIN:|62-getter|1|62-postInit
+            textField2 = new TextField(getPasswordFieldLabel(), " ", 32, TextField.ANY | TextField.PASSWORD);//GEN-BEGIN:|62-getter|1|62-postInit
             textField2.setLayout(ImageItem.LAYOUT_LEFT | Item.LAYOUT_TOP | Item.LAYOUT_VCENTER | Item.LAYOUT_VSHRINK | Item.LAYOUT_EXPAND);//GEN-END:|62-getter|1|62-postInit
                 // write post-init user code here
         }//GEN-BEGIN:|62-getter|2|
@@ -1224,10 +1239,24 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     public Form getSetup() {
         if (setup == null) {//GEN-END:|217-getter|0|217-preInit
             // write pre-init user code here
-            setup = new Form("Setup", new Item[] { getTextField5(), getTextField4(), getChoiceGroup2() });//GEN-BEGIN:|217-getter|1|217-postInit
+            setup = new Form("Setup", new Item[] { getChoiceGroup2(), getTextField5(), getTextField4() });//GEN-BEGIN:|217-getter|1|217-postInit
             setup.addCommand(getOkCommand());
             setup.setCommandListener(this);//GEN-END:|217-getter|1|217-postInit
-            // write post-init user code here
+            ItemStateListener listener = new ItemStateListener() {
+
+                public void itemStateChanged(Item item) {
+                    if (item == choiceGroup2) {
+                        // Change the password field label, if GMX is selected
+                        if (choiceGroup2.isSelected(1)) {
+                            textField4.setLabel("SMS-Manager Freischaltcode:");
+                        }
+                        else {
+                            textField4.setLabel("Passwort:");
+                        }
+                    }
+                }
+            };
+            setup.setItemStateListener(listener);
         }//GEN-BEGIN:|217-getter|2|
         return setup;
     }
@@ -1486,7 +1515,6 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         return choiceGroup4;
     }
     //</editor-fold>//GEN-END:|263-getter|2|
-    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtSenderName ">//GEN-BEGIN:|266-getter|0|266-preInit
     /**
@@ -1551,8 +1579,6 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     }
     //</editor-fold>//GEN-END:|272-getter|2|
 
-
-    //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: BenutzerwahlBestaetigung ">//GEN-BEGIN:|281-getter|0|281-preInit
     /**
      * Returns an initiliazed instance of BenutzerwahlBestaetigung component.
@@ -1665,7 +1691,6 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         return stringItem3;
     }
     //</editor-fold>//GEN-END:|302-getter|2|
-    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtFehlerbeschreibung ">//GEN-BEGIN:|303-getter|0|303-preInit
     /**
@@ -1681,7 +1706,6 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         return txtFehlerbeschreibung;
     }
     //</editor-fold>//GEN-END:|303-getter|2|
-    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtCCemail ">//GEN-BEGIN:|304-getter|0|304-preInit
     /**
@@ -1774,7 +1798,6 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         return EmailNotSent;
     }
     //</editor-fold>//GEN-END:|318-getter|2|
-    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: NoEmail ">//GEN-BEGIN:|321-getter|0|321-preInit
     /**
@@ -1882,10 +1905,8 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     }
     //</editor-fold>//GEN-END:|347-getter|2|
 
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: smallFont ">
     /**
-    //</editor-fold>
-    //</editor-fold>
-
      * //<editor-fold defaultstate="collapsed" desc=" Generated Getter: smallFont ">//GEN-BEGIN:|351-getter|0|351-preInit
      * /**
      * Returns an initiliazed instance of smallFont component.
