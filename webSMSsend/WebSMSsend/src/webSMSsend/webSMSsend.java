@@ -131,10 +131,10 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
      */
     public webSMSsend() throws IOException {
         GUI = this;
-//#if DefaultConfiguration
-        simulation = true;
+//#if Test
+//#         simulation = true;
 //#else
-//#     simulation = false;
+    simulation = false;
 //#endif
     }
 

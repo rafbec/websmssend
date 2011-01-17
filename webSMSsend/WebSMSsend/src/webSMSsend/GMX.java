@@ -79,11 +79,11 @@ public class GMX extends SmsConnector {
             NetworkHandler connection = new NetworkHandler(username_, password_,gui_);
             smsRecv = connection.checkRecv(smsRecv);
 
-            //#if DefaultConfiguration
-            // Output only on developer site, message contains sensitive data
-            gui_.Debug("Empf\u00E4nger-Handynummer: " + smsRecv);
+            //#if Test
+//#             // Output only on developer site, message contains sensitive data
+//#             gui_.Debug("Empf\u00E4nger-Handynummer: " + smsRecv);
             //#else
-//#             gui_.Debug("Empf\u00E4nger-Handynummer: " + smsRecv.substring(0, 6) + "*******");
+            gui_.Debug("Empf\u00E4nger-Handynummer: " + smsRecv.substring(0, 6) + "*******");
             //#endif
 
             Hashtable params = new Hashtable();
@@ -120,13 +120,13 @@ public class GMX extends SmsConnector {
 
             outputMessage("Senden wird vorbereitet...");
             
-            //#if DefaultConfiguration
-            // Output only on developer site, message contains sensitive data
-            gui_.Debug("Kundennummer: "+customerIDObj);
-            gui_.Debug("Absender-Handynummer: "+senderPhoneNumberObj);
+            //#if Test
+//#             // Output only on developer site, message contains sensitive data
+//#             gui_.Debug("Kundennummer: "+customerIDObj);
+//#             gui_.Debug("Absender-Handynummer: "+senderPhoneNumberObj);
             //#else
-//#             gui_.Debug("Kundennummer: "+customerIDObj.toString().substring(0, 4) + "*******");
-//#             gui_.Debug("Absender-Handynummer: "+senderPhoneNumberObj.toString().substring(0, 6) + "*******");
+            gui_.Debug("Kundennummer: "+customerIDObj.toString().substring(0, 4) + "*******");
+            gui_.Debug("Absender-Handynummer: "+senderPhoneNumberObj.toString().substring(0, 6) + "*******");
             //#endif
             
             if(senderPhoneNumberObj == null || freeMaxMonth == null || freeRemainingMonth == null)
@@ -200,15 +200,15 @@ public class GMX extends SmsConnector {
 
         Writer writer = new OutputStreamWriter(connection.openOutputStream());
 
-        //#if DefaultConfiguration
-        // Output only on developer site, message contains sensitive data
-        gui_.Debug("Erstelle Serveranfrage mit folgenden Parametern: " + params);
+        //#if Test
+//#         // Output only on developer site, message contains sensitive data
+//#         gui_.Debug("Erstelle Serveranfrage mit folgenden Parametern: " + params);
         //#endif
         
         String request = createRequest(method, version, params, gmxFlag);
-        //#if DefaultConfiguration
-        // Output only on developer site, message contains sensitive data
-        gui_.Debug("Serveranfrage: " + request);
+        //#if Test
+//#         // Output only on developer site, message contains sensitive data
+//#         gui_.Debug("Serveranfrage: " + request);
         //#endif
 
         writer.write(request);
@@ -228,9 +228,9 @@ public class GMX extends SmsConnector {
         reader.read(buffer, 0, length);
         String asString = String.valueOf(buffer);
 
-        //#if DefaultConfiguration
-        // Output only during development, message contains sensitive data
-        gui_.Debug("Serverantwort: " + asString);
+        //#if Test
+//#         // Output only during development, message contains sensitive data
+//#         gui_.Debug("Serverantwort: " + asString);
         //#endif
 
         if (asString.indexOf("<WR TYPE=\"RSPNS\"") < 0) {
@@ -275,9 +275,9 @@ public class GMX extends SmsConnector {
 
             dataString = dataString.substring(posValueEnd + 2);
         }
-        //#if DefaultConfiguration
-        // Output only during development, message contains sensitive data
-        gui_.Debug("Serverantwort geparsed: " + result);
+        //#if Test
+//#         // Output only during development, message contains sensitive data
+//#         gui_.Debug("Serverantwort geparsed: " + result);
         //#endif
         return result;
     }
