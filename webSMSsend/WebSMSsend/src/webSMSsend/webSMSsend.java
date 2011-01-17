@@ -179,9 +179,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         if (remSMS != -1 & remSMS != -2) {
             StringBuffer remSMStext = new StringBuffer("Verbleibende Frei-SMS: " + remSMS);
             if (provider == 1) { //GMX specific
-                remSMStext.append("/" + maxFreeSMS);
+                remSMStext.append("/").append(maxFreeSMS);
             }
-            return remSMStext.append("\nBenutzerkonto " + (ActiveAccount + 1)).toString();
+            return (remSMStext.append("\nBenutzerkonto ").append(ActiveAccount + 1)).toString();
         } else {
             return "";
         }
@@ -669,8 +669,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
 
                 public void itemStateChanged(Item item) {
                     if (item == textField3) {
-                        StringBuffer smsInputLabel = new StringBuffer("" + textField3.getString().length()
-                                + " (" + CountSMS(textField3.getString()) + " SMS)");
+                        StringBuffer smsInputLabel = new StringBuffer().append(textField3.getString().length())
+                                .append(" (").append(CountSMS(textField3.getString()))
+                                .append(" SMS)");
                         if (provider == 1 && textField3.size() > GMX.maxSMSLength) { // GMX specific
                             smsInputLabel.append("\nSMS ist zu lang! Max. ")
                                     .append(GMX.maxSMSLength)
