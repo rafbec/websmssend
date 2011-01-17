@@ -392,7 +392,8 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             if (command == LastSMS) {//GEN-END:|7-commandAction|13|348-preAction
                 // write pre-action user code here
                 textField.setString("" + ioSettings.getLastSMSto());//GEN-BEGIN:|7-commandAction|14|348-postAction
-                textField3.setString("" + ioSettings.getLastSMStext());//GEN-END:|7-commandAction|14|348-postAction
+                textField3.setString("" + ioSettings.getLastSMStext());
+                textField3.notifyStateChanged();//GEN-END:|7-commandAction|14|348-postAction
                 // write post-action user code here
             } else if (command == eingabeLeeren) {//GEN-LINE:|7-commandAction|15|245-preAction
                     // write pre-action user code here
