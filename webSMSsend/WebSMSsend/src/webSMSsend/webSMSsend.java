@@ -192,9 +192,13 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             // Algorithm copied from the GMX SMS-Manager web application's
             // JavaScript definitions on
             // https://www.sms-manager.info/wsm/sms_center.jsp
-            if (smsText.length() > 160) {
+            if(smsText.length() > 160) {
                 return (int) Math.floor((smsText.length() + 151) / 152);
-            } else {
+            }
+            else if (smsText.length() == 0) {
+                return 0;
+            }
+            else {
                 return 1;
             }
         }
