@@ -256,8 +256,8 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     }
 
     private void RetrieveTempSMS() {
-        textField.setString("" + ioSettings.getTempSMSto());
         textField3.setString("" + ioSettings.getTempSMStext());
+        textField.setString("" + ioSettings.getTempSMSto());
     }
 
     private void ClearSMSInput() {
