@@ -985,7 +985,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     public TextField getTextField() {
         if (textField == null) {//GEN-END:|156-getter|0|156-preInit
             // write pre-init user code here
-            textField = new TextField("Handynummer:", null, 32, TextField.PHONENUMBER);//GEN-BEGIN:|156-getter|1|156-postInit
+            textField = new TextField("Empf\u00E4nger (Handynummer):", null, 32, TextField.PHONENUMBER);//GEN-BEGIN:|156-getter|1|156-postInit
             textField.setLayout(ImageItem.LAYOUT_CENTER | Item.LAYOUT_TOP | Item.LAYOUT_BOTTOM | Item.LAYOUT_VCENTER | Item.LAYOUT_2);
             textField.setPreferredSize(-1, -1);//GEN-END:|156-getter|1|156-postInit
             // write post-init user code here
