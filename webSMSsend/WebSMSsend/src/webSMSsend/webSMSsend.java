@@ -251,11 +251,12 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     private void RetrieveTempSMS() {
         textField3.setString("" + ioSettings.getTempSMStext());
         textField.setString("" + ioSettings.getTempSMSto());
+        textField3.notifyStateChanged();
     }
 
     private void ClearSMSInput() {
         textField3.setString("");
-        textField3.setLabel(MESSAGE_TEXTFIELD_LABEL);
+        textField3.notifyStateChanged();
         textField.setString("");
     }
     //<editor-fold defaultstate="collapsed" desc=" Generated Methods ">//GEN-BEGIN:|methods|0|
@@ -295,11 +296,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     public void startMIDlet() {//GEN-END:|3-startMIDlet|0|3-preAction
             if (ioSettings.getUsername().equals("")) {
                 switchDisplayable(null, getSetup());
-
             } else {
-
-
                 switchDisplayable(null, getMainMenu());
+                textField3.notifyStateChanged();
                 SyncSettings();
                 stringItem1.setText(getRemSMSText());
             }
