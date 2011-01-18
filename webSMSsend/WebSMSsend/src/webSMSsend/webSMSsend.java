@@ -256,7 +256,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
 
     private void ClearSMSInput() {
         textField3.setString("");
-        textField3.notifyStateChanged();
+        textField3.setLabel(MESSAGE_TEXTFIELD_LABEL);
         textField.setString("");
     }
     //<editor-fold defaultstate="collapsed" desc=" Generated Methods ">//GEN-BEGIN:|methods|0|
