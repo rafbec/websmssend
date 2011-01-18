@@ -26,7 +26,7 @@ public class O2 extends SmsConnector {
         }
 
         try {
-            gui_.Debug("starte sendSMS02()");
+            gui_.Debug("starte sendSMS02()" + (simulation ? " SIMULATION!" : ""));
             long totaltime = System.currentTimeMillis();
             if (smsRecv.equals("")) {
                 gui_.SetWaitScreenText("kein Empf\u00E4nger angegeben!");
@@ -46,7 +46,12 @@ public class O2 extends SmsConnector {
             gui_.SetWaitScreenText("Login wird geladen...");
 
             smsRecv = connection.checkRecv(smsRecv);
-            gui_.Debug("Login wird geladen: smsRecv: " + smsRecv);
+            //#if Test
+//#             // Output only on developer site, message contains sensitive data
+//#             gui_.Debug("Empf\u00E4nger-Handynummer: " + smsRecv);
+            //#else
+            gui_.Debug("Empf\u00E4nger-Handynummer: " + smsRecv.substring(0, 6) + "*******");
+            //#endif
             url = "https://login.o2online.de/loginRegistration/loginAction"
                     + ".do?_flowId=" + "login&o2_type=asp&o2_label=login/co"
                     + "mcenter-login&scheme=http&" + "port=80&server=email."
@@ -63,7 +68,6 @@ public class O2 extends SmsConnector {
                     if (i == 1) {
                         throw ex;
                     }
-                    gui_.Debug("SSL-Fehler, starte erneut...");
                     gui_.SetWaitScreenText("SSL-Fehler, starte erneut...");
                     Thread.sleep(3000);
                 } catch (IOException ex) {
@@ -71,11 +75,9 @@ public class O2 extends SmsConnector {
                     if (i == 1) {
                         throw ex;
                     }
-                    gui_.Debug("Netzwerkfehler, starte erneut...");
                     gui_.SetWaitScreenText("Netzwerkfehler, starte erneut...");
                     Thread.sleep(3000);
                 } catch (Exception ex) {
-                    gui_.Debug("Keine Verbindung m\u00F6glich :" + ex.toString() + " " + ex.getMessage());
                     gui_.SetWaitScreenText("Keine Verbindung m\u00F6glich :" + ex.toString() + "\n" + ex.getMessage());
                     Thread.sleep(3000);
                     throw ex;
@@ -87,7 +89,7 @@ public class O2 extends SmsConnector {
             flowExecutionKey = connection.getFlowExecutionKey();
 
             gui_.SetWaitScreenText("Zugangsdaten werden gesendet...");
-            gui_.Debug("Zugangsdaten werden gesendet: Flow ExecutionKey: " + flowExecutionKey);
+            gui_.Debug("Flow ExecutionKey: " + flowExecutionKey);
             url = "https://login.o2online.de/loginRegistration/loginAction.do";
             connection.httpHandler("POST", url, "login.o2online.de", "_flowExecutionKey="
                     + URLEncoder.encode(flowExecutionKey)

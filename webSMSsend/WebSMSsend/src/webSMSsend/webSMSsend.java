@@ -199,10 +199,10 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
 
     public void SetWaitScreenText(String Text) {
         if (waitScreen != null)
+        {
             waitScreen.setText(Text);
-        /** @todo Soll hier gleichzeitig ein Debug()-Aufruf stattfinden? Würde
-         * aus meiner Sicht Sinn machen und Code in GMX() und O2() reduzieren.
-         */
+            GUI.Debug(Text);
+        }
     }
 
     public void setRemSMS(int remSMS, int maxFreeSMS) {
