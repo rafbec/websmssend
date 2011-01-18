@@ -139,10 +139,6 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
 //#endif
     }
 
-    public int sendGMXsms() {
-        return 0;
-    }
-
     private boolean CheckCharacters(String text) {
         boolean correctcharacters = true;
         char[] checkname = text.toCharArray();
@@ -165,14 +161,6 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             return "SMS-Manager Freischaltcode:";
         } else {
             return "Passwort:";
-        }
-    }
-
-    private String getPasswordField() {
-        if (!ioSettings.getPassword().equals("")) {
-            return "****";
-        } else {
-            return "";
         }
     }
 
@@ -205,7 +193,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         }
         else {
             //ceiled division
-            return (smsText.length() >= 0) ? ((smsText.length() + 160 - 1) / 160) : (smsText.length() / 160);
+            return (smsText.length() > 0) ? ((smsText.length() + 160 - 1) / 160) : 0;
         }
     }
 
