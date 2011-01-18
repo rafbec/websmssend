@@ -56,7 +56,7 @@ public class GMX extends SmsConnector {
 
     public void Send(String smsRecv, String smsText, String senderName, boolean simulation) throws Exception {
         try {
-            gui_.Debug("Starte " + getClass().getName() + ".Send()");
+            gui_.Debug("Starte " + getClass().getName() + ".Send()" + (simulation ? " SIMULATION!" : ""));
             long totaltime = System.currentTimeMillis();
 
             if (smsRecv.equals("")) {
@@ -90,7 +90,7 @@ public class GMX extends SmsConnector {
             params.put("email_address", username_);
             params.put("password", password_);
 
-            outputMessage("Login...");
+            gui_.SetWaitScreenText("Login...");
             Hashtable result = sendPackage("GET_CUSTOMER", "1.10", params, true);
 
             if(result == null)
@@ -102,13 +102,13 @@ public class GMX extends SmsConnector {
                 throw new RuntimeException("Konnte Server-Antwort nicht lesen");
 
             if(returnCode.equals("0")) {
-                outputMessage("Login erfolgreich");
+                gui_.SetWaitScreenText("Login erfolgreich");
             }
             else if(returnCode.equals("25")) {
                 throw new Exception("E-Mail/Freischaltcode falsch");
             }
             else {
-                outputMessage("Unbekannte Serverantwort: "+returnCode);
+                gui_.SetWaitScreenText("Unbekannte Serverantwort: " + returnCode);
             }
 
             Object customerIDObj = result.get("customer_id");
@@ -118,7 +118,7 @@ public class GMX extends SmsConnector {
             // Number of free SMS remaining the current month
             String freeRemainingMonth = result.get("free_rem_month").toString();
 
-            outputMessage("Senden wird vorbereitet...");
+            gui_.SetWaitScreenText("Senden wird vorbereitet...");
             
             //#if Test
 //#             // Output only on developer site, message contains sensitive data
@@ -149,7 +149,7 @@ public class GMX extends SmsConnector {
             params.put("sms_sender", senderPhoneNumber);
 
             if (!simulation) {
-                outputMessage("SMS wird gesendet...");
+                gui_.SetWaitScreenText("SMS wird gesendet...");
                 result = sendPackage("SEND_SMS", "1.01", params, false);
 
                 //Counting amount of used SMS
@@ -163,23 +163,23 @@ public class GMX extends SmsConnector {
                 }
                 gui_.Debug("Die SMS ist Zeichen lang: " + smsText.length());
                 gui_.Debug("Anzahl SMS: " + SMSneeded);
-                outputMessage("SMS wurde versandt");
+                gui_.SetWaitScreenText("SMS wurde gesendet");
             }
 
             gui_.setRemSMS(remSMS, Integer.parseInt(freeMaxMonth));
             
             gui_.Debug("Fertig mit " + getClass().getName() + ".Send(), Dauer: " + (System.currentTimeMillis() - totaltime) + " ms");
         } catch (OutOfMemoryError ex) {
-            outputMessage("Systemspeicher voll. " + ex.getMessage());
+            gui_.SetWaitScreenText("Systemspeicher voll. " + ex.getMessage());
             Thread.sleep(3000);
             throw ex;
         } catch (Exception ex) {
-            outputMessage("SMS nicht gesendet: " + ex.getMessage());
+            gui_.SetWaitScreenText("SMS nicht gesendet: " + ex.getMessage());
             ex.printStackTrace();
             Thread.sleep(3000);
             throw ex;
         } catch (Throwable e) {
-            outputMessage("Unklarer Fehler: " + e.toString());
+            gui_.SetWaitScreenText("Unklarer Fehler: " + e.toString());
             Thread.sleep(10000);
             throw new Exception("Fehler!");
         }
@@ -280,14 +280,5 @@ public class GMX extends SmsConnector {
 //#         gui_.Debug("Serverantwort geparsed: " + result);
         //#endif
         return result;
-    }
-
-    /**
-     * Shows a message on the phone screen and prints it also to the debug
-     * stream.
-     */
-    private void outputMessage(String msg) {
-        gui_.SetWaitScreenText(msg);
-        gui_.Debug(msg);
     }
 }
