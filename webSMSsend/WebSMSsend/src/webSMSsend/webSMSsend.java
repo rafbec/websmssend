@@ -36,6 +36,7 @@ import org.netbeans.microedition.util.SimpleCancellableTask;
 
 public class webSMSsend extends MIDlet implements CommandListener, IGui {
 
+    public static final String MESSAGE_TEXTFIELD_LABEL = "0 (0 SMS)";
     //FOR DEBUG ONLY!! SMS will not be sent if true
     public static boolean simulation = false;
     public static final int SENDERMODE_STANDARD = 0;
@@ -266,7 +267,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
 
     private void ClearSMSInput() {
         textField3.setString("");
-        textField3.setLabel("Eingabe");
+        textField3.setLabel(MESSAGE_TEXTFIELD_LABEL);
         textField.setString("");
     }
     //<editor-fold defaultstate="collapsed" desc=" Generated Methods ">//GEN-BEGIN:|methods|0|
@@ -1428,7 +1429,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     public TextField getTextField3() {
         if (textField3 == null) {//GEN-END:|247-getter|0|247-preInit
             // write pre-init user code here
-            textField3 = new TextField("Eingabe:", null, 1800, TextField.ANY);//GEN-BEGIN:|247-getter|1|247-postInit
+            textField3 = new TextField(MESSAGE_TEXTFIELD_LABEL, null, 1800, TextField.ANY);//GEN-BEGIN:|247-getter|1|247-postInit
             textField3.setLayout(ImageItem.LAYOUT_CENTER | Item.LAYOUT_VEXPAND);//GEN-END:|247-getter|1|247-postInit
             // write post-init user code here
         }//GEN-BEGIN:|247-getter|2|
