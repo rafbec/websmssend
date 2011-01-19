@@ -252,12 +252,14 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         textField3.setString("" + ioSettings.getTempSMStext());
         textField.setString("" + ioSettings.getTempSMSto());
         textField3.notifyStateChanged();
+        getDisplay().setCurrentItem(textField);
     }
 
     private void ClearSMSInput() {
         textField3.setString("");
         textField3.setLabel(MESSAGE_TEXTFIELD_LABEL);
         textField.setString("");
+        getDisplay().setCurrentItem(textField);
     }
     //<editor-fold defaultstate="collapsed" desc=" Generated Methods ">//GEN-BEGIN:|methods|0|
     /**
@@ -303,7 +305,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                 stringItem1.setText(getRemSMSText());
             }
 //GEN-LINE:|3-startMIDlet|1|3-postAction
-
+        debugSystemProperties();
     }//GEN-BEGIN:|3-startMIDlet|2|
     //</editor-fold>//GEN-END:|3-startMIDlet|2|
 
@@ -602,11 +604,11 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                     if (remSMS != -1) {
                         ioSettings.saveRemSMS("" + remSMS, "" + maxFreeSMS);
                     }
-                    switchDisplayable(getSmsSend(), getMainMenu());//GEN-LINE:|7-commandAction|70|50-postAction
-                    smsSend.setString("SMS gesendet\n" + getRemSMSText());
                     //Save LastSMS
                     ioSettings.saveLastSMS(textField.getString(), textField3.getString());
                     ClearSMSInput();
+                    switchDisplayable(getSmsSend(), getMainMenu());//GEN-LINE:|7-commandAction|70|50-postAction
+                    smsSend.setString("SMS gesendet\n" + getRemSMSText());
             } else if (command == exitCommand1) {//GEN-LINE:|7-commandAction|71|99-preAction
                     // write pre-action user code here
                 exitMIDlet();//GEN-LINE:|7-commandAction|72|99-postAction
@@ -1973,6 +1975,26 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             } catch (Exception ex) {
                 getDebug().setString("Textbox voll: " + getDebug().size() + " Zeichen --> l\u00F6sche Inhalt\n");
             }
+        }
+    }
+
+    /**
+     * Writes a debug message about the system's properties.
+     */
+    private void debugSystemProperties() {
+        if (debug) {
+            StringBuffer props = new StringBuffer();
+            props.append("System properties\nmicroedition.configuration: ");
+            props.append(System.getProperty("microedition.configuration"));
+            props.append("\nmicroedition.profiles: ");
+            props.append(System.getProperty("microedition.profiles"));
+            props.append("\nmicroedition.platform: ");
+            props.append(System.getProperty("microedition.platform"));
+            props.append("\nmicroedition.encoding: ");
+            props.append(System.getProperty("microedition.encoding"));
+            props.append("\nmicroedition.locale: ");
+            props.append(System.getProperty("microedition.locale"));
+            Debug(props.toString());
         }
     }
 }
