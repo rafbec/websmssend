@@ -154,7 +154,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     }
 
     private String getVersion() {
-        return "0.63.0";
+        return "0.63.1";
     }
 
     private String getPasswordFieldLabel() {
@@ -277,9 +277,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             if (ioSettings.getUsername().equals("")) {
                 switchDisplayable(null, getSetup());
             } else {
+                SyncSettings();
                 switchDisplayable(null, getMainMenu());
                 textField3.notifyStateChanged();
-                SyncSettings();
             }
 //GEN-LINE:|3-startMIDlet|1|3-postAction
         debugSystemProperties();
