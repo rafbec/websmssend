@@ -628,9 +628,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                         StringBuffer smsInputLabel = new StringBuffer().append(textField3.getString().length())
                                 .append(" (").append(SmsConnector.CountSms(textField3.getString()))
                                 .append(" SMS)");
-                        if (provider == 1 && textField3.size() > GMX.MAX_SMS_LENGTH) { // GMX specific
+                        if (textField3.size() > SmsConnector.getMaxSMSLength()) {
                             smsInputLabel.append("\nSMS ist zu lang! Max. ")
-                                    .append(GMX.MAX_SMS_LENGTH)
+                                    .append(SmsConnector.getMaxSMSLength())
                                     .append(" Zeichen!");
                         }
                         textField3.setLabel(smsInputLabel.toString());

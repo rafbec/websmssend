@@ -13,14 +13,16 @@ import webSMSsend.IGui;
  */
 public abstract class SmsConnector implements ISmsConnector {
 
-protected static final String REMAINING_SMS_FIELD = "RemainingSMS";
-protected static final String MAX_FREE_SMS = "MaxFreeSMS";
+    // Maximum SMS length allowed
+    protected static final int MAX_SMS_LENGTH = 1800;
+    protected static final String REMAINING_SMS_FIELD = "RemainingSMS";
+    protected static final String MAX_FREE_SMS = "MaxFreeSMS";
 
-protected IGui gui_ = null;
-protected int remsms_=-1;
-protected int maxfreesms_=-1;
-protected String password_;
-protected String username_;
+    protected IGui gui_ = null;
+    protected int remsms_ = -1;
+    protected int maxfreesms_ = -1;
+    protected String password_;
+    protected String username_;
 
     public void Initialize(String userName, String passWord, IGui Gui) {
         password_ = passWord;
@@ -62,5 +64,9 @@ protected String username_;
             smsRecv = "+49".concat(smsRecv.substring(1));
         }
         return smsRecv;
+    }
+
+    public int getMaxSMSLength() {
+        return MAX_SMS_LENGTH;
     }
 }

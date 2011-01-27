@@ -43,10 +43,14 @@ import javax.microedition.io.HttpConnection;
  * @author Copyright 2011 schirinowski@gmail.com
  */
 public class GMX extends SmsConnector {
-
-    public static final String WEBSERVICE_URL = "http://app5.wr-gmbh.de/WRServer/WRServer.dll/WR";
+    // Default GMX SMS server is app5, according to some internet forum entries,
+    // the default recovery procedure is app{0,...,4,6,7} if app5 is not
+    // available. As app5 has a questionable performance in terms of the delay
+    // between receiving the SMS to be sent and the time it is actually sent,
+    // app5 is not the default server of webSMSsend
+    public static final String WEBSERVICE_URL = "http://app3.wr-gmbh.de/WRServer/WRServer.dll/WR";
     // Maximum SMS length according to http://www.gmx.net/gmx-sms
-    public static final int MAX_SMS_LENGTH = 760;
+    protected static final int MAX_SMS_LENGTH = 760;
 
     String customerID;
     String senderPhoneNumber;
@@ -76,6 +80,10 @@ public class GMX extends SmsConnector {
         return text;
     }
 
+    public int getMaxSMSLength() {
+        return MAX_SMS_LENGTH;
+    }
+
     public int CountSms(String smsText) {
         if (smsText.length() > 160) {
             return (int) Math.floor((smsText.length() + 151) / 152);
@@ -102,7 +110,7 @@ public class GMX extends SmsConnector {
                 throw new Exception("Kein SMS-Text angegeben");
             }
 
-            if (smsText.length() > 760) {
+            if (smsText.length() > getMaxSMSLength()) {
                 throw new Exception("SMS-Text zu lang (max. 760 Zeichen)");
             }
 

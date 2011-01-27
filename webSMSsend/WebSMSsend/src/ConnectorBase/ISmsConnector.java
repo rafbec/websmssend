@@ -12,6 +12,8 @@ import webSMSsend.IGui;
  * @author Copyright 2011 redrocketracoon@googlemail.com
  */
 public interface ISmsConnector {
+// Maximum SMS length
+public int getMaxSMSLength();
 public String getName();
 public int getRemainingSMS();
 public int getMaxFreeSMS();
