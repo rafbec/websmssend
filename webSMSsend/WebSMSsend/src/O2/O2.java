@@ -16,6 +16,9 @@ import javax.microedition.pki.CertificateException;
  */
 public class O2 extends SmsConnector {
 
+    // Maximum SMS length allowed
+    protected static final int MAX_SMS_LENGTH = 1800;
+
     public String getName() {
         return "O2";
     }
@@ -30,6 +33,10 @@ public class O2 extends SmsConnector {
         } else {
             return "Verbleibende Frei-SMS: " + remsms_;
         }
+    }
+
+    public int getMaxSMSLength() {
+        return MAX_SMS_LENGTH;
     }
     
     public int CountSms(String smsText) {

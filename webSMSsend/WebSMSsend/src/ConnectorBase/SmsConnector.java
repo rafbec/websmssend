@@ -13,8 +13,6 @@ import webSMSsend.IGui;
  */
 public abstract class SmsConnector implements ISmsConnector {
 
-    // Maximum SMS length allowed
-    protected static final int MAX_SMS_LENGTH = 1800;
     protected static final String REMAINING_SMS_FIELD = "RemainingSMS";
     protected static final String MAX_FREE_SMS = "MaxFreeSMS";
 
@@ -64,9 +62,5 @@ public abstract class SmsConnector implements ISmsConnector {
             smsRecv = "+49".concat(smsRecv.substring(1));
         }
         return smsRecv;
-    }
-
-    public int getMaxSMSLength() {
-        return MAX_SMS_LENGTH;
     }
 }
