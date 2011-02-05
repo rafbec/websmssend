@@ -21,6 +21,7 @@ public abstract class SmsConnector implements ISmsConnector {
     protected int maxfreesms_ = -1;
     protected String password_;
     protected String username_;
+    protected ConnectorSpecification specs_ = new ConnectorSpecification();
 
     public void Initialize(String userName, String passWord, IGui Gui) {
         password_ = passWord;
@@ -46,6 +47,10 @@ public abstract class SmsConnector implements ISmsConnector {
             maxfreesms_ = -1; //-1 if no value could be restored
         }
         return maxfreesms_;
+    }
+
+    public boolean hasProperty(int Property) {
+        return specs_.HasPropterty(Property);
     }
 
     protected void SaveItem(String ItemName, String Content)

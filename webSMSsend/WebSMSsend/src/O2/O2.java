@@ -7,6 +7,7 @@ package O2;
 
 import ConnectorBase.URLEncoder;
 import ConnectorBase.SmsConnector;
+import ConnectorBase.Properties;
 import java.io.IOException;
 import javax.microedition.pki.CertificateException;
 
@@ -15,6 +16,10 @@ import javax.microedition.pki.CertificateException;
  * @author Copyright 2011 redrocketracoon@googlemail.com
  */
 public class O2 extends SmsConnector {
+
+    public O2() {
+        specs_.AddProperty(new int[] {Properties.CAN_SEND_NAME_AS_SENDER, Properties.CAN_SIMULATE_SEND_PROCESS});
+    }
 
     // Maximum SMS length allowed
     protected static final int MAX_SMS_LENGTH = 1800;

@@ -27,6 +27,7 @@ package webSMSsend;
 import GMX.GMX;
 import O2.O2;
 import ConnectorBase.ISmsConnector;
+import ConnectorBase.Properties;
 import java.io.IOException;
 import java.io.PrintStream;
 import javax.microedition.lcdui.*;
@@ -98,10 +99,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     private Form providerSettings;
     private ChoiceGroup choiceGroup3;
     private Form smsSettings;
-    private StringItem stringItem2;
+    private StringItem StatusLabel;
     private ChoiceGroup choiceGroup4;
     private TextField txtSenderName;
-    private StringItem stringItem;
     private Form setup;
     private ChoiceGroup choiceGroup2;
     private TextField textField4;
@@ -550,8 +550,8 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             } else if (command == okCommand6) {//GEN-LINE:|7-commandAction|65|270-preAction
                     if (txtSenderName.getString().length() < 5 && choiceGroup4.getSelectedIndex() != 0) {
                         //Fehlermeldung "Name zu kurz" falls Text als Absender gewählt
-                        stringItem2.setText("Der Absender muss mindestens 5 Buchstaben lang sein");
-                        stringItem2.setLabel("Achtung!");
+                        StatusLabel.setText("Der Absender muss mindestens 5 Buchstaben lang sein");
+                        StatusLabel.setLabel("Achtung!");
                     } else {
                         // write pre-action user code here
                         CharactersCorrect();//GEN-LINE:|7-commandAction|66|270-postAction
@@ -1014,10 +1014,15 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                 // write pre-action user code here
                 switchDisplayable(null, getSmsSettings());//GEN-LINE:|165-action|6|169-postAction
                 // write post-action user code here
-                choiceGroup4.setSelectedIndex(SenderMode, true);
-                txtSenderName.setString(SenderName);
-                stringItem2.setText("");
-                stringItem2.setLabel("");
+                if (SmsConnector.hasProperty(Properties.CAN_SEND_NAME_AS_SENDER)) {
+                    choiceGroup4.setSelectedIndex(SenderMode, true);
+                    txtSenderName.setString(SenderName);
+                    StatusLabel.setText("");
+                    StatusLabel.setLabel("");
+                }
+                else{
+                    StatusLabel.setText("nicht unterstützt!");
+                }
                 //hier muss die der richtige Eintrag markiert werden und der Absender eingetragen werden
             } else if (__selectedString.equals("Optimierung")) {//GEN-LINE:|165-action|7|170-preAction
                 // write pre-action user code here
@@ -1051,7 +1056,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     public Form getSmsSettings() {
         if (smsSettings == null) {//GEN-END:|177-getter|0|177-preInit
             // write pre-init user code here
-            smsSettings = new Form("SMS Eigenschaften", new Item[] { getStringItem(), getChoiceGroup4(), getTxtSenderName(), getStringItem2() });//GEN-BEGIN:|177-getter|1|177-postInit
+            smsSettings = new Form("SMS Eigenschaften", new Item[] { getChoiceGroup4(), getTxtSenderName(), getStatusLabel() });//GEN-BEGIN:|177-getter|1|177-postInit
             smsSettings.addCommand(getBack());
             smsSettings.addCommand(getOkCommand6());
             smsSettings.setCommandListener(this);//GEN-END:|177-getter|1|177-postInit
@@ -1489,21 +1494,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     }
     //</editor-fold>//GEN-END:|266-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: stringItem ">//GEN-BEGIN:|268-getter|0|268-preInit
-    /**
-     * Returns an initiliazed instance of stringItem component.
-     * @return the initialized component instance
-     */
-    public StringItem getStringItem() {
-        if (stringItem == null) {//GEN-END:|268-getter|0|268-preInit
-            // write pre-init user code here
-            stringItem = new StringItem("", "F\u00FCr O2-Internet-Pack:", Item.PLAIN);//GEN-BEGIN:|268-getter|1|268-postInit
-            stringItem.setLayout(ImageItem.LAYOUT_LEFT | Item.LAYOUT_TOP | Item.LAYOUT_VCENTER | Item.LAYOUT_VSHRINK | Item.LAYOUT_EXPAND);//GEN-END:|268-getter|1|268-postInit
-            // write post-init user code here
-        }//GEN-BEGIN:|268-getter|2|
-        return stringItem;
-    }
-    //</editor-fold>//GEN-END:|268-getter|2|
+
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommand6 ">//GEN-BEGIN:|269-getter|0|269-preInit
     /**
@@ -1519,20 +1510,21 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         return okCommand6;
     }
     //</editor-fold>//GEN-END:|269-getter|2|
+    //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: stringItem2 ">//GEN-BEGIN:|272-getter|0|272-preInit
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: StatusLabel ">//GEN-BEGIN:|272-getter|0|272-preInit
     /**
-     * Returns an initiliazed instance of stringItem2 component.
+     * Returns an initiliazed instance of StatusLabel component.
      * @return the initialized component instance
      */
-    public StringItem getStringItem2() {
-        if (stringItem2 == null) {//GEN-END:|272-getter|0|272-preInit
+    public StringItem getStatusLabel() {
+        if (StatusLabel == null) {//GEN-END:|272-getter|0|272-preInit
             // write pre-init user code here
-            stringItem2 = new StringItem("", "", Item.PLAIN);//GEN-BEGIN:|272-getter|1|272-postInit
-            stringItem2.setLayout(ImageItem.LAYOUT_LEFT | Item.LAYOUT_TOP | Item.LAYOUT_VCENTER);//GEN-END:|272-getter|1|272-postInit
+            StatusLabel = new StringItem("", "", Item.PLAIN);//GEN-BEGIN:|272-getter|1|272-postInit
+            StatusLabel.setLayout(ImageItem.LAYOUT_CENTER | Item.LAYOUT_BOTTOM | Item.LAYOUT_VCENTER);//GEN-END:|272-getter|1|272-postInit
             // write post-init user code here
         }//GEN-BEGIN:|272-getter|2|
-        return stringItem2;
+        return StatusLabel;
     }
     //</editor-fold>//GEN-END:|272-getter|2|
 

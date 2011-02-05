@@ -27,6 +27,7 @@
 package GMX;
 
 import ConnectorBase.SmsConnector;
+import ConnectorBase.Properties;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -54,6 +55,10 @@ public class GMX extends SmsConnector {
 
     String customerID;
     String senderPhoneNumber;
+
+    public GMX(){
+        specs_.AddProperty(new int[]{Properties.CAN_SIMULATE_SEND_PROCESS});
+    }
 
     public String getName() {
         return "GMX";

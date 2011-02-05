@@ -19,6 +19,12 @@ public int getRemainingSMS();
 public int getMaxFreeSMS();
 public String getRemSmsText();
 public String getPasswordFieldLabel();
+/**
+ * checks if a connector has one of the Properties specified in ConnectorBase.Properties
+ * @param Property
+ * @return true or false
+ */
+public boolean hasProperty(int Property) ;
 public void Initialize(String userName, String passWord, IGui Gui);
 public void Send(String smsRecv, String smsText)throws Exception;
 public void Send(String smsRecv, String smsText, String senderName, boolean simulation)throws Exception;
