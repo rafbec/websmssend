@@ -28,6 +28,7 @@ package GMX;
 
 import ConnectorBase.SmsConnector;
 import ConnectorBase.Properties;
+import ConnectorBase.SmsData;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -57,7 +58,7 @@ public class GMX extends SmsConnector {
     String senderPhoneNumber;
 
     public GMX(){
-        specs_.AddProperty(new int[]{Properties.CAN_SIMULATE_SEND_PROCESS});
+        specs.AddProperty(new int[]{Properties.CAN_SIMULATE_SEND_PROCESS});
     }
 
     public String getName() {
@@ -74,13 +75,13 @@ public class GMX extends SmsConnector {
         if (getRemainingSMS() == -1 ) {
             text += "?";
         } else {
-            text += remsms_;
+            text += remsms;
         }
 
         if (this.getMaxFreeSMS() == -1 ) {
             text += "/?";
         } else {
-            text += "/" + maxfreesms_;
+            text += "/" + maxfreesms;
         }
         return text;
     }
@@ -99,40 +100,37 @@ public class GMX extends SmsConnector {
         }
     }
 
-    public void Send(String smsRecv, String smsText) throws Exception {
-        Send(smsRecv, smsText, "" , false);
-    }
-
-    public void Send(String smsRecv, String smsText, String senderName, boolean simulation) throws Exception {
+    public void Send(SmsData Sms) throws Exception {
         try {
-            gui_.Debug("Starte " + getClass().getName() + ".Send()" + (simulation ? " SIMULATION!" : ""));
+            gui = Sms.getGui();
+            gui.Debug("Starte " + getClass().getName() + ".Send()" + (Sms.isSimualtion() ? " SIMULATION!" : ""));
             long totaltime = System.currentTimeMillis();
 
-            if (smsRecv.equals("")) {
+            if (Sms.getSmsrecv().equals("")) {
                 throw new Exception("Kein Empf\u00E4nger angegeben");
             }
-            if (smsText.equals("")) {
+            if (Sms.getSmstext().equals("")) {
                 throw new Exception("Kein SMS-Text angegeben");
             }
 
-            if (smsText.length() > getMaxSMSLength()) {
+            if (Sms.getSmstext().length() > getMaxSMSLength()) {
                 throw new Exception("SMS-Text zu lang (max. 760 Zeichen)");
             }
 
-            smsRecv = checkRecv(smsRecv);
+            String smsRecv = checkRecv(Sms.getSmsrecv());
 
             //#if Test
 //#             // Output only on developer site, message contains sensitive data
-//#             gui_.Debug("Empf\u00E4nger-Handynummer: " + smsRecv);
+//#             gui.Debug("Empf\u00E4nger-Handynummer: " + smsRecv);
             //#else
             gui_.Debug("Empf\u00E4nger-Handynummer: " + smsRecv.substring(0, 6) + "*******");
             //#endif
 
             Hashtable params = new Hashtable();
-            params.put("email_address", username_);
-            params.put("password", password_);
+            params.put("email_address", Sms.getUsername());
+            params.put("password", Sms.getPassword());
 
-            gui_.SetWaitScreenText("Login...");
+            gui.SetWaitScreenText("Login...");
             Hashtable result = sendPackage("GET_CUSTOMER", "1.10", params, true);
 
             if(result == null)
@@ -144,13 +142,13 @@ public class GMX extends SmsConnector {
                 throw new RuntimeException("Konnte Server-Antwort nicht lesen");
 
             if(returnCode.equals("0")) {
-                gui_.SetWaitScreenText("Login erfolgreich");
+                gui.SetWaitScreenText("Login erfolgreich");
             }
             else if(returnCode.equals("25")) {
                 throw new Exception("E-Mail/Freischaltcode falsch");
             }
             else {
-                gui_.SetWaitScreenText("Unbekannte Serverantwort: " + returnCode);
+                gui.SetWaitScreenText("Unbekannte Serverantwort: " + returnCode);
             }
 
             Object customerIDObj = result.get("customer_id");
@@ -160,12 +158,12 @@ public class GMX extends SmsConnector {
             // Number of free SMS remaining the current month
             String freeRemainingMonth = result.get("free_rem_month").toString();
 
-            gui_.SetWaitScreenText("Senden wird vorbereitet...");
+            gui.SetWaitScreenText("Senden wird vorbereitet...");
             
             //#if Test
 //#             // Output only on developer site, message contains sensitive data
-//#             gui_.Debug("Kundennummer: "+customerIDObj);
-//#             gui_.Debug("Absender-Handynummer: "+senderPhoneNumberObj);
+//#             gui.Debug("Kundennummer: "+customerIDObj);
+//#             gui.Debug("Absender-Handynummer: "+senderPhoneNumberObj);
             //#else
             gui_.Debug("Kundennummer: "+customerIDObj.toString().substring(0, 4) + "*******");
             gui_.Debug("Absender-Handynummer: "+senderPhoneNumberObj.toString().substring(0, 6) + "*******");
@@ -186,16 +184,16 @@ public class GMX extends SmsConnector {
 
             params.put("customer_id", customerID);
             params.put("receivers", "\\<TBL ROWS=\"1\" COLS=\"3\"\\>receiver_id\\\\;receiver_name\\\\;receiver_number\\\\;1\\\\;Bla\\\\;" + smsRecv + "\\\\;\\</TBL\\>");
-            params.put("sms_text", smsText);
+            params.put("sms_text", Sms.getSmstext());
             params.put("send_option", "sms");
             params.put("sms_sender", senderPhoneNumber);
 
-            if (!simulation) {
-                gui_.SetWaitScreenText("SMS wird gesendet...");
+            if (!Sms.isSimualtion()) {
+                gui.SetWaitScreenText("SMS wird gesendet...");
                 result = sendPackage("SEND_SMS", "1.01", params, false);
 
                 //Counting amount of used SMS
-                int SMSneeded = CountSms(smsText);
+                int SMSneeded = CountSms(Sms.getSmstext());
                 // Check if there are free SMS left
                 if (remSMS - SMSneeded > 0) {
                     remSMS = remSMS - SMSneeded;
@@ -203,31 +201,31 @@ public class GMX extends SmsConnector {
                 else {
                     remSMS = 0;
                 }
-                gui_.Debug("Die SMS ist Zeichen lang: " + smsText.length());
-                gui_.Debug("Anzahl SMS: " + SMSneeded);
-                gui_.SetWaitScreenText("SMS wurde gesendet");
+                gui.Debug("Die SMS ist Zeichen lang: " + Sms.getSmstext().length());
+                gui.Debug("Anzahl SMS: " + SMSneeded);
+                gui.SetWaitScreenText("SMS wurde gesendet");
             }
 
-            remsms_ = remSMS;
+            remsms = remSMS;
             try {
-                maxfreesms_ = Integer.parseInt(freeMaxMonth);
+                maxfreesms = Integer.parseInt(freeMaxMonth);
             } catch (Exception ex) {
-                maxfreesms_ = 0;
+                maxfreesms = 0;
             }
-            SaveItem(REMAINING_SMS_FIELD, remsms_+"");
-            SaveItem(MAX_FREE_SMS, maxfreesms_+"");
-            gui_.Debug("Fertig mit " + getClass().getName() + ".Send(), Dauer: " + (System.currentTimeMillis() - totaltime) + " ms");
+            SaveItem(REMAINING_SMS_FIELD, remsms+"");
+            SaveItem(MAX_FREE_SMS, maxfreesms+"");
+            gui.Debug("Fertig mit " + getClass().getName() + ".Send(), Dauer: " + (System.currentTimeMillis() - totaltime) + " ms");
         } catch (OutOfMemoryError ex) {
-            gui_.SetWaitScreenText("Systemspeicher voll. " + ex.getMessage());
+            gui.SetWaitScreenText("Systemspeicher voll. " + ex.getMessage());
             Thread.sleep(3000);
             throw ex;
         } catch (Exception ex) {
-            gui_.SetWaitScreenText("SMS nicht gesendet: " + ex.getMessage());
+            gui.SetWaitScreenText("SMS nicht gesendet: " + ex.getMessage());
             ex.printStackTrace();
             Thread.sleep(3000);
             throw ex;
         } catch (Throwable e) {
-            gui_.SetWaitScreenText("Unklarer Fehler: " + e.toString());
+            gui.SetWaitScreenText("Unklarer Fehler: " + e.toString());
             Thread.sleep(10000);
             throw new Exception("Fehler!");
         }
@@ -250,13 +248,13 @@ public class GMX extends SmsConnector {
 
         //#if Test
 //#         // Output only on developer site, message contains sensitive data
-//#         gui_.Debug("Erstelle Serveranfrage mit folgenden Parametern: " + params);
+//#         gui.Debug("Erstelle Serveranfrage mit folgenden Parametern: " + params);
         //#endif
         
         String request = createRequest(method, version, params, gmxFlag);
         //#if Test
 //#         // Output only on developer site, message contains sensitive data
-//#         gui_.Debug("Serveranfrage: " + request);
+//#         gui.Debug("Serveranfrage: " + request);
         //#endif
 
         writer.write(request);
@@ -270,7 +268,7 @@ public class GMX extends SmsConnector {
         Reader reader = new InputStreamReader(connection.openInputStream());
 
         int length = (int) connection.getLength();
-        gui_.Debug("Empfange " + length + " Bytes...");
+        gui.Debug("Empfange " + length + " Bytes...");
 
         char[] buffer = new char[length];
         reader.read(buffer, 0, length);
@@ -278,7 +276,7 @@ public class GMX extends SmsConnector {
 
         //#if Test
 //#         // Output only during development, message contains sensitive data
-//#         gui_.Debug("Serverantwort: " + asString);
+//#         gui.Debug("Serverantwort: " + asString);
         //#endif
 
         if (asString.indexOf("<WR TYPE=\"RSPNS\"") < 0) {
@@ -325,7 +323,7 @@ public class GMX extends SmsConnector {
         }
         //#if Test
 //#         // Output only during development, message contains sensitive data
-//#         gui_.Debug("Serverantwort geparsed: " + result);
+//#         gui.Debug("Serverantwort geparsed: " + result);
         //#endif
         return result;
     }

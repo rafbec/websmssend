@@ -25,8 +25,6 @@ public String getPasswordFieldLabel();
  * @return true or false
  */
 public boolean hasProperty(int Property) ;
-public void Initialize(String userName, String passWord, IGui Gui);
-public void Send(String smsRecv, String smsText)throws Exception;
-public void Send(String smsRecv, String smsText, String senderName, boolean simulation)throws Exception;
+public abstract void Send(SmsData Sms)throws Exception;
 public int CountSms(String smsText);
 }

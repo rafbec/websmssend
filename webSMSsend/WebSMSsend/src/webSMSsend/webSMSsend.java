@@ -28,6 +28,7 @@ import GMX.GMX;
 import O2.O2;
 import ConnectorBase.ISmsConnector;
 import ConnectorBase.Properties;
+import ConnectorBase.SmsData;
 import java.io.IOException;
 import java.io.PrintStream;
 import javax.microedition.lcdui.*;
@@ -183,14 +184,13 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     }
 
     public int sendSMS(String smsRecv, String smsText) throws Exception {
-        String sendername_ = "";
+        String sendername = "";
 
         if (SenderMode == 1) { //SenderMode = 1 TEXT as Sender
-            sendername_ = SenderName;
+            sendername = SenderName;
         }
 
-        SmsConnector.Initialize(username, password, GUI);
-        SmsConnector.Send(smsRecv, smsText, sendername_, simulation);
+        SmsConnector.Send(new SmsData(username, password, this, smsRecv, smsText, sendername, simulation));
         return 0;
     }
 
@@ -213,7 +213,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         } else {
             SmsConnector = new GMX();
         }
-        SmsConnector.Initialize(username, password, GUI);
+
         if (stringItem1 != null)
             stringItem1.setText(getRemSMSText());
 

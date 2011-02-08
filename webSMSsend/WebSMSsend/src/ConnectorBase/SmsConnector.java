@@ -16,46 +16,38 @@ public abstract class SmsConnector implements ISmsConnector {
     protected static final String REMAINING_SMS_FIELD = "RemainingSMS";
     protected static final String MAX_FREE_SMS = "MaxFreeSMS";
 
-    protected IGui gui_ = null;
-    protected int remsms_ = -1;
-    protected int maxfreesms_ = -1;
-    protected String password_;
-    protected String username_;
-    protected ConnectorSpecification specs_ = new ConnectorSpecification();
-
-    public void Initialize(String userName, String passWord, IGui Gui) {
-        password_ = passWord;
-        username_ = userName;
-        gui_ = Gui;
-    }
+    protected IGui gui = null;
+    protected int remsms = -1;
+    protected int maxfreesms = -1;
+    protected ConnectorSpecification specs = new ConnectorSpecification();
 
     public int getRemainingSMS() {
         try {
-            String remsms = gui_.GetItem(getName() + REMAINING_SMS_FIELD);
-            remsms_ = Integer.parseInt(remsms);
+            String remsms = gui.GetItem(getName() + REMAINING_SMS_FIELD);
+            this.remsms = Integer.parseInt(remsms);
         } catch (Exception ex) {
-            remsms_=-1; //-1 if no value could be restored
+            remsms=-1; //-1 if no value could be restored
         }
-        return remsms_;
+        return remsms;
     }
 
     public int getMaxFreeSMS() {
         try {
-            String maxfreesms = gui_.GetItem(getName() + MAX_FREE_SMS);
-            maxfreesms_ = Integer.parseInt(maxfreesms);
+            String maxfreesms = gui.GetItem(getName() + MAX_FREE_SMS);
+            this.maxfreesms = Integer.parseInt(maxfreesms);
         } catch (Exception ex) {
-            maxfreesms_ = -1; //-1 if no value could be restored
+            maxfreesms = -1; //-1 if no value could be restored
         }
-        return maxfreesms_;
+        return maxfreesms;
     }
 
     public boolean hasProperty(int Property) {
-        return specs_.HasPropterty(Property);
+        return specs.HasPropterty(Property);
     }
 
     protected void SaveItem(String ItemName, String Content)
     {
-        gui_.SaveItem(getName() + ItemName, Content); //saves Field with Connectorname
+        gui.SaveItem(getName() + ItemName, Content); //saves Field with Connectorname
     }
 
     protected String checkRecv(String smsRecv) {
