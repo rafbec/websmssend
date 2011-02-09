@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package O2;
 
 import ConnectorBase.URLEncoder;
@@ -18,10 +17,12 @@ import javax.microedition.pki.CertificateException;
  */
 public class O2 extends SmsConnector {
 
-    public O2() {
-        specs.AddProperty(new int[] {Properties.CAN_SEND_NAME_AS_SENDER, Properties.CAN_SIMULATE_SEND_PROCESS});
-    }
+    private ResumeData resumeData = null;
 
+    public O2() {
+        specs.AddProperty(new int[]{Properties.CAN_SEND_NAME_AS_SENDER, Properties.CAN_SIMULATE_SEND_PROCESS
+                , Properties.CAN_ABORT_SEND_PROCESS_WHEN_NO_FREE_SMS_AVAILABLE});
+    }
     // Maximum SMS length allowed
     protected static final int MAX_SMS_LENGTH = 1800;
 
@@ -44,21 +45,24 @@ public class O2 extends SmsConnector {
     public int getMaxSMSLength() {
         return MAX_SMS_LENGTH;
     }
-    
+
     public int CountSms(String smsText) {
         return (smsText.length() > 0) ? ((smsText.length() + 160 - 1) / 160) : 0;         //ceiled division
     }
-   
-    public void Send(SmsData Sms) throws Exception {
-        int SenderMode=0; //0=Phonenumber, 1=Text( SenderName )
+
+    public int send(SmsData Sms) throws Exception {
+        int SenderMode = 0; //0=Phonenumber, 1=Text( SenderName )
+        boolean failedToGetRemSms = false;
         gui = Sms.getGui();
 
-        if (Sms.getSendername().length() >=5){
+        if (Sms.getSendername().length() >= 5) {
             SenderMode = 1;
         }
 
         try {
             gui.Debug("starte sendSMS02()" + (Sms.isSimualtion() ? " SIMULATION!" : ""));
+            gui.Debug("Die SMS ist Zeichen lang: " + Sms.getSmstext().length());
+            gui.Debug("Anzahl SMS: " + CountSms(Sms.getSmstext()));
             long totaltime = System.currentTimeMillis();
             if (Sms.getSmsrecv().equals("")) {
                 gui.SetWaitScreenText("kein Empf\u00E4nger angegeben!");
@@ -74,7 +78,7 @@ public class O2 extends SmsConnector {
             Thread.sleep(500);
             String url;
 
-            NetworkHandler connection = new NetworkHandler(Sms.getUsername(), Sms.getPassword(),gui);
+            NetworkHandler connection = new NetworkHandler(Sms.getUsername(), Sms.getPassword(), gui);
             gui.SetWaitScreenText("Login wird geladen...");
 
             String smsRecv = checkRecv(Sms.getSmsrecv());
@@ -82,7 +86,7 @@ public class O2 extends SmsConnector {
 //#             // Output only on developer site, message contains sensitive data
 //#             gui.Debug("Empf\u00E4nger-Handynummer: " + smsRecv);
             //#else
-            gui_.Debug("Empf\u00E4nger-Handynummer: " + smsRecv.substring(0, 6) + "*******");
+            gui.Debug("Empf\u00E4nger-Handynummer: " + smsRecv.substring(0, 6) + "*******");
             //#endif
             url = "https://login.o2online.de/loginRegistration/loginAction"
                     + ".do?_flowId=" + "login&o2_type=asp&o2_label=login/co"
@@ -148,7 +152,7 @@ public class O2 extends SmsConnector {
             //System.out.println(connection.getContent()+"\n\n\n");
             String postRequest = "";
             gui.SetWaitScreenText("SMS wird gesendet...");
-            url = "https://email.o2online.de/smscenter_send.osp";
+
 
             //Build SMS send request and get remaining SMS.
 
@@ -159,34 +163,21 @@ public class O2 extends SmsConnector {
             postRequest = returnValue[0];
 
             try {
-                    remsms = Integer.parseInt(returnValue[1]);
+                remsms = Integer.parseInt(returnValue[1]);
+                remsms = remsms - CountSms(Sms.getSmstext()); //Counting amount of used SMS and subtract from remaining freesms
             } catch (Exception ex) {
                 gui.Debug("Failed to receive remaining SMS: " + ex.toString() + ex.getMessage());
+                failedToGetRemSms = true;
             }
 
-            if (SenderMode == 1) { //Text as Sender
-                postRequest = postRequest + "SMSTo=" + URLEncoder.encode(smsRecv) + "&SMSText="
-                        + URLEncoder.encode(Sms.getSmstext()) + "&SMSFrom="
-                        + URLEncoder.encode(Sms.getSendername()) + "&Frequency=5";
-            } else {
-                postRequest = postRequest + "SMSTo=" + URLEncoder.encode(smsRecv) + "&SMSText="
-                        + URLEncoder.encode(Sms.getSmstext()) + "&SMSFrom=&Frequency=5";
+            if (remsms < 0 && failedToGetRemSms == false) { //No free sms remaining ask user what to do. In case it's not possible to aquire remsms send anyway
+                resumeData = new ResumeData(SenderMode, postRequest, smsRecv, Sms, connection);
+                return -1;
+            } else { //enough free sms avaiable
+                sendSms(new ResumeData(SenderMode, postRequest, smsRecv, Sms, connection));
+                gui.Debug("Fertig mit sendSMS02, Dauer: " + (System.currentTimeMillis() - totaltime) + " ms");
+                return 0;
             }
-
-            if (!Sms.isSimualtion()) {
-                connection.httpHandler("POST", url, "email.o2online.de", postRequest, false);//false
-            }
-            //if (remsms_>0) remsms_--;
-            int SMSneeded = CountSms(Sms.getSmstext());
-            if (remsms > 0) {
-                remsms = remsms - SMSneeded; //Counting amount of used SMS
-            }
-            gui.Debug("Die SMS ist Zeichen lang: " + Sms.getSmstext().length());
-            gui.Debug("Anzahl SMS: " + SMSneeded);
-            gui.Debug("Fertig mit sendSMS02, Dauer: " + (System.currentTimeMillis() - totaltime) + " ms");
-            gui.SetWaitScreenText("SMS wurde versandt!");
-            SaveItem(REMAINING_SMS_FIELD, remsms+"");
-
         } catch (OutOfMemoryError ex) {
             gui.SetWaitScreenText("Systemspeicher voll!");
             gui.Debug("Systemspeicher voll!" + ex.getMessage());
@@ -204,5 +195,33 @@ public class O2 extends SmsConnector {
             Thread.sleep(10000);
             throw new Exception("Fehler!");
         }
+    }
+
+    public void resumeSending() throws Exception {
+        gui.Debug("Resume SMS sending process");
+        sendSms(resumeData);
+    }
+
+    private void sendSms(ResumeData resumeData) throws IOException, Exception {
+
+        final String url = "https://email.o2online.de/smscenter_send.osp";
+        String postRequest = resumeData.getPostRequest();
+        SmsData Sms = resumeData.getSms();
+
+        if (resumeData.getSenderMode() == 1) {
+            //Text as Sender
+            postRequest = postRequest + "SMSTo=" + URLEncoder.encode(resumeData.getSmsRecv()) + "&SMSText="
+                    + URLEncoder.encode(Sms.getSmstext()) + "&SMSFrom=" + URLEncoder.encode(Sms.getSendername()) + "&Frequency=5";
+        } else {
+            postRequest = postRequest + "SMSTo=" + URLEncoder.encode(resumeData.getSmsRecv()) + "&SMSText="
+                    + URLEncoder.encode(Sms.getSmstext()) + "&SMSFrom=&Frequency=5";
+        }
+
+        if (!Sms.isSimualtion()) {
+            resumeData.getConnection().httpHandler("POST", url, "email.o2online.de", postRequest, false); //false
+        }
+
+        gui.SetWaitScreenText("SMS wurde versandt!");
+        SaveItem(REMAINING_SMS_FIELD, remsms + "");
     }
 }

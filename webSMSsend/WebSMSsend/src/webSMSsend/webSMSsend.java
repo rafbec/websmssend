@@ -190,7 +190,15 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             sendername = SenderName;
         }
 
-        SmsConnector.Send(new SmsData(username, password, this, smsRecv, smsText, sendername, simulation));
+        int retValue = SmsConnector.send(new SmsData(username, password, this, smsRecv, smsText, sendername, simulation));
+
+        if (SmsConnector.hasProperty(Properties.CAN_ABORT_SEND_PROCESS_WHEN_NO_FREE_SMS_AVAILABLE)){
+            if (retValue == -1){ //Send process aborted having no more free sms
+                //ToDo: ask User what to do
+                SmsConnector.resumeSending();
+            }
+        }
+
         return 0;
     }
 

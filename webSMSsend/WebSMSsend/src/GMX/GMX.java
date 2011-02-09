@@ -100,7 +100,11 @@ public class GMX extends SmsConnector {
         }
     }
 
-    public void Send(SmsData Sms) throws Exception {
+    public void resumeSending() throws Exception {
+        throw new Exception("not implemented"); //not implemented
+    }
+
+    public int send(SmsData Sms) throws Exception {
         try {
             gui = Sms.getGui();
             gui.Debug("Starte " + getClass().getName() + ".Send()" + (Sms.isSimualtion() ? " SIMULATION!" : ""));
@@ -123,7 +127,7 @@ public class GMX extends SmsConnector {
 //#             // Output only on developer site, message contains sensitive data
 //#             gui.Debug("Empf\u00E4nger-Handynummer: " + smsRecv);
             //#else
-            gui_.Debug("Empf\u00E4nger-Handynummer: " + smsRecv.substring(0, 6) + "*******");
+            gui.Debug("Empf\u00E4nger-Handynummer: " + smsRecv.substring(0, 6) + "*******");
             //#endif
 
             Hashtable params = new Hashtable();
@@ -165,8 +169,8 @@ public class GMX extends SmsConnector {
 //#             gui.Debug("Kundennummer: "+customerIDObj);
 //#             gui.Debug("Absender-Handynummer: "+senderPhoneNumberObj);
             //#else
-            gui_.Debug("Kundennummer: "+customerIDObj.toString().substring(0, 4) + "*******");
-            gui_.Debug("Absender-Handynummer: "+senderPhoneNumberObj.toString().substring(0, 6) + "*******");
+            gui.Debug("Kundennummer: "+customerIDObj.toString().substring(0, 4) + "*******");
+            gui.Debug("Absender-Handynummer: "+senderPhoneNumberObj.toString().substring(0, 6) + "*******");
             //#endif
             
             if(senderPhoneNumberObj == null || freeMaxMonth == null || freeRemainingMonth == null)
@@ -215,6 +219,7 @@ public class GMX extends SmsConnector {
             SaveItem(REMAINING_SMS_FIELD, remsms+"");
             SaveItem(MAX_FREE_SMS, maxfreesms+"");
             gui.Debug("Fertig mit " + getClass().getName() + ".Send(), Dauer: " + (System.currentTimeMillis() - totaltime) + " ms");
+            return 0;
         } catch (OutOfMemoryError ex) {
             gui.SetWaitScreenText("Systemspeicher voll. " + ex.getMessage());
             Thread.sleep(3000);
