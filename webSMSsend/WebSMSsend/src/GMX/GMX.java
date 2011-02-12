@@ -211,7 +211,7 @@ public class GMX extends SmsConnector {
 //#             // Output only on developer site, message contains sensitive data
 //#             gui.Debug("Empf\u00E4nger-Handynummer: " + smsRecv);
             //#else
-            gui.Debug("Empf\u00E4nger-Handynummer: " + smsRecv.substring(0, 6) + "*******");
+            gui.Debug("Empf\u00E4nger-Handynummer: " + smsRecv.substring(0, 3) + "*******");
             //#endif
 
             Hashtable params = new Hashtable();
@@ -239,6 +239,11 @@ public class GMX extends SmsConnector {
                 gui.SetWaitScreenText("Unbekannte Serverantwort: " + returnCode);
             }
 
+            int senderPhoneNumberConfirmed = Integer.parseInt(result.get("cell_phone_confirmed").toString());
+            if(senderPhoneNumberConfirmed != 1) {
+                throw new Exception("Handynummer im GMX SMS-Manager nicht bestätigt");
+            }
+            
             Object customerIDObj = result.get("customer_id");
             Object senderPhoneNumberObj = result.get("cell_phone");
             // Maximum number of free SMS a user can send
@@ -250,11 +255,8 @@ public class GMX extends SmsConnector {
             
             //#if Test
 //#             // Output only on developer site, message contains sensitive data
-//#             gui.Debug("Kundennummer: "+customerIDObj);
-//#             gui.Debug("Absender-Handynummer: "+senderPhoneNumberObj);
-            //#else
-            gui.Debug("Kundennummer: "+customerIDObj.toString().substring(0, 4) + "*******");
-            gui.Debug("Absender-Handynummer: "+senderPhoneNumberObj.toString().substring(0, 6) + "*******");
+//#             gui.Debug("Kundennummer: " + customerIDObj);
+//#             gui.Debug("Absender-Handynummer: " + senderPhoneNumberObj);
             //#endif
             
             if(senderPhoneNumberObj == null || freeMaxMonth == null || freeRemainingMonth == null)
@@ -310,7 +312,6 @@ public class GMX extends SmsConnector {
             throw ex;
         } catch (Exception ex) {
             gui.SetWaitScreenText("SMS nicht gesendet: " + ex.getMessage());
-            ex.printStackTrace();
             Thread.sleep(3000);
             throw ex;
         } catch (Throwable e) {
@@ -379,10 +380,12 @@ public class GMX extends SmsConnector {
         
         String request = createRequest(method, version, params, gmxFlag);
         //#if Test
-//#         // Output only on developer site, message contains sensitive data
+//#         // Output as is only on developer site, message contains sensitive data
 //#         gui.Debug("Serveranfrage: " + request);
+        //#else
+        gui.Debug("Serveranfrage: " + anonymizeProtocolMsg(request));
         //#endif
-
+        
         writer.write(request);
         writer.flush();
 
@@ -401,8 +404,10 @@ public class GMX extends SmsConnector {
         String asString = String.valueOf(buffer);
 
         //#if Test
-//#         // Output only during development, message contains sensitive data
+//#         // Output as is only during development, message contains sensitive data
 //#         gui.Debug("Serverantwort: " + asString);
+        //#else
+        gui.Debug("Serverantwort: " + anonymizeProtocolMsg(asString));
         //#endif
 
         if (asString.indexOf("<WR TYPE=\"RSPNS\"") < 0) {
@@ -480,5 +485,40 @@ public class GMX extends SmsConnector {
 //#         gui.Debug("Serverantwort geparsed: " + result);
         //#endif
         return result;
+    }
+
+    private String anonymizeProtocolMsg(String message) {
+        String[] keywords = {"customer_id",
+                            "reseller_id",
+                            "register_date",
+                            "email_address",
+                            "password",
+                            "first_name",
+                            "last_name",
+                            "cell_phone",
+                            "sms_sender",
+                            "receivers",
+                            "sms_text"};
+
+        StringBuffer msg = new StringBuffer(message);
+
+        String key = new String();
+        for (int i = 0; i < keywords.length; i++) {
+            key = keywords[i];
+   
+            int start = message.indexOf(key);
+            if (start < 0) {
+                continue;
+            }
+            
+            int caret = start + key.length() + 1;
+            int stop = message.indexOf("\\p", start);
+
+            while (caret < stop) {
+                msg.setCharAt(caret, '*');
+                caret++;
+            }
+        }
+        return msg.toString();
     }
 }
