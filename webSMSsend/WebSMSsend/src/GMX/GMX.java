@@ -40,35 +40,75 @@ import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
 
 /**
- * This class implements the interface to the GMX SMS service.
+ * This class implements the {@link ConnectorBase.ISmsConnector communication
+ * interface} to the GMX SMS service.
  * 
  * @author Copyright 2011 schirinowski@gmail.com
+ * @version $Revision$
  */
 public class GMX extends SmsConnector {
-    // Default GMX SMS server is app5, according to some internet forum entries,
-    // the default recovery procedure is app{0,...,4,6,7} if app5 is not
-    // available. As app5 has a questionable performance in terms of the delay
-    // between receiving the SMS to be sent and the time it is actually sent,
-    // app5 is not the default server of webSMSsend
-    public static final String WEBSERVICE_URL = "http://app3.wr-gmbh.de/WRServer/WRServer.dll/WR";
-    // Maximum SMS length according to http://www.gmx.net/gmx-sms
-    protected static final int MAX_SMS_LENGTH = 760;
+    /**
+     * Stores the SMS server's URL
+     * ({@code http://app3.wr-gmbh.de/WRServer/WRServer.dll/WR}) to connect to.
+     * Default GMX SMS server is app5, according to some internet forum entries,
+     * the default recovery procedure is app{0,...,4,6,7} if app5 is not
+     * available. As app5 has a questionable performance in terms of the delay
+     * between receiving the SMS to be sent and the time it is actually sent,
+     * app5 is not the default server of webSMSsend
+     */
+    private static final String WEBSERVICE_URL = "http://app3.wr-gmbh.de/WRServer/WRServer.dll/WR";
 
+    /**
+     * Maximum SMS length according to http://www.gmx.net/gmx-sms, which is 760.
+     */
+    private static final int MAX_SMS_LENGTH = 760;
+
+    /**
+     * GMX internal customer representation. Its value is received from the GMX
+     * server after the user has logged into it.
+     */
     String customerID;
+    /**
+     * Mobile phone number stored in GMX database belonging to the user logged
+     * in. Its value is received from the GMX server after the user has logged
+     * into it.
+     */
     String senderPhoneNumber;
 
+    /**
+     * The constructor initializes the connector's properties. Until now, the
+     * GMX connector has only the {@link Properties#CAN_SIMULATE_SEND_PROCESS
+     * CAN_SIMULATE_SEND_PROCESS} property.
+     */
     public GMX(){
         specs.AddProperty(new int[]{Properties.CAN_SIMULATE_SEND_PROCESS});
     }
 
+    /**
+     * Returns the current connector's name.
+     * @return A {@link String} containing the connector's name ({@code GMX}).
+     */
     public String getName() {
         return "GMX";
     }
 
+    /**
+     * Returns the label which describes the password's meaning which must be
+     * entered for this connector. This varies according to the used 
+     * {@link SmsConnector}.
+     * @return a {@link String} containing the password's meaning. In
+     *         the case of GMX, it is the ({@code SMS-Manager Freischaltcode}).
+     */
     public String getPasswordFieldLabel() {
         return "SMS-Manager Freischaltcode:";
     }
 
+    /**
+     * Returns the description how many free SMS are left with respect to the
+     * active account.
+     * @return a {@link String} showing the number of left GMX free SMS
+     *         and the maximum number of free SMS in the current month.
+     */
     public String getRemSmsText() {
         String text = "Verbleibende Frei-SMS: ";
 
@@ -86,10 +126,21 @@ public class GMX extends SmsConnector {
         return text;
     }
 
+    /**
+     * Returns the maximum number of chars an SMS may contain.
+     * @return an integer representing the maximum number of chars an SMS may
+     *         contain when using GMX.
+     */
     public int getMaxSMSLength() {
         return MAX_SMS_LENGTH;
     }
 
+    /**
+     * This method computes the number of SMS the provided text will be
+     * resulting in.
+     * @param smsText the SMS text to be sent.
+     * @return the number of SMS the sent text will result in.
+     */
     public int CountSms(String smsText) {
         if (smsText.length() > 160) {
             return (int) Math.floor((smsText.length() + 151) / 152);
@@ -104,7 +155,40 @@ public class GMX extends SmsConnector {
         throw new Exception("not implemented"); //not implemented
     }
 
-    public int send(SmsData Sms) throws Exception {
+    /**
+     * Caller of {@link #Send(java.lang.String, java.lang.String,
+     * java.lang.String, boolean) GMX.Send} in case the additional parameters
+     * {@code senderName} and {@code simulation} are not needed. In other words,
+     * an SMS sent using this method is always transmitted with the user's
+     * mobile phone number as sender identification..
+     * @param smsRecv the SMS recipient's mobile phone number.
+     * @param smsText the SMS text to be sent.
+     * @throws Exception
+     */
+    public void Send(String smsRecv, String smsText) throws Exception {
+        // Old syntax,
+        // Send(smsRecv, smsText, "" , false);
+    }
+
+    /**
+     * This method handles the SMS sending process and transmits the SMS to be
+     * sent to the {@link #WEBSERVICE_URL GMX SMS server} for further
+     * processing. It first logs the user in by which it also receives the
+     * number of remaining free SMS. Afterwards, the SMS to be sent is fit into
+     * the protocol message and transmitted to the GMX server which confirms the
+     * SMS transmission.
+     * @param smsRecv {@link String} containing the SMS recipient's mobile phone
+     *        number.
+     * @param smsText {@link String} containing the SMS text to be sent.
+     * @param senderName {@link String} containing an arbitrary sender name.
+     *        Yet unused.
+     * @param simulation determines, whether the sending process is only
+     *        simulated or actually executed. If set {@code true}, the connector
+     *        behaves as if the SMS was sent, except that the statement
+     *        executing the sending process is ignored.
+     * @throws Exception
+     */
+     public int send(SmsData Sms) throws Exception {
         try {
             gui = Sms.getGui();
             gui.Debug("Starte " + getClass().getName() + ".Send()" + (Sms.isSimualtion() ? " SIMULATION!" : ""));
@@ -236,6 +320,43 @@ public class GMX extends SmsConnector {
         }
     }
 
+    /**
+     * Handles the actual communication between the connector and the
+     * {@link #WEBSERVICE_URL GMX server}. It first creates the protocol message
+     * by invoking {@link #createRequest(String method, String version,
+     * Hashtable params, boolean gmxFlag) createRequest()}, transmits it to the
+     * server via HTTP and returns the server's response as a key value paired
+     * collection after invoking {@link #parseResponse(java.lang.String)
+     * parseRepsonse()}.
+     * @param method determines the sort of request transmitted to the server.
+     *        Valid arguments are:
+     *        <ul>
+     *        <li>{@code GET_CUSTOMER}: Logs the user in.<ul>
+     *            <li>Necessary {@code version} parameter value: {@code 1.10}</li>
+     *            <li>Obligatory key value pairs contained in {@code params} needed
+     *            for this request: tbd</li>
+     *            <li>{@code gmxFlag}: Set {@code true}.</li>
+     *            <li>Received key value pairs: tbd</li></ul>
+     *        </li>
+     *        <li>{@code SEND_SMS}: Sends the SMS in the end.<ul>
+     *            <li>Necessary {@code version} parameter value: {@code 1.01}</li>
+     *            <li>Obligatory key value pairs contained in {@code params} needed
+     *            for this request: tbd</li>
+     *            <li>{@code gmxFlag}: Set {@code false}.</li>
+     *            <li>Received key value pairs: tbd</li></ul>
+     *        </li>
+     *        </ul>
+     * @param version obligatory parameter for the specified request. Value
+     *        depends on the selected {@code method}.
+     * @param params obligatory key value pair collection containing all
+     *        parameters send to the server. Contents depend on the selected
+     *        {@code method}.
+     * @param gmxFlag defines whether the current request is GMX specific. Value
+     *        depends on selected {@code method}.
+     * @throws Exception
+     * @return a collection with all key value pairs inlcuded in the server's
+     *         response.
+     */
     private Hashtable sendPackage(String method, String version, Hashtable params, boolean gmxFlag) throws Exception {
         HttpConnection connection = (HttpConnection) Connector.open(WEBSERVICE_URL, Connector.READ_WRITE);
 
@@ -296,21 +417,49 @@ public class GMX extends SmsConnector {
         return parseResponse(line);
     }
 
+    /**
+     * Creates an XML-style protocol message used for the communication between
+     * connector and server. Takes all parameters and wraps it into a message
+     * sent to the server.
+     * @param method cf. {@link #sendPackage(java.lang.String, java.lang.String,
+     * java.util.Hashtable, boolean) sendPackage()}.
+     * @param version cf. {@link #sendPackage(java.lang.String, java.lang.String,
+     * java.util.Hashtable, boolean sendPackage()) sendPackage()}.
+     * @param params cf. {@link #sendPackage(java.lang.String, java.lang.String,
+     * java.util.Hashtable, boolean) sendPackage()}.
+     * @param gmxFlag cf. {@link #sendPackage(java.lang.String, java.lang.String,
+     * java.util.Hashtable, boolean) sendPackage()}.
+     * @return the request message formatted according to the protocol used for
+     * communication between connector and server.
+     */
     private String createRequest(String method, String version, Hashtable params, boolean gmxFlag) {
         StringBuffer request = new StringBuffer();
-        request.append("<WR TYPE=\"RQST\" NAME=\"" + method + "\" VER=\"" + version + "\" PROGVER=\"1.13.04\">" + (gmxFlag ? "gmx=1\\p" : ""));
+        request.append("<WR TYPE=\"RQST\" NAME=\"")
+                .append(method)
+                .append("\" VER=\"")
+                .append(version)
+                .append("\" PROGVER=\"1.13.04\">")
+                .append(gmxFlag ? "gmx=1\\p" : "");
 
         Enumeration paramKeys = params.keys();
         while (paramKeys.hasMoreElements()) {
             Object key = paramKeys.nextElement();
             Object value = params.get(key);
-            request.append(key + "=" + value + "\\p");
+            request.append(key).append("=").append(value).append("\\p");
         }
 
         request.append("</WR>");
         return request.toString();
     }
 
+    /**
+     * Takes a server's response as parameter and splits it into key value pairs
+     * which are returned as a {@link Hashtable}.
+     * @param response server's response on a request sent using {@link
+     *        #sendPackage(java.lang.String, java.lang.String,
+     *        java.util.Hashtable, boolean) sendPackage()}
+     * @return a key value paired collection created from the server's response.
+     */
     private Hashtable parseResponse(String response) {
         Hashtable result = new Hashtable();
         String dataString = response.substring(response.indexOf('>') + 1, response.indexOf("</WR>"));
