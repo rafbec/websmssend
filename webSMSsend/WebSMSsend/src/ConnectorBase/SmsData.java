@@ -7,7 +7,7 @@ package ConnectorBase;
 import webSMSsend.IGui;
 
 /**
- * Smsdata bundles all necessary information for connectors to send a sms
+ * SmsData bundles all necessary information for connectors to send an SMS
  * @author Copyright 2011 redrocketracoon@googlemail.com
  */
 public class SmsData {
@@ -15,35 +15,29 @@ public class SmsData {
     private String username;
     private String password;
     private IGui gui;
-    private String smsrecv;
-    private String smstext;
-    private String sendername;
-    private boolean simualtion;
-
-    /**
-     *
-     */
-    public SmsData() {
-    }
+    private String smsRecv;
+    private String smsText;
+    private String senderName;
+    private boolean simulation;
 
     /**
      *
      * @param username
      * @param password
      * @param gui
-     * @param smsrecv
-     * @param smstext
-     * @param sendername
-     * @param simualtion
+     * @param smsRecv
+     * @param smsText
+     * @param senderName
+     * @param simulation
      */
-    public SmsData(String username, String password, IGui gui, String smsrecv, String smstext, String sendername, boolean simualtion) {
+    public SmsData(String username, String password, IGui gui, String smsRecv, String smsText, String senderName, boolean simulation) {
         this.username = username;
         this.password = password;
         this.gui = gui;
-        this.smsrecv = smsrecv;
-        this.smstext = smstext;
-        this.sendername = sendername;
-        this.simualtion = simualtion;
+        this.smsRecv = smsRecv;
+        this.smsText = smsText;
+        this.senderName = senderName;
+        this.simulation = simulation;
     }
 
     /**
@@ -89,58 +83,58 @@ public class SmsData {
     }
 
     /**
-     * @return the smsrecv
+     * @return the smsRecv
      */
-    public String getSmsrecv() {
-        return smsrecv;
+    public String getSmsRecv() {
+        return smsRecv;
     }
 
     /**
-     * @param smsrecv the smsrecv to set
+     * @param smsRecv the smsRecv to set
      */
-    public void setSmsrecv(String smsrecv) {
-        this.smsrecv = smsrecv;
+    public void setSmsrecv(String smsRecv) {
+        this.smsRecv = smsRecv;
     }
 
     /**
-     * @return the smstext
+     * @return the smsText
      */
-    public String getSmstext() {
-        return smstext;
+    public String getSmsText() {
+        return smsText;
     }
 
     /**
-     * @param smstext the smstext to set
+     * @param smsText the smsText to set
      */
-    public void setSmstext(String smstext) {
-        this.smstext = smstext;
+    public void setSmsText(String smsText) {
+        this.smsText = smsText;
     }
 
     /**
-     * @return the sendername
+     * @return the senderName
      */
-    public String getSendername() {
-        return sendername;
+    public String getSenderName() {
+        return senderName;
     }
 
     /**
-     * @param sendername the sendername to set
+     * @param senderName the senderName to set
      */
-    public void setSendername(String sendername) {
-        this.sendername = sendername;
+    public void setSendername(String senderName) {
+        this.senderName = senderName;
     }
 
     /**
-     * @return the simualtion
+     * @return the simulation
      */
-    public boolean isSimualtion() {
-        return simualtion;
+    public boolean isSimulation() {
+        return simulation;
     }
 
     /**
-     * @param simualtion the simualtion to set
+     * @param simulation the simulation to set
      */
-    public void setSimualtion(boolean simualtion) {
-        this.simualtion = simualtion;
+    public void setSimualtion(boolean simulation) {
+        this.simulation = simulation;
     }
 }

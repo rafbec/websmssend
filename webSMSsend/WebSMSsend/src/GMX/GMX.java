@@ -188,24 +188,24 @@ public class GMX extends SmsConnector {
      *        executing the sending process is ignored.
      * @throws Exception
      */
-     public int send(SmsData Sms) throws Exception {
+     public int send(SmsData sms) throws Exception {
         try {
-            gui = Sms.getGui();
-            gui.Debug("Starte " + getClass().getName() + ".Send()" + (Sms.isSimualtion() ? " SIMULATION!" : ""));
+            gui = sms.getGui();
+            gui.Debug("Starte " + getClass().getName() + ".Send()" + (sms.isSimulation() ? " SIMULATION!" : ""));
             long totaltime = System.currentTimeMillis();
 
-            if (Sms.getSmsrecv().equals("")) {
+            if (sms.getSmsRecv().equals("")) {
                 throw new Exception("Kein Empf\u00E4nger angegeben");
             }
-            if (Sms.getSmstext().equals("")) {
+            if (sms.getSmsText().equals("")) {
                 throw new Exception("Kein SMS-Text angegeben");
             }
 
-            if (Sms.getSmstext().length() > getMaxSMSLength()) {
+            if (sms.getSmsText().length() > getMaxSMSLength()) {
                 throw new Exception("SMS-Text zu lang (max. 760 Zeichen)");
             }
 
-            String smsRecv = checkRecv(Sms.getSmsrecv());
+            String smsRecv = checkRecv(sms.getSmsRecv());
 
             //#if Test
 //#             // Output only on developer site, message contains sensitive data
@@ -215,8 +215,8 @@ public class GMX extends SmsConnector {
             //#endif
 
             Hashtable params = new Hashtable();
-            params.put("email_address", Sms.getUsername());
-            params.put("password", Sms.getPassword());
+            params.put("email_address", sms.getUsername());
+            params.put("password", sms.getPassword());
 
             gui.SetWaitScreenText("Login...");
             Hashtable result = sendPackage("GET_CUSTOMER", "1.10", params, true);
@@ -272,16 +272,16 @@ public class GMX extends SmsConnector {
 
             params.put("customer_id", customerID);
             params.put("receivers", "\\<TBL ROWS=\"1\" COLS=\"3\"\\>receiver_id\\\\;receiver_name\\\\;receiver_number\\\\;1\\\\;Bla\\\\;" + smsRecv + "\\\\;\\</TBL\\>");
-            params.put("sms_text", Sms.getSmstext());
+            params.put("sms_text", sms.getSmsText());
             params.put("send_option", "sms");
             params.put("sms_sender", senderPhoneNumber);
 
-            if (!Sms.isSimualtion()) {
+            if (!sms.isSimulation()) {
                 gui.SetWaitScreenText("SMS wird gesendet...");
                 result = sendPackage("SEND_SMS", "1.01", params, false);
 
                 //Counting amount of used SMS
-                int SMSneeded = CountSms(Sms.getSmstext());
+                int SMSneeded = CountSms(sms.getSmsText());
                 // Check if there are free SMS left
                 if (remSMS - SMSneeded > 0) {
                     remSMS = remSMS - SMSneeded;
@@ -289,7 +289,7 @@ public class GMX extends SmsConnector {
                 else {
                     remSMS = 0;
                 }
-                gui.Debug("Die SMS ist Zeichen lang: " + Sms.getSmstext().length());
+                gui.Debug("Die SMS ist Zeichen lang: " + sms.getSmsText().length());
                 gui.Debug("Anzahl SMS: " + SMSneeded);
                 gui.SetWaitScreenText("SMS wurde gesendet");
             }

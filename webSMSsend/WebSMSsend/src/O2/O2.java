@@ -55,21 +55,21 @@ public class O2 extends SmsConnector {
         boolean failedToGetRemSms = false;
         gui = Sms.getGui();
 
-        if (Sms.getSendername().length() >= 5) {
+        if (Sms.getSenderName().length() >= 5) {
             SenderMode = 1;
         }
 
         try {
-            gui.Debug("starte sendSMS02()" + (Sms.isSimualtion() ? " SIMULATION!" : ""));
-            gui.Debug("Die SMS ist Zeichen lang: " + Sms.getSmstext().length());
-            gui.Debug("Anzahl SMS: " + CountSms(Sms.getSmstext()));
+            gui.Debug("starte sendSMS02()" + (Sms.isSimulation() ? " SIMULATION!" : ""));
+            gui.Debug("Die SMS ist Zeichen lang: " + Sms.getSmsText().length());
+            gui.Debug("Anzahl SMS: " + CountSms(Sms.getSmsText()));
             long totaltime = System.currentTimeMillis();
-            if (Sms.getSmsrecv().equals("")) {
+            if (Sms.getSmsRecv().equals("")) {
                 gui.SetWaitScreenText("kein Empf\u00E4nger angegeben!");
                 Thread.sleep(1000);
                 throw new Exception("kein Empf\u00E4nger!");
             }
-            if (Sms.getSmstext().equals("")) {
+            if (Sms.getSmsText().equals("")) {
                 gui.SetWaitScreenText("kein SMS-Text angegeben!");
                 Thread.sleep(1000);
                 throw new Exception("leere SMS!");
@@ -81,7 +81,7 @@ public class O2 extends SmsConnector {
             NetworkHandler connection = new NetworkHandler(Sms.getUsername(), Sms.getPassword(), gui);
             gui.SetWaitScreenText("Login wird geladen...");
 
-            String smsRecv = checkRecv(Sms.getSmsrecv());
+            String smsRecv = checkRecv(Sms.getSmsRecv());
             //#if Test
 //#             // Output only on developer site, message contains sensitive data
 //#             gui.Debug("Empf\u00E4nger-Handynummer: " + smsRecv);
@@ -164,7 +164,7 @@ public class O2 extends SmsConnector {
 
             try {
                 remsms = Integer.parseInt(returnValue[1]);
-                remsms = remsms - CountSms(Sms.getSmstext()); //Counting amount of used SMS and subtract from remaining freesms
+                remsms = remsms - CountSms(Sms.getSmsText()); //Counting amount of used SMS and subtract from remaining freesms
             } catch (Exception ex) {
                 gui.Debug("Failed to receive remaining SMS: " + ex.toString() + ex.getMessage());
                 failedToGetRemSms = true;
@@ -211,13 +211,13 @@ public class O2 extends SmsConnector {
         if (resumeData.getSenderMode() == 1) {
             //Text as Sender
             postRequest = postRequest + "SMSTo=" + URLEncoder.encode(resumeData.getSmsRecv()) + "&SMSText="
-                    + URLEncoder.encode(Sms.getSmstext()) + "&SMSFrom=" + URLEncoder.encode(Sms.getSendername()) + "&Frequency=5";
+                    + URLEncoder.encode(Sms.getSmsText()) + "&SMSFrom=" + URLEncoder.encode(Sms.getSenderName()) + "&Frequency=5";
         } else {
             postRequest = postRequest + "SMSTo=" + URLEncoder.encode(resumeData.getSmsRecv()) + "&SMSText="
-                    + URLEncoder.encode(Sms.getSmstext()) + "&SMSFrom=&Frequency=5";
+                    + URLEncoder.encode(Sms.getSmsText()) + "&SMSFrom=&Frequency=5";
         }
 
-        if (!Sms.isSimualtion()) {
+        if (!Sms.isSimulation()) {
             resumeData.getConnection().httpHandler("POST", url, "email.o2online.de", postRequest, false); //false
         }
 
