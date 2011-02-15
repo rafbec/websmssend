@@ -839,7 +839,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     public Command getExitCommand1() {
         if (exitCommand1 == null) {//GEN-END:|98-getter|0|98-preInit
                 // write pre-init user code here
-            exitCommand1 = new Command("Exit", Command.EXIT, 0);//GEN-LINE:|98-getter|1|98-postInit
+            exitCommand1 = new Command("Beenden", Command.EXIT, 0);//GEN-LINE:|98-getter|1|98-postInit
                 // write post-init user code here
         }//GEN-BEGIN:|98-getter|2|
         return exitCommand1;
@@ -869,7 +869,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     public Command getOkCommand2() {
         if (okCommand2 == null) {//GEN-END:|106-getter|0|106-preInit
                 // write pre-init user code here
-            okCommand2 = new Command("Ok", Command.OK, 0);//GEN-LINE:|106-getter|1|106-postInit
+            okCommand2 = new Command("OK", Command.OK, 0);//GEN-LINE:|106-getter|1|106-postInit
                 // write post-init user code here
         }//GEN-BEGIN:|106-getter|2|
         return okCommand2;
@@ -899,7 +899,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     public Command getOkCommand3() {
         if (okCommand3 == null) {//GEN-END:|111-getter|0|111-preInit
             // write pre-init user code here
-            okCommand3 = new Command("Ok", Command.OK, 0);//GEN-LINE:|111-getter|1|111-postInit
+            okCommand3 = new Command("OK", Command.OK, 0);//GEN-LINE:|111-getter|1|111-postInit
             // write post-init user code here
         }//GEN-BEGIN:|111-getter|2|
         return okCommand3;
@@ -967,7 +967,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     public Command getNextSettings() {
         if (nextSettings == null) {//GEN-END:|172-getter|0|172-preInit
             // write pre-init user code here
-            nextSettings = new Command("Ok", Command.OK, 0);//GEN-LINE:|172-getter|1|172-postInit
+            nextSettings = new Command("OK", Command.OK, 0);//GEN-LINE:|172-getter|1|172-postInit
             // write post-init user code here
         }//GEN-BEGIN:|172-getter|2|
         return nextSettings;
@@ -1310,7 +1310,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     public Command getLoginScreenSend() {
         if (loginScreenSend == null) {//GEN-END:|240-getter|0|240-preInit
             // write pre-init user code here
-            loginScreenSend = new Command("Ok", Command.OK, 0);//GEN-LINE:|240-getter|1|240-postInit
+            loginScreenSend = new Command("OK", Command.OK, 0);//GEN-LINE:|240-getter|1|240-postInit
             // write post-init user code here
         }//GEN-BEGIN:|240-getter|2|
         return loginScreenSend;
@@ -1408,7 +1408,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     public Command getOkCommand5() {
         if (okCommand5 == null) {//GEN-END:|253-getter|0|253-preInit
             // write pre-init user code here
-            okCommand5 = new Command("Ok", Command.OK, 0);//GEN-LINE:|253-getter|1|253-postInit
+            okCommand5 = new Command("OK", Command.OK, 0);//GEN-LINE:|253-getter|1|253-postInit
             // write post-init user code here
         }//GEN-BEGIN:|253-getter|2|
         return okCommand5;
