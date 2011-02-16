@@ -50,7 +50,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     String username;
     String password;
     int provider; //0 = O2, 1 = GMX
-    boolean contentLoad;
+    boolean saveEachCharacter;
     boolean debug;
     PrintStream debugPrintStream;
     private long startTime = 0;
@@ -206,7 +206,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         username = ioSettings.getUsername();
         password = ioSettings.getPassword();
         provider = ioSettings.getSetup();
-        contentLoad = ioSettings.getContentLoad().equals("true");
+        saveEachCharacter = ioSettings.getSaveEachCharacter().equals("true");
         ActiveAccount = Integer.parseInt(ioSettings.getActiveAccount());
         SenderMode = ioSettings.getSenderMode();
         SenderName = ioSettings.getSenderName();
@@ -228,7 +228,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         System.out.println("ActiveAccount: " + ActiveAccount);
     }
 
-    private void SaveTempSMS() {
+    private void saveTempSMS() {
         if (getMainMenu() != null) {
             ioSettings.saveTempSMS(textField.getString(), textField3.getString());
         }
@@ -483,16 +483,13 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                     // write post-action user code here
             } else if (command == okCommand) {//GEN-LINE:|7-commandAction|51|208-preAction
                     if (choiceGroup.isSelected(0)) {
-                        ioSettings.saveOptim("true"); //ToDo right now this is not used. In future it either needs to be removed or implemented
-                        contentLoad = true;
+                        ioSettings.saveSaveEachCharacter("true"); 
+                        saveEachCharacter = true;
                     } else {
-                        ioSettings.saveOptim("false");
-                        contentLoad = false;
+                        ioSettings.saveSaveEachCharacter("false");
+                        saveEachCharacter = false;
                     }
-                    if (choiceGroup.isSelected(1)) { //ToDo right now this is not used. In future it either needs to be removed or implemented
-                        // ToDo add action to checkbox
-                    }
-                    if (choiceGroup.isSelected(2)) {
+                    if (choiceGroup.isSelected(1)) {
                         ioSettings.saveDebug("true");
                         debug = true;
                     } else {
@@ -526,13 +523,13 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                     password = textField4.getString();
                     provider = choiceGroup2.getSelectedIndex();
                     System.out.println("Provider: " + provider);
-                    contentLoad = false;
                     debug = false;
+                    saveEachCharacter = true;
 
                     if (provider == -1) {
                         provider = 0;
                     }
-                    ioSettings.saveOptim("false");
+                    ioSettings.saveSaveEachCharacter("true");
                     ioSettings.saveDebug("false");
                     ioSettings.saveSetup("" + (provider));
                     ioSettings.saveToRMS(username, password);
@@ -642,7 +639,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                                     .append(" Zeichen!");
                         }
                         textField3.setLabel(smsInputLabel.toString());
-                        SaveTempSMS();
+                        if (saveEachCharacter) {
+                            saveTempSMS();
+                        }
                     }
                 }
             };
@@ -1036,7 +1035,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                 // write pre-action user code here
                 switchDisplayable(null, getOptimSettings());//GEN-LINE:|165-action|8|170-postAction
 
-                boolean[] selected = {contentLoad, true, debug};
+                boolean[] selected = {saveEachCharacter, debug};
                 choiceGroup.setSelectedFlags(selected);
             } else if (__selectedString.equals("SMS-Anbieter")) {//GEN-LINE:|165-action|9|171-preAction
                 // write pre-action user code here
@@ -1139,14 +1138,12 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         if (choiceGroup == null) {//GEN-END:|204-getter|0|204-preInit
             // write pre-init user code here
             choiceGroup = new ChoiceGroup("Folgende Ver\u00E4nderungen k\u00F6nnen das Programm beschleunigen.\nSie funktionieren nicht auf allen Systemen!", Choice.MULTIPLE);//GEN-BEGIN:|204-getter|1|204-postInit
-            choiceGroup.append("Seiten nicht komplett laden", null);
-            choiceGroup.append("verbleibende SMS anzeigen", null);
-            choiceGroup.append("Debug", null);
+            choiceGroup.append("SMS-Text nach jedem Zeichen speichern", null);
+            choiceGroup.append("Debug-Meldungen schreiben", null);
             choiceGroup.setFitPolicy(Choice.TEXT_WRAP_DEFAULT);
-            choiceGroup.setSelectedFlags(new boolean[] { false, false, false });
+            choiceGroup.setSelectedFlags(new boolean[] { false, false });
             choiceGroup.setFont(0, getFont());
-            choiceGroup.setFont(1, getFont());
-            choiceGroup.setFont(2, null);//GEN-END:|204-getter|1|204-postInit
+            choiceGroup.setFont(1, null);//GEN-END:|204-getter|1|204-postInit
             // write post-init user code here
         }//GEN-BEGIN:|204-getter|2|
         return choiceGroup;
@@ -1892,7 +1889,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
      * Exits MIDlet.
      */
     public void exitMIDlet() {
-        SaveTempSMS();
+        saveTempSMS();
         switchDisplayable(null, null);
         destroyApp(true);
         notifyDestroyed();
@@ -1916,7 +1913,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
      * Called when MIDlet is paused.
      */
     public void pauseApp() {
-        SaveTempSMS();
+        saveTempSMS();
         midletPaused = true;
     }
 
@@ -1925,7 +1922,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
      * @param unconditional if true, then the MIDlet has to be unconditionally terminated and all resources has to be released.
      */
     public void destroyApp(boolean unconditional) {
-        SaveTempSMS();
+        saveTempSMS();
     }
 
     public void Debug(String debugText) {

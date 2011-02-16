@@ -28,8 +28,8 @@ import javax.microedition.rms.RecordStoreException;
 
 public class ioSettings {
 
-    protected static String getContentLoad() {
-        return getData(MakeFieldName("optim"), 1);
+    protected static String getSaveEachCharacter() {
+        return getData(MakeFieldName("SaveEachCharacter"), 1);
     }
 
     protected static String getDebug() {
@@ -97,9 +97,9 @@ public class ioSettings {
         return saveData(MakeFieldName("LoginData"), data, 2);
     }
 
-    protected static int saveOptim(String contentLoad) {
+    protected static int saveSaveEachCharacter(String contentLoad) {
         String[] data = {contentLoad};
-        return saveData(MakeFieldName("optim"), data, 1);
+        return saveData(MakeFieldName("SaveEachCharacter"), data, 1);
     }
 
     protected static int saveDebug(String debug) {
