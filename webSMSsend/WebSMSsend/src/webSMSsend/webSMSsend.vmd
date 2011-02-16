@@ -147,7 +147,7 @@
                 <Component componentID="98" typeID="Cjavax.microedition.lcdui.Command">
                     <Property name="instanceName" typeID="Pjava.lang.String" value="VexitCommand1"/>
                     <Property name="codeGenerated" typeID="Pboolean" value="Vtrue"/>
-                    <Property name="label" typeID="Pjava.lang.String" value="VBeenden"/>
+                    <Property name="label" typeID="Pjava.lang.String" value="VAbbrechen"/>
                     <Property name="type" typeID="Pint" value="V7"/>
                 </Component>
                 <Component componentID="111" typeID="Cjavax.microedition.lcdui.Command">
@@ -383,12 +383,12 @@
                         </Component>
                     </Component>
                     <Component componentID="99" typeID="C#CommandEventSource">
-                        <Property name="eventHandler" typeID="C#EventHandler" value="R101"/>
+                        <Property name="eventHandler" typeID="C#EventHandler" value="R390"/>
                         <Property name="displayable" typeID="Cjavax.microedition.lcdui.Displayable" value="R47"/>
                         <Property name="command" typeID="Cjavax.microedition.lcdui.Command" value="R98"/>
-                        <Component componentID="101" typeID="C#ExitMidletEventHandler">
+                        <Component componentID="390" typeID="C#SwitchDisplayableEventHandler">
                             <Property name="eventSource" typeID="C#EventSource" value="R99"/>
-                            <Property name="mobileDevice" typeID="C#MobileDevice" value="R2"/>
+                            <Property name="displayable" typeID="Cjavax.microedition.lcdui.Displayable" value="R14"/>
                         </Component>
                     </Component>
                 </Component>
@@ -454,7 +454,7 @@
                 <Component componentID="91" typeID="Cjavax.microedition.lcdui.Alert">
                     <Property name="instanceName" typeID="Pjava.lang.String" value="VsmsSend"/>
                     <Property name="codeGenerated" typeID="Pboolean" value="Vtrue"/>
-                    <Property name="commands" typeID="1C#CommandEventSource" value="A2:4_R1044_R107"/>
+                    <Property name="commands" typeID="1C#CommandEventSource" value="A1:4_R107"/>
                     <Property name="title" typeID="Pjava.lang.String" value="VSenden erfolgreich"/>
                     <Property name="commandListener" typeID="C#CommandListener" value="R7"/>
                     <Property name="string" typeID="Pjava.lang.String" value="U&quot;SMS gesendet\n&quot;+getRemSMSText()"/>
@@ -468,33 +468,15 @@
                             <Property name="displayable" typeID="Cjavax.microedition.lcdui.Displayable" value="R14"/>
                         </Component>
                     </Component>
-                    <Component componentID="104" typeID="C#CommandEventSource">
-                        <Property name="eventHandler" typeID="C#EventHandler" value="R105"/>
-                        <Property name="displayable" typeID="Cjavax.microedition.lcdui.Displayable" value="R91"/>
-                        <Property name="command" typeID="Cjavax.microedition.lcdui.Command" value="R103"/>
-                        <Component componentID="105" typeID="C#ExitMidletEventHandler">
-                            <Property name="eventSource" typeID="C#EventSource" value="R104"/>
-                            <Property name="mobileDevice" typeID="C#MobileDevice" value="R2"/>
-                        </Component>
-                    </Component>
                 </Component>
                 <Component componentID="90" typeID="Cjavax.microedition.lcdui.Alert">
                     <Property name="instanceName" typeID="Pjava.lang.String" value="VnotSend"/>
                     <Property name="codeGenerated" typeID="Pboolean" value="Vtrue"/>
-                    <Property name="commands" typeID="1C#CommandEventSource" value="A2:4_R1104_R112"/>
+                    <Property name="commands" typeID="1C#CommandEventSource" value="A1:4_R112"/>
                     <Property name="title" typeID="Pjava.lang.String" value="VFehler"/>
                     <Property name="commandListener" typeID="C#CommandListener" value="R7"/>
                     <Property name="string" typeID="Pjava.lang.String" value="V"/>
                     <Property name="timeout" typeID="Pint" value="V-2"/>
-                    <Component componentID="110" typeID="C#CommandEventSource">
-                        <Property name="eventHandler" typeID="C#EventHandler" value="R113"/>
-                        <Property name="displayable" typeID="Cjavax.microedition.lcdui.Displayable" value="R90"/>
-                        <Property name="command" typeID="Cjavax.microedition.lcdui.Command" value="R109"/>
-                        <Component componentID="113" typeID="C#ExitMidletEventHandler">
-                            <Property name="eventSource" typeID="C#EventSource" value="R110"/>
-                            <Property name="mobileDevice" typeID="C#MobileDevice" value="R2"/>
-                        </Component>
-                    </Component>
                     <Component componentID="112" typeID="C#CommandEventSource">
                         <Property name="eventHandler" typeID="C#EventHandler" value="R114"/>
                         <Property name="displayable" typeID="Cjavax.microedition.lcdui.Displayable" value="R90"/>
