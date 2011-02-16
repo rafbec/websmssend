@@ -169,7 +169,7 @@ public class O2 extends SmsConnector {
             }
 
             //for Debug purposes: simulates no more Free-SMS available
-            remsms =-1;
+            //remsms =-1;
 
             if (remsms < 0 && failedToGetRemSms == false) { //No free sms remaining ask user what to do. In case it's not possible to aquire remsms send anyway
                 resumeData = new ResumeData(SenderMode, postRequest, smsRecv, Sms, connection);
