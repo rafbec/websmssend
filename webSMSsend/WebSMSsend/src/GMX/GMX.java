@@ -151,7 +151,7 @@ public class GMX extends SmsConnector {
         }
     }
 
-    public void resumeSending() throws Exception {
+    public boolean resumeSending() throws Exception {
         throw new Exception("not implemented"); //not implemented
     }
 

@@ -45,6 +45,14 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     public static boolean simulation = false;
     public static final int SENDERMODE_STANDARD = 0;
     public static final int SENDERMODE_TEXT = 1;
+    /**
+     * if true SMS-Connector should resume sending a SMS after use approval
+     */
+    boolean resumeMode=false;
+    /**
+     * if true there are no free sms available and user is asked what to do
+     */
+    boolean noMoreFreeSMS=false;
     String recvNB;
     String text;
     String username;
@@ -82,6 +90,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     private Command SendEmail;
     private Command LastSMS;
     private Command okCommand1;
+    private Command switchAccount;
+    private Command cancelCommand;
+    private Command okCommandResumeSendSms;
     private Form MainMenu;
     private TextField textField;
     private StringItem stringItem1;
@@ -122,6 +133,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     private TextField txtFehlerbeschreibung;
     private Alert WrongCharacter;
     private Alert NoEmail;
+    private Alert noMoreFreeSmsScreen;
     private SimpleCancellableTask task;
     private Font font;
     private Image image1;
@@ -184,21 +196,29 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     }
 
     public int sendSMS(String smsRecv, String smsText) throws Exception {
-        String sendername = "";
+        if (resumeMode) {
+            resumeMode=false;
+            if (SmsConnector.hasProperty(Properties.CAN_ABORT_SEND_PROCESS_WHEN_NO_FREE_SMS_AVAILABLE)){
+                if (SmsConnector.resumeSending()== false){
+                    sendSMS(smsRecv, smsText);
+                }
+            }else{
+                sendSMS(smsRecv, smsText);
+            }
+        } else {
+            String sendername = "";
 
-        if (SenderMode == 1) { //SenderMode = 1 TEXT as Sender
-            sendername = SenderName;
-        }
+            if (SenderMode == 1) { //SenderMode = 1 TEXT as Sender
+                sendername = SenderName;
+            }
 
-        int retValue = SmsConnector.send(new SmsData(username, password, this, smsRecv, smsText, sendername, simulation));
+            int retValue = SmsConnector.send(new SmsData(username, password, this, smsRecv, smsText, sendername, simulation));
 
-        if (SmsConnector.hasProperty(Properties.CAN_ABORT_SEND_PROCESS_WHEN_NO_FREE_SMS_AVAILABLE)){
-            if (retValue == -1){ //Send process aborted having no more free sms
-                //ToDo: ask User what to do
-                SmsConnector.resumeSending();
+            if (retValue == -1) { //Send process aborted having no more free sms
+                noMoreFreeSMS = true;
+                throw new Exception("No more Free-SMS");
             }
         }
-
         return 0;
     }
 
@@ -345,13 +365,17 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             } else if (command == back) {//GEN-LINE:|7-commandAction|3|255-preAction
                     // write pre-action user code here
                 switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|4|255-postAction
-                    // write post-action user code here
+                // write post-action user code here
             } else if (command == okCommand5) {//GEN-LINE:|7-commandAction|5|254-preAction
-                    ChooseAccountAction();
+                ChooseAccountAction();
+                if (resumeMode) {
+                    switchDisplayable(getBenutzerwahlBestaetigung(), getWaitScreen());
+                } else {
                     // write pre-action user code here
                     switchDisplayable(getBenutzerwahlBestaetigung(), getList());//GEN-LINE:|7-commandAction|6|254-postAction
                     // write post-action user code here
-                    BenutzerwahlBestaetigung = null;
+                }
+                BenutzerwahlBestaetigung = null;
             }//GEN-BEGIN:|7-commandAction|7|294-preAction
         } else if (displayable == Debug) {
             if (command == Clear) {//GEN-END:|7-commandAction|7|294-preAction
@@ -390,6 +414,8 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                     recvNB = textField.getString();
                     text = textField3.getString();
                     Debug("Senden pressed");
+                    resumeMode = false;
+                    noMoreFreeSMS = false;
                     if (!password.equals("")) {
                         switchDisplayable(null, getWaitScreen());//GEN-LINE:|7-commandAction|22|29-postAction
                     } else {
@@ -465,25 +491,41 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                     SyncSettings();
                     switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|44|85-postAction
                     // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|45|110-preAction
+            }//GEN-BEGIN:|7-commandAction|45|383-preAction
+        } else if (displayable == noMoreFreeSmsScreen) {
+            if (command == cancelCommand) {//GEN-END:|7-commandAction|45|383-preAction
+                // write pre-action user code here
+                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|46|383-postAction
+                // write post-action user code here
+            } else if (command == okCommandResumeSendSms) {//GEN-LINE:|7-commandAction|47|385-preAction
+                resumeMode = true;
+                // write pre-action user code here
+                switchDisplayable(null, getWaitScreen());//GEN-LINE:|7-commandAction|48|385-postAction
+                // write post-action user code here
+            } else if (command == switchAccount) {//GEN-LINE:|7-commandAction|49|381-preAction
+                resumeMode = true;
+                // write pre-action user code here
+                switchDisplayable(null, getChooseAccount());//GEN-LINE:|7-commandAction|50|381-postAction
+                // write post-action user code here
+            }//GEN-BEGIN:|7-commandAction|51|110-preAction
         } else if (displayable == notSend) {
-            if (command == exitCommand3) {//GEN-END:|7-commandAction|45|110-preAction
+            if (command == exitCommand3) {//GEN-END:|7-commandAction|51|110-preAction
                     // write pre-action user code here
-                exitMIDlet();//GEN-LINE:|7-commandAction|46|110-postAction
+                exitMIDlet();//GEN-LINE:|7-commandAction|52|110-postAction
                     // write post-action user code here
-            } else if (command == okCommand3) {//GEN-LINE:|7-commandAction|47|112-preAction
+            } else if (command == okCommand3) {//GEN-LINE:|7-commandAction|53|112-preAction
                     // write pre-action user code here
-                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|48|112-postAction
+                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|54|112-postAction
                     // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|49|187-preAction
+            }//GEN-BEGIN:|7-commandAction|55|187-preAction
         } else if (displayable == optimSettings) {
-            if (command == back) {//GEN-END:|7-commandAction|49|187-preAction
+            if (command == back) {//GEN-END:|7-commandAction|55|187-preAction
                     // write pre-action user code here
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|50|187-postAction
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|56|187-postAction
                     // write post-action user code here
-            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|51|208-preAction
+            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|57|208-preAction
                     if (choiceGroup.isSelected(0)) {
-                        ioSettings.saveSaveEachCharacter("true"); 
+                        ioSettings.saveSaveEachCharacter("true");
                         saveEachCharacter = true;
                     } else {
                         ioSettings.saveSaveEachCharacter("false");
@@ -497,15 +539,15 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                         debug = false;
                     }
                     SyncSettings();
-                    switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|52|208-postAction
+                    switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|58|208-postAction
                     // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|53|189-preAction
+            }//GEN-BEGIN:|7-commandAction|59|189-preAction
         } else if (displayable == providerSettings) {
-            if (command == back) {//GEN-END:|7-commandAction|53|189-preAction
+            if (command == back) {//GEN-END:|7-commandAction|59|189-preAction
                     // write pre-action user code here
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|54|189-postAction
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|60|189-postAction
                     // write post-action user code here
-            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|55|232-preAction
+            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|61|232-preAction
                 if (choiceGroup3.getSelectedIndex() != -1) {
                     provider = choiceGroup3.getSelectedIndex();
                     ioSettings.saveSetup("" + provider);
@@ -515,10 +557,10 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                     }
                 }
                 SyncSettings();
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|56|232-postAction
-            }//GEN-BEGIN:|7-commandAction|57|227-preAction
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|62|232-postAction
+            }//GEN-BEGIN:|7-commandAction|63|227-preAction
         } else if (displayable == setup) {
-            if (command == okCommand) {//GEN-END:|7-commandAction|57|227-preAction
+            if (command == okCommand) {//GEN-END:|7-commandAction|63|227-preAction
                     username = textField5.getString();
                     password = textField4.getString();
                     provider = choiceGroup2.getSelectedIndex();
@@ -533,67 +575,67 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                     ioSettings.saveDebug("false");
                     ioSettings.saveSetup("" + (provider));
                     ioSettings.saveToRMS(username, password);
-                    switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|58|227-postAction
+                    switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|64|227-postAction
                     SyncSettings();
                     // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|59|104-preAction
+            }//GEN-BEGIN:|7-commandAction|65|104-preAction
         } else if (displayable == smsSend) {
-            if (command == exitCommand2) {//GEN-END:|7-commandAction|59|104-preAction
+            if (command == exitCommand2) {//GEN-END:|7-commandAction|65|104-preAction
                     // write pre-action user code here
-                exitMIDlet();//GEN-LINE:|7-commandAction|60|104-postAction
+                exitMIDlet();//GEN-LINE:|7-commandAction|66|104-postAction
                     // write post-action user code here
-            } else if (command == okCommand2) {//GEN-LINE:|7-commandAction|61|107-preAction
+            } else if (command == okCommand2) {//GEN-LINE:|7-commandAction|67|107-preAction
                     // write pre-action user code here
-                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|62|107-postAction
+                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|68|107-postAction
                 stringItem1.setText(getRemSMSText());
-            }//GEN-BEGIN:|7-commandAction|63|183-preAction
+            }//GEN-BEGIN:|7-commandAction|69|183-preAction
         } else if (displayable == smsSettings) {
-            if (command == back) {//GEN-END:|7-commandAction|63|183-preAction
+            if (command == back) {//GEN-END:|7-commandAction|69|183-preAction
                     // write pre-action user code here
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|64|183-postAction
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|70|183-postAction
                     // write post-action user code here
-            } else if (command == okCommand6) {//GEN-LINE:|7-commandAction|65|270-preAction
+            } else if (command == okCommand6) {//GEN-LINE:|7-commandAction|71|270-preAction
                     if (txtSenderName.getString().length() < 5 && choiceGroup4.getSelectedIndex() != 0) {
                         //Fehlermeldung "Name zu kurz" falls Text als Absender gewählt
                         StatusLabel.setText("Der Absender muss mindestens 5 Buchstaben lang sein");
                         StatusLabel.setLabel("Achtung!");
                     } else {
                         // write pre-action user code here
-                        CharactersCorrect();//GEN-LINE:|7-commandAction|66|270-postAction
+                        CharactersCorrect();//GEN-LINE:|7-commandAction|72|270-postAction
                         // write post-action user code here
                     }
-            }//GEN-BEGIN:|7-commandAction|67|51-preAction
+            }//GEN-BEGIN:|7-commandAction|73|51-preAction
         } else if (displayable == waitScreen) {
-            if (command == WaitScreen.FAILURE_COMMAND) {//GEN-END:|7-commandAction|67|51-preAction
+            if (command == WaitScreen.FAILURE_COMMAND) {//GEN-END:|7-commandAction|73|51-preAction
                     getNotSend().setString("SMS nicht gesendet!");
-                    switchDisplayable(getNotSend(), getMainMenu());//GEN-LINE:|7-commandAction|68|51-postAction
+                    noMoreFreeSmsAvailable();//GEN-LINE:|7-commandAction|74|51-postAction
 
-            } else if (command == WaitScreen.SUCCESS_COMMAND) {//GEN-LINE:|7-commandAction|69|50-preAction
+            } else if (command == WaitScreen.SUCCESS_COMMAND) {//GEN-LINE:|7-commandAction|75|50-preAction
                     //Save LastSMS
                     ioSettings.saveLastSMS(textField.getString(), textField3.getString());
                     ClearSMSInput();
-                    switchDisplayable(getSmsSend(), getMainMenu());//GEN-LINE:|7-commandAction|70|50-postAction
+                    switchDisplayable(getSmsSend(), getMainMenu());//GEN-LINE:|7-commandAction|76|50-postAction
                     smsSend.setString("SMS gesendet\n" + getRemSMSText());
                     stringItem1.setText(getRemSMSText());
-            } else if (command == exitCommand1) {//GEN-LINE:|7-commandAction|71|99-preAction
+            } else if (command == exitCommand1) {//GEN-LINE:|7-commandAction|77|99-preAction
                     // write pre-action user code here
-                exitMIDlet();//GEN-LINE:|7-commandAction|72|99-postAction
+                exitMIDlet();//GEN-LINE:|7-commandAction|78|99-postAction
                     // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|73|312-preAction
+            }//GEN-BEGIN:|7-commandAction|79|312-preAction
         } else if (displayable == waitScreen1) {
-            if (command == WaitScreen.FAILURE_COMMAND) {//GEN-END:|7-commandAction|73|312-preAction
+            if (command == WaitScreen.FAILURE_COMMAND) {//GEN-END:|7-commandAction|79|312-preAction
                     // write pre-action user code here
-                switchDisplayable(getEmailNotSent(), getSendEmailForm());//GEN-LINE:|7-commandAction|74|312-postAction
+                switchDisplayable(getEmailNotSent(), getSendEmailForm());//GEN-LINE:|7-commandAction|80|312-postAction
                     // write post-action user code here
-            } else if (command == WaitScreen.SUCCESS_COMMAND) {//GEN-LINE:|7-commandAction|75|311-preAction
+            } else if (command == WaitScreen.SUCCESS_COMMAND) {//GEN-LINE:|7-commandAction|81|311-preAction
                     // write pre-action user code here
-                switchDisplayable(getEmailSent(), getDebug());//GEN-LINE:|7-commandAction|76|311-postAction
+                switchDisplayable(getEmailSent(), getDebug());//GEN-LINE:|7-commandAction|82|311-postAction
                     // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|77|7-postCommandAction
-        }//GEN-END:|7-commandAction|77|7-postCommandAction
+            }//GEN-BEGIN:|7-commandAction|83|7-postCommandAction
+        }//GEN-END:|7-commandAction|83|7-postCommandAction
             // write post-action user code here
-    }//GEN-BEGIN:|7-commandAction|78|
-    //</editor-fold>//GEN-END:|7-commandAction|78|
+    }//GEN-BEGIN:|7-commandAction|84|
+    //</editor-fold>//GEN-END:|7-commandAction|84|
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitCommand ">//GEN-BEGIN:|18-getter|0|18-preInit
     /**
@@ -1876,6 +1918,114 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         return smallFont;
     }
     //</editor-fold>//GEN-END:|351-getter|2|
+    //</editor-fold>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //</editor-fold>
+
+
+
+    //<editor-fold defaultstate="collapsed" desc=" Generated Method: noMoreFreeSmsAvailable ">//GEN-BEGIN:|367-if|0|367-preIf
+    /**
+     * Performs an action assigned to the noMoreFreeSmsAvailable if-point.
+     */
+    public void noMoreFreeSmsAvailable() {//GEN-END:|367-if|0|367-preIf
+        // enter pre-if user code here
+        if (noMoreFreeSMS) {//GEN-LINE:|367-if|1|368-preAction
+            // write pre-action user code here
+            switchDisplayable(null, getNoMoreFreeSmsScreen());//GEN-LINE:|367-if|2|368-postAction
+            // write post-action user code here
+        } else {//GEN-LINE:|367-if|3|369-preAction
+            // write pre-action user code here
+            switchDisplayable(null, getNotSend());//GEN-LINE:|367-if|4|369-postAction
+            // write post-action user code here
+        }//GEN-LINE:|367-if|5|367-postIf
+        // enter post-if user code here
+    }//GEN-BEGIN:|367-if|6|
+    //</editor-fold>//GEN-END:|367-if|6|
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: noMoreFreeSmsScreen ">//GEN-BEGIN:|378-getter|0|378-preInit
+    /**
+     * Returns an initiliazed instance of noMoreFreeSmsScreen component.
+     * @return the initialized component instance
+     */
+    public Alert getNoMoreFreeSmsScreen() {
+        if (noMoreFreeSmsScreen == null) {//GEN-END:|378-getter|0|378-preInit
+            // write pre-init user code here
+            noMoreFreeSmsScreen = new Alert("Keine Frei-SMS!", "Es sind keine Frei-SMS mehr vorhanden.\r\n" +//GEN-BEGIN:|378-getter|1|378-postInit
+                    "Soll die SMS trotzdem versendet werden\r\n" +
+                    "oder der Account gewechselt werden?", null, null);
+            noMoreFreeSmsScreen.addCommand(getSwitchAccount());
+            noMoreFreeSmsScreen.addCommand(getCancelCommand());
+            noMoreFreeSmsScreen.addCommand(getOkCommandResumeSendSms());
+            noMoreFreeSmsScreen.setCommandListener(this);
+            noMoreFreeSmsScreen.setTimeout(Alert.FOREVER);//GEN-END:|378-getter|1|378-postInit
+            // write post-init user code here
+        }//GEN-BEGIN:|378-getter|2|
+        return noMoreFreeSmsScreen;
+    }
+    //</editor-fold>//GEN-END:|378-getter|2|
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: switchAccount ">//GEN-BEGIN:|380-getter|0|380-preInit
+    /**
+     * Returns an initiliazed instance of switchAccount component.
+     * @return the initialized component instance
+     */
+    public Command getSwitchAccount() {
+        if (switchAccount == null) {//GEN-END:|380-getter|0|380-preInit
+            // write pre-init user code here
+            switchAccount = new Command("Account", Command.SCREEN, 0);//GEN-LINE:|380-getter|1|380-postInit
+            // write post-init user code here
+        }//GEN-BEGIN:|380-getter|2|
+        return switchAccount;
+    }
+    //</editor-fold>//GEN-END:|380-getter|2|
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: cancelCommand ">//GEN-BEGIN:|382-getter|0|382-preInit
+    /**
+     * Returns an initiliazed instance of cancelCommand component.
+     * @return the initialized component instance
+     */
+    public Command getCancelCommand() {
+        if (cancelCommand == null) {//GEN-END:|382-getter|0|382-preInit
+            // write pre-init user code here
+            cancelCommand = new Command("Abbrechen", Command.CANCEL, 0);//GEN-LINE:|382-getter|1|382-postInit
+            // write post-init user code here
+        }//GEN-BEGIN:|382-getter|2|
+        return cancelCommand;
+    }
+    //</editor-fold>//GEN-END:|382-getter|2|
+    //</editor-fold>
+
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommandResumeSendSms ">//GEN-BEGIN:|384-getter|0|384-preInit
+    /**
+     * Returns an initiliazed instance of okCommandResumeSendSms component.
+     * @return the initialized component instance
+     */
+    public Command getOkCommandResumeSendSms() {
+        if (okCommandResumeSendSms == null) {//GEN-END:|384-getter|0|384-preInit
+            // write pre-init user code here
+            okCommandResumeSendSms = new Command("Senden", Command.OK, 0);//GEN-LINE:|384-getter|1|384-postInit
+            // write post-init user code here
+        }//GEN-BEGIN:|384-getter|2|
+        return okCommandResumeSendSms;
+    }
+    //</editor-fold>//GEN-END:|384-getter|2|
 
     /**
      * Returns a display instance.

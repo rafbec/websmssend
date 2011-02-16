@@ -151,9 +151,7 @@ public class O2 extends SmsConnector {
             gui.Debug("Fertig mit connection.httpHandler, Dauer: " + httphandlertime + " ms");
             //System.out.println(connection.getContent()+"\n\n\n");
             String postRequest = "";
-            gui.SetWaitScreenText("SMS wird gesendet...");
-
-
+            
             //Build SMS send request and get remaining SMS.
 
             String[] returnValue;
@@ -169,6 +167,9 @@ public class O2 extends SmsConnector {
                 gui.Debug("Failed to receive remaining SMS: " + ex.toString() + ex.getMessage());
                 failedToGetRemSms = true;
             }
+
+            //for Debug purposes: simulates no more Free-SMS available
+            //remsms =-1;
 
             if (remsms < 0 && failedToGetRemSms == false) { //No free sms remaining ask user what to do. In case it's not possible to aquire remsms send anyway
                 resumeData = new ResumeData(SenderMode, postRequest, smsRecv, Sms, connection);
@@ -197,13 +198,20 @@ public class O2 extends SmsConnector {
         }
     }
 
-    public void resumeSending() throws Exception {
+    public boolean resumeSending() throws Exception {
         gui.Debug("Resume SMS sending process");
-        sendSms(resumeData);
+        if (resumeData != null) {
+            sendSms(resumeData);
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
     private void sendSms(ResumeData resumeData) throws IOException, Exception {
-
+        
+        gui.SetWaitScreenText("SMS wird gesendet...");
         final String url = "https://email.o2online.de/smscenter_send.osp";
         String postRequest = resumeData.getPostRequest();
         SmsData Sms = resumeData.getSms();

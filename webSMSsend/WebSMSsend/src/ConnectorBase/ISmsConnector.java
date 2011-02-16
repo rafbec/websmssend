@@ -64,8 +64,10 @@ public interface ISmsConnector {
 
     /**
      * resumes interrupted send(SmsData Sms) after asking user
+     * @return true = resuming was possible false = no resume data, resuming was not successfull
+     * @throws Exception
      */
-    public abstract void resumeSending() throws Exception;
+    public abstract boolean resumeSending() throws Exception;
 
     /**
      *
