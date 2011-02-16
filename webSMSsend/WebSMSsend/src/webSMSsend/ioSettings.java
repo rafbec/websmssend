@@ -29,7 +29,12 @@ import javax.microedition.rms.RecordStoreException;
 public class ioSettings {
 
     protected static String getSaveEachCharacter() {
-        return getData(MakeFieldName("SaveEachCharacter"), 1);
+        String data = getData(MakeFieldName("SaveEachCharacter"), 1);
+        if (data.equals(""))
+        {
+            data="true"; //standard true
+        }
+        return data;
     }
 
     protected static String getDebug() {

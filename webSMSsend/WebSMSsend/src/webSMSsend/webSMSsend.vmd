@@ -251,20 +251,23 @@
                 <Component componentID="380" typeID="Cjavax.microedition.lcdui.Command">
                     <Property name="instanceName" typeID="Pjava.lang.String" value="VswitchAccount"/>
                     <Property name="codeGenerated" typeID="Pboolean" value="Vtrue"/>
-                    <Property name="label" typeID="Pjava.lang.String" value="VAccount"/>
+                    <Property name="label" typeID="Pjava.lang.String" value="VAccount wechseln"/>
                     <Property name="type" typeID="Pint" value="V1"/>
+                    <Property name="priority" typeID="Pint" value="V1"/>
                 </Component>
                 <Component componentID="382" typeID="Cjavax.microedition.lcdui.Command">
                     <Property name="instanceName" typeID="Pjava.lang.String" value="VcancelCommand"/>
                     <Property name="codeGenerated" typeID="Pboolean" value="Vtrue"/>
                     <Property name="label" typeID="Pjava.lang.String" value="VAbbrechen"/>
                     <Property name="type" typeID="Pint" value="V3"/>
+                    <Property name="priority" typeID="Pint" value="V3"/>
                 </Component>
                 <Component componentID="384" typeID="Cjavax.microedition.lcdui.Command">
                     <Property name="instanceName" typeID="Pjava.lang.String" value="VokCommandResumeSendSms"/>
                     <Property name="codeGenerated" typeID="Pboolean" value="Vtrue"/>
                     <Property name="label" typeID="Pjava.lang.String" value="VSenden"/>
                     <Property name="type" typeID="Pint" value="V4"/>
+                    <Property name="priority" typeID="Pint" value="V2"/>
                 </Component>
             </Component>
             <Component componentID="10" typeID="C#DisplayablesCategory">

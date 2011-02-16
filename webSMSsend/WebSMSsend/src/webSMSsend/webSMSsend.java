@@ -367,8 +367,11 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                 switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|4|255-postAction
                 // write post-action user code here
             } else if (command == okCommand5) {//GEN-LINE:|7-commandAction|5|254-preAction
+                Debug("resumeMode: "+ resumeMode);
                 ChooseAccountAction();
+
                 if (resumeMode) {
+                    waitScreen = null;
                     switchDisplayable(getBenutzerwahlBestaetigung(), getWaitScreen());
                 } else {
                     // write pre-action user code here
@@ -566,7 +569,6 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                     provider = choiceGroup2.getSelectedIndex();
                     System.out.println("Provider: " + provider);
                     debug = false;
-                    saveEachCharacter = true;
 
                     if (provider == -1) {
                         provider = 0;
@@ -1944,6 +1946,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     public void noMoreFreeSmsAvailable() {//GEN-END:|367-if|0|367-preIf
         // enter pre-if user code here
         if (noMoreFreeSMS) {//GEN-LINE:|367-if|1|368-preAction
+            resumeMode = true;
             // write pre-action user code here
             switchDisplayable(null, getNoMoreFreeSmsScreen());//GEN-LINE:|367-if|2|368-postAction
             // write post-action user code here
@@ -1988,7 +1991,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     public Command getSwitchAccount() {
         if (switchAccount == null) {//GEN-END:|380-getter|0|380-preInit
             // write pre-init user code here
-            switchAccount = new Command("Account", Command.SCREEN, 0);//GEN-LINE:|380-getter|1|380-postInit
+            switchAccount = new Command("Account wechseln", Command.SCREEN, 1);//GEN-LINE:|380-getter|1|380-postInit
             // write post-init user code here
         }//GEN-BEGIN:|380-getter|2|
         return switchAccount;
@@ -2004,7 +2007,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     public Command getCancelCommand() {
         if (cancelCommand == null) {//GEN-END:|382-getter|0|382-preInit
             // write pre-init user code here
-            cancelCommand = new Command("Abbrechen", Command.CANCEL, 0);//GEN-LINE:|382-getter|1|382-postInit
+            cancelCommand = new Command("Abbrechen", Command.CANCEL, 3);//GEN-LINE:|382-getter|1|382-postInit
             // write post-init user code here
         }//GEN-BEGIN:|382-getter|2|
         return cancelCommand;
@@ -2020,7 +2023,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     public Command getOkCommandResumeSendSms() {
         if (okCommandResumeSendSms == null) {//GEN-END:|384-getter|0|384-preInit
             // write pre-init user code here
-            okCommandResumeSendSms = new Command("Senden", Command.OK, 0);//GEN-LINE:|384-getter|1|384-postInit
+            okCommandResumeSendSms = new Command("Senden", Command.OK, 2);//GEN-LINE:|384-getter|1|384-postInit
             // write post-init user code here
         }//GEN-BEGIN:|384-getter|2|
         return okCommandResumeSendSms;
