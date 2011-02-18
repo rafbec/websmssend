@@ -178,20 +178,20 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             return SmsConnector.getRemSmsText() + "\nBenutzerkonto " + (ActiveAccount + 1);
     }
 
-    public void SetWaitScreenText(String Text) {
+    public void setWaitScreenText(String Text) {
         if (waitScreen != null) {
             waitScreen.setText(Text);
-            GUI.Debug(Text);
+            GUI.debug(Text);
         }
     }
 
-    public void SaveItem(String itemName, String content) {
+    public void saveItems(String itemName, String content) {
         String[] data = {content};
-        Debug(itemName + " " + content);
+        debug(itemName + " " + content);
         ioSettings.saveData(ioSettings.MakeFieldName(itemName), data, data.length);
     }
 
-    public String GetItem(String itemName) {
+    public String getItem(String itemName) {
         return ioSettings.getData(ioSettings.MakeFieldName(itemName), 1);
     }
 
@@ -367,7 +367,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                 switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|4|255-postAction
                 // write post-action user code here
             } else if (command == okCommand5) {//GEN-LINE:|7-commandAction|5|254-preAction
-                Debug("resumeMode: "+ resumeMode);
+                debug("resumeMode: "+ resumeMode);
                 ChooseAccountAction();
 
                 if (resumeMode) {
@@ -416,7 +416,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             } else if (command == writeSMS) {//GEN-LINE:|7-commandAction|21|29-preAction
                     recvNB = textField.getString();
                     text = textField3.getString();
-                    Debug("Senden pressed");
+                    debug("Senden pressed");
                     resumeMode = false;
                     noMoreFreeSMS = false;
                     if (!password.equals("")) {
@@ -742,7 +742,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
      */
     public WaitScreen getWaitScreen() {
         if (waitScreen == null) {//GEN-END:|47-getter|0|47-preInit
-                Debug("waitscreen erstellen");
+                debug("waitscreen erstellen");
                 // write pre-init user code here
                 waitScreen = new WaitScreen(getDisplay());//GEN-BEGIN:|47-getter|1|47-postInit
                 waitScreen.setTitle("Sende SMS...");
@@ -2070,7 +2070,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         saveTempSMS();
     }
 
-    public void Debug(String debugText) {
+    public void debug(String debugText) {
         if (debug) {
             try {
                 long currentTime = System.currentTimeMillis() - startTime;
@@ -2098,7 +2098,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             props.append(System.getProperty("microedition.encoding"));
             props.append("\nmicroedition.locale: ");
             props.append(System.getProperty("microedition.locale"));
-            Debug(props.toString());
+            debug(props.toString());
         }
     }
 }

@@ -1,7 +1,26 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ *
+ *
+    Copyright 2011 redrocketracoon@googlemail.com
+    This file is part of WebSMSsend.
+
+    WebSMSsend is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    WebSMSsend is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with WebSMSsend.  If not, see <http://www.gnu.org/licenses/>.
+
+ *
+ *
  */
+
 package O2;
 
 import ConnectorBase.URLEncoder;
@@ -60,33 +79,33 @@ public class O2 extends SmsConnector {
         }
 
         try {
-            gui.Debug("starte sendSMS02()" + (Sms.isSimulation() ? " SIMULATION!" : ""));
-            gui.Debug("Die SMS ist Zeichen lang: " + Sms.getSmsText().length());
-            gui.Debug("Anzahl SMS: " + CountSms(Sms.getSmsText()));
+            gui.debug("starte sendSMS02()" + (Sms.isSimulation() ? " SIMULATION!" : ""));
+            gui.debug("Die SMS ist Zeichen lang: " + Sms.getSmsText().length());
+            gui.debug("Anzahl SMS: " + CountSms(Sms.getSmsText()));
             long totaltime = System.currentTimeMillis();
             if (Sms.getSmsRecv().equals("")) {
-                gui.SetWaitScreenText("kein Empf\u00E4nger angegeben!");
+                gui.setWaitScreenText("kein Empf\u00E4nger angegeben!");
                 Thread.sleep(1000);
                 throw new Exception("kein Empf\u00E4nger!");
             }
             if (Sms.getSmsText().equals("")) {
-                gui.SetWaitScreenText("kein SMS-Text angegeben!");
+                gui.setWaitScreenText("kein SMS-Text angegeben!");
                 Thread.sleep(1000);
                 throw new Exception("leere SMS!");
             }
-            gui.SetWaitScreenText("Einstellungen werden geladen...");
+            gui.setWaitScreenText("Einstellungen werden geladen...");
             Thread.sleep(500);
             String url;
 
             NetworkHandler connection = new NetworkHandler(Sms.getUsername(), Sms.getPassword(), gui);
-            gui.SetWaitScreenText("Login wird geladen...");
+            gui.setWaitScreenText("Login wird geladen...");
 
             String smsRecv = checkRecv(Sms.getSmsRecv());
             //#if Test
 //#             // Output only on developer site, message contains sensitive data
-//#             gui.Debug("Empf\u00E4nger-Handynummer: " + smsRecv);
+//#             gui.debug("Empf\u00E4nger-Handynummer: " + smsRecv);
             //#else
-            gui.Debug("Empf\u00E4nger-Handynummer: " + smsRecv.substring(0, 6) + "*******");
+            gui.debug("Empf\u00E4nger-Handynummer: " + smsRecv.substring(0, 6) + "*******");
             //#endif
             url = "https://login.o2online.de/loginRegistration/loginAction"
                     + ".do?_flowId=" + "login&o2_type=asp&o2_label=login/co"
@@ -100,21 +119,21 @@ public class O2 extends SmsConnector {
                     //      continue;
                     break;
                 } catch (CertificateException ex) {
-                    gui.Debug(ex.toString());
+                    gui.debug(ex.toString());
                     if (i == 1) {
                         throw ex;
                     }
-                    gui.SetWaitScreenText("SSL-Fehler, starte erneut...");
+                    gui.setWaitScreenText("SSL-Fehler, starte erneut...");
                     Thread.sleep(3000);
                 } catch (IOException ex) {
-                    gui.Debug("IOException: " + ex.toString());
+                    gui.debug("IOException: " + ex.toString());
                     if (i == 1) {
                         throw ex;
                     }
-                    gui.SetWaitScreenText("Netzwerkfehler, starte erneut...");
+                    gui.setWaitScreenText("Netzwerkfehler, starte erneut...");
                     Thread.sleep(3000);
                 } catch (Exception ex) {
-                    gui.SetWaitScreenText("Keine Verbindung m\u00F6glich :" + ex.toString() + "\n" + ex.getMessage());
+                    gui.setWaitScreenText("Keine Verbindung m\u00F6glich :" + ex.toString() + "\n" + ex.getMessage());
                     Thread.sleep(3000);
                     throw ex;
                 }
@@ -124,8 +143,8 @@ public class O2 extends SmsConnector {
 
             flowExecutionKey = connection.getFlowExecutionKey();
 
-            gui.SetWaitScreenText("Zugangsdaten werden gesendet...");
-            gui.Debug("Flow ExecutionKey: " + flowExecutionKey);
+            gui.setWaitScreenText("Zugangsdaten werden gesendet...");
+            gui.debug("Flow ExecutionKey: " + flowExecutionKey);
             url = "https://login.o2online.de/loginRegistration/loginAction.do";
             connection.httpHandler("POST", url, "login.o2online.de", "_flowExecutionKey="
                     + URLEncoder.encode(flowExecutionKey)
@@ -133,7 +152,7 @@ public class O2 extends SmsConnector {
                     + "&password=" + URLEncoder.encode(connection.getPassword().trim())
                     + "&_eventId=login", false);//False
 
-            gui.SetWaitScreenText("Zugangsdaten werden gepr\u00FCft...");
+            gui.setWaitScreenText("Zugangsdaten werden gepr\u00FCft...");
             url = "https://email.o2online.de/ssomanager.osp?APIID=AUTH-WEBSSO&"
                     + "TargetApp=/sms_new.osp%3f&o2_type=url&o2_label=web2sms-o2online";
             String localCookie = connection.getCookie();
@@ -143,28 +162,30 @@ public class O2 extends SmsConnector {
                 Exception ex = new Exception("Zugangsdaten falsch!");
                 throw ex;
             }
-            gui.SetWaitScreenText("Senden wird vorbereitet...");
+            gui.setWaitScreenText("Senden wird vorbereitet...");
             url = "https://email.o2online.de/smscenter_new.osp?Autocompletion=1&MsgContentID=-1";
             long starttime = System.currentTimeMillis();
             connection.httpHandler("GET", url, "email.o2online.de", "", true);
             long httphandlertime = System.currentTimeMillis() - starttime;
-            gui.Debug("Fertig mit connection.httpHandler, Dauer: " + httphandlertime + " ms");
+            gui.debug("Fertig mit connection.httpHandler, Dauer: " + httphandlertime + " ms");
             //System.out.println(connection.getContent()+"\n\n\n");
             String postRequest = "";
-            
+            gui.setWaitScreenText("SMS wird gesendet...");
+
+
             //Build SMS send request and get remaining SMS.
 
             String[] returnValue;
             starttime = System.currentTimeMillis();
             returnValue = connection.getSendPostRequest(true, SenderMode); //Sendermode: 0=phone number 1=text
-            gui.Debug("Fertig mit getSendPostRequest, Dauer: " + (System.currentTimeMillis() - starttime) + " ms" + "HttpHandler: " + httphandlertime + " ms");
+            gui.debug("Fertig mit getSendPostRequest, Dauer: " + (System.currentTimeMillis() - starttime) + " ms" + "HttpHandler: " + httphandlertime + " ms");
             postRequest = returnValue[0];
 
             try {
                 remsms = Integer.parseInt(returnValue[1]);
                 remsms = remsms - CountSms(Sms.getSmsText()); //Counting amount of used SMS and subtract from remaining freesms
             } catch (Exception ex) {
-                gui.Debug("Failed to receive remaining SMS: " + ex.toString() + ex.getMessage());
+                gui.debug("Failed to receive remaining SMS: " + ex.toString() + ex.getMessage());
                 failedToGetRemSms = true;
             }
 
@@ -176,30 +197,30 @@ public class O2 extends SmsConnector {
                 return -1;
             } else { //enough free sms avaiable
                 sendSms(new ResumeData(SenderMode, postRequest, smsRecv, Sms, connection));
-                gui.Debug("Fertig mit sendSMS02, Dauer: " + (System.currentTimeMillis() - totaltime) + " ms");
+                gui.debug("Fertig mit sendSMS02, Dauer: " + (System.currentTimeMillis() - totaltime) + " ms");
                 return 0;
             }
         } catch (OutOfMemoryError ex) {
-            gui.SetWaitScreenText("Systemspeicher voll!");
-            gui.Debug("Systemspeicher voll!" + ex.getMessage());
+            gui.setWaitScreenText("Systemspeicher voll!");
+            gui.debug("Systemspeicher voll!" + ex.getMessage());
             Thread.sleep(7000);
             throw ex;
         } catch (Exception ex) {
-            gui.SetWaitScreenText(ex.toString() + ": " + ex.getMessage());
-            gui.Debug(ex.toString() + ": " + ex.getMessage());
+            gui.setWaitScreenText(ex.toString() + ": " + ex.getMessage());
+            gui.debug(ex.toString() + ": " + ex.getMessage());
             ex.printStackTrace();
             Thread.sleep(7000);
             throw ex;
         } catch (Throwable e) {
-            gui.SetWaitScreenText("Unklarer Fehler: " + e.toString());
-            gui.Debug("Unklarer Fehler: " + e.toString());
+            gui.setWaitScreenText("Unklarer Fehler: " + e.toString());
+            gui.debug("Unklarer Fehler: " + e.toString());
             Thread.sleep(10000);
             throw new Exception("Fehler!");
         }
     }
 
     public boolean resumeSending() throws Exception {
-        gui.Debug("Resume SMS sending process");
+        gui.debug("Resume SMS sending process");
         if (resumeData != null) {
             sendSms(resumeData);
             return true;
@@ -211,7 +232,7 @@ public class O2 extends SmsConnector {
 
     private void sendSms(ResumeData resumeData) throws IOException, Exception {
         
-        gui.SetWaitScreenText("SMS wird gesendet...");
+        gui.setWaitScreenText("SMS wird gesendet...");
         final String url = "https://email.o2online.de/smscenter_send.osp";
         String postRequest = resumeData.getPostRequest();
         SmsData Sms = resumeData.getSms();
@@ -229,7 +250,7 @@ public class O2 extends SmsConnector {
             resumeData.getConnection().httpHandler("POST", url, "email.o2online.de", postRequest, false); //false
         }
 
-        gui.SetWaitScreenText("SMS wurde versandt!");
+        gui.setWaitScreenText("SMS wurde versandt!");
         SaveItem(REMAINING_SMS_FIELD, remsms + "");
     }
 }

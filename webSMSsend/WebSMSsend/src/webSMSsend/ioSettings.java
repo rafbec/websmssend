@@ -21,6 +21,7 @@ along with WebSMSsend.  If not, see <http://www.gnu.org/licenses/>.
  *
  *
  */
+
 package webSMSsend;
 
 import javax.microedition.rms.RecordStore;

@@ -156,47 +156,28 @@ public class GMX extends SmsConnector {
     }
 
     /**
-     * Caller of {@link #Send(java.lang.String, java.lang.String,
-     * java.lang.String, boolean) GMX.Send} in case the additional parameters
-     * {@code senderName} and {@code simulation} are not needed. In other words,
-     * an SMS sent using this method is always transmitted with the user's
-     * mobile phone number as sender identification..
-     * @param smsRecv the SMS recipient's mobile phone number.
-     * @param smsText the SMS text to be sent.
-     * @throws Exception
-     */
-    public void Send(String smsRecv, String smsText) throws Exception {
-        // Old syntax,
-        // Send(smsRecv, smsText, "" , false);
-    }
-
-    /**
      * This method handles the SMS sending process and transmits the SMS to be
      * sent to the {@link #WEBSERVICE_URL GMX SMS server} for further
      * processing. It first logs the user in by which it also receives the
      * number of remaining free SMS. Afterwards, the SMS to be sent is fit into
      * the protocol message and transmitted to the GMX server which confirms the
      * SMS transmission.
-     * @param smsRecv {@link String} containing the SMS recipient's mobile phone
-     *        number.
-     * @param smsText {@link String} containing the SMS text to be sent.
-     * @param senderName {@link String} containing an arbitrary sender name.
-     *        Yet unused.
-     * @param simulation determines, whether the sending process is only
-     *        simulated or actually executed. If set {@code true}, the connector
-     *        behaves as if the SMS was sent, except that the statement
-     *        executing the sending process is ignored.
+     * @param sms contains all relevant information which are necessary for
+     *        sending an SMS, e. g. the SMS' text, recipient's phone number,
+     *        etc.
      * @throws Exception
      */
      public int send(SmsData sms) throws Exception {
         try {
             gui = sms.getGui();
-            gui.Debug("Starte " + getClass().getName() + ".Send()" + (sms.isSimulation() ? " SIMULATION!" : ""));
+            gui.debug("Starte " + getClass().getName() + ".Send()"
+                    + (sms.isSimulation() ? " SIMULATION!" : ""));
             long totaltime = System.currentTimeMillis();
 
             if (sms.getSmsRecv().equals("")) {
                 throw new Exception("Kein Empf\u00E4nger angegeben");
             }
+
             if (sms.getSmsText().equals("")) {
                 throw new Exception("Kein SMS-Text angegeben");
             }
@@ -209,16 +190,17 @@ public class GMX extends SmsConnector {
 
             //#if Test
 //#             // Output only on developer site, message contains sensitive data
-//#             gui.Debug("Empf\u00E4nger-Handynummer: " + smsRecv);
+//#             gui.debug("Empf\u00E4nger-Handynummer: " + smsRecv);
             //#else
-            gui.Debug("Empf\u00E4nger-Handynummer: " + smsRecv.substring(0, 3) + "*******");
+            gui.debug("Empf\u00E4nger-Handynummer: " + smsRecv.substring(0, 3) + "*******");
             //#endif
-
+            gui.debug("Webservice-URL: " + WEBSERVICE_URL);
+            
             Hashtable params = new Hashtable();
             params.put("email_address", sms.getUsername());
             params.put("password", sms.getPassword());
 
-            gui.SetWaitScreenText("Login...");
+            gui.setWaitScreenText("Login...");
             Hashtable result = sendPackage("GET_CUSTOMER", "1.10", params, true);
 
             if(result == null)
@@ -230,13 +212,13 @@ public class GMX extends SmsConnector {
                 throw new RuntimeException("Konnte Server-Antwort nicht lesen");
 
             if(returnCode.equals("0")) {
-                gui.SetWaitScreenText("Login erfolgreich");
+                gui.setWaitScreenText("Login erfolgreich");
             }
             else if(returnCode.equals("25")) {
                 throw new Exception("E-Mail/Freischaltcode falsch");
             }
             else {
-                gui.SetWaitScreenText("Unbekannte Serverantwort: " + returnCode);
+                gui.setWaitScreenText("Unbekannte Serverantwort: " + returnCode);
             }
 
             int senderPhoneNumberConfirmed = Integer.parseInt(result.get("cell_phone_confirmed").toString());
@@ -247,16 +229,15 @@ public class GMX extends SmsConnector {
             Object customerIDObj = result.get("customer_id");
             Object senderPhoneNumberObj = result.get("cell_phone");
             // Maximum number of free SMS a user can send
-            String freeMaxMonth = result.get("free_max_month").toString();
+            Object freeMaxMonth = result.get("free_max_month");
             // Number of free SMS remaining the current month
             String freeRemainingMonth = result.get("free_rem_month").toString();
 
-            gui.SetWaitScreenText("Senden wird vorbereitet...");
-            
+            gui.setWaitScreenText("Senden wird vorbereitet...");
             //#if Test
 //#             // Output only on developer site, message contains sensitive data
-//#             gui.Debug("Kundennummer: " + customerIDObj);
-//#             gui.Debug("Absender-Handynummer: " + senderPhoneNumberObj);
+//#             gui.debug("Kundennummer: " + customerIDObj);
+//#             gui.debug("Absender-Handynummer: " + senderPhoneNumberObj);
             //#endif
             
             if(senderPhoneNumberObj == null || freeMaxMonth == null || freeRemainingMonth == null)
@@ -279,43 +260,72 @@ public class GMX extends SmsConnector {
             params.put("sms_sender", senderPhoneNumber);
 
             if (!sms.isSimulation()) {
-                gui.SetWaitScreenText("SMS wird gesendet...");
+                gui.setWaitScreenText("SMS wird gesendet...");
                 result = sendPackage("SEND_SMS", "1.01", params, false);
 
-                //Counting amount of used SMS
-                int SMSneeded = CountSms(sms.getSmsText());
-                // Check if there are free SMS left
-                if (remSMS - SMSneeded > 0) {
-                    remSMS = remSMS - SMSneeded;
+                Object sendReturnCode = result.get("rslt");
+
+                if(sendReturnCode == null)
+                    throw new RuntimeException("Konnte Server-Antwort nicht lesen");
+
+                if(sendReturnCode.equals("0")) {
+                    gui.setWaitScreenText("SMS wurde gesendet");
                 }
                 else {
-                    remSMS = 0;
+                    gui.setWaitScreenText("Unbekannte Serverantwort: " + returnCode);
                 }
-                gui.Debug("Die SMS ist Zeichen lang: " + sms.getSmsText().length());
-                gui.Debug("Anzahl SMS: " + SMSneeded);
-                gui.SetWaitScreenText("SMS wurde gesendet");
+
+                // Counting amount of used SMS
+                int SMSneeded = CountSms(sms.getSmsText());
+                gui.debug("Die SMS ist Zeichen lang: " + sms.getSmsText().length());
+                gui.debug("Anzahl SMS: " + SMSneeded);
+
+                // Determine remaining SMS this month
+                try {
+                    remsms = Integer.parseInt(result.get("free_rem_month").toString());
+                } catch (NumberFormatException ne) {
+                    gui.debug("Konnte verbleibende SMS nicht bestimmen: "
+                            + ne.getMessage()
+                            + "\nNutze alte Methode");
+                    // Check if there are free SMS left
+                    if (remSMS - SMSneeded > 0) {
+                        remSMS = remSMS - SMSneeded;
+                    }
+                    else {
+                        remSMS = 0;
+                    }
+                    remsms = remSMS;
+                }
             }
 
-            remsms = remSMS;
+            //Determine maximum possible free SMS this month
+            freeMaxMonth = result.get("free_max_month");
             try {
-                maxfreesms = Integer.parseInt(freeMaxMonth);
-            } catch (Exception ex) {
+                maxfreesms = Integer.parseInt(freeMaxMonth.toString());
+            } catch (NumberFormatException ne) {
+                gui.debug("Konnte maximal in diesem Monat mögliche SMS "
+                        + "nicht bestimmen: "
+                        + ne.getMessage());
                 maxfreesms = 0;
             }
+
             SaveItem(REMAINING_SMS_FIELD, remsms+"");
             SaveItem(MAX_FREE_SMS, maxfreesms+"");
-            gui.Debug("Fertig mit " + getClass().getName() + ".Send(), Dauer: " + (System.currentTimeMillis() - totaltime) + " ms");
+
+            gui.debug("Fertig mit " + getClass().getName()
+                    + ".Send(), Dauer: "
+                    + (System.currentTimeMillis() - totaltime) + " ms");
             return 0;
         } catch (OutOfMemoryError ex) {
-            gui.SetWaitScreenText("Systemspeicher voll. " + ex.getMessage());
+            gui.setWaitScreenText("Systemspeicher voll. " + ex.getMessage());
             Thread.sleep(3000);
             throw ex;
         } catch (Exception ex) {
-            gui.SetWaitScreenText("SMS nicht gesendet: " + ex.getMessage());
+            gui.setWaitScreenText("SMS nicht gesendet: " + ex.getMessage());
             Thread.sleep(3000);
             throw ex;
         } catch (Throwable e) {
-            gui.SetWaitScreenText("Unklarer Fehler: " + e.toString());
+            gui.setWaitScreenText("Unklarer Fehler: " + e.toString());
             Thread.sleep(10000);
             throw new Exception("Fehler!");
         }
@@ -375,15 +385,15 @@ public class GMX extends SmsConnector {
 
         //#if Test
 //#         // Output only on developer site, message contains sensitive data
-//#         gui.Debug("Erstelle Serveranfrage mit folgenden Parametern: " + params);
+//#         gui.debug("Erstelle Serveranfrage mit folgenden Parametern: " + params);
         //#endif
         
         String request = createRequest(method, version, params, gmxFlag);
         //#if Test
 //#         // Output as is only on developer site, message contains sensitive data
-//#         gui.Debug("Serveranfrage: " + request);
+//#         gui.debug("Serveranfrage: " + request);
         //#else
-        gui.Debug("Serveranfrage: " + anonymizeProtocolMsg(request));
+        gui.debug("Serveranfrage: " + anonymizeProtocolMsg(request));
         //#endif
         
         writer.write(request);
@@ -391,13 +401,14 @@ public class GMX extends SmsConnector {
 
         int responseCode = connection.getResponseCode();
         if (responseCode != HttpConnection.HTTP_OK) {
-            throw new IOException("HTTP Antwort-Code: " + responseCode);
+            throw new IOException("HTTP Antwort-Code: " + responseCode
+                    + ", Grund: " + connection.getResponseMessage());
         }
 
         Reader reader = new InputStreamReader(connection.openInputStream());
 
         int length = (int) connection.getLength();
-        gui.Debug("Empfange " + length + " Bytes...");
+        gui.debug("Empfange " + length + " Bytes...");
 
         char[] buffer = new char[length];
         reader.read(buffer, 0, length);
@@ -405,9 +416,9 @@ public class GMX extends SmsConnector {
 
         //#if Test
 //#         // Output as is only during development, message contains sensitive data
-//#         gui.Debug("Serverantwort: " + asString);
+//#         gui.debug("Serverantwort: " + asString);
         //#else
-        gui.Debug("Serverantwort: " + anonymizeProtocolMsg(asString));
+        gui.debug("Serverantwort: " + anonymizeProtocolMsg(asString));
         //#endif
 
         if (asString.indexOf("<WR TYPE=\"RSPNS\"") < 0) {
@@ -482,7 +493,7 @@ public class GMX extends SmsConnector {
         }
         //#if Test
 //#         // Output only during development, message contains sensitive data
-//#         gui.Debug("Serverantwort geparsed: " + result);
+//#         gui.debug("Serverantwort geparsed: " + result);
         //#endif
         return result;
     }

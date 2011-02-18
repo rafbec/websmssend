@@ -1,6 +1,24 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ *
+ *
+    Copyright 2010 redrocketracoon@googlemail.com
+    This file is part of WebSMSsend.
+
+    WebSMSsend is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    WebSMSsend is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with WebSMSsend.  If not, see <http://www.gnu.org/licenses/>.
+
+ *
+ *
  */
 
 package webSMSsend;
@@ -73,14 +91,14 @@ public class EmailClient {
          while (((c = is.read()) != -1) ) {
             sb.append((char) c);
          }
-        parent.Debug("SMTP server response - " + sb.toString());
+        parent.debug("SMTP server response - " + sb.toString());
         if (sb.toString().indexOf("Message accepted")!=-1){
             i=1; //successfull
         } else{
             throw new IOException("E-Mail not send");
         }
       } catch(IOException e) {
-        parent.Debug("Cannot connect to SMTP server. Ping the server to make sure it is running...\n"+e.toString()+e.getMessage());
+        parent.debug("Cannot connect to SMTP server. Ping the server to make sure it is running...\n"+e.toString()+e.getMessage());
         throw e;
       } finally {
          try {

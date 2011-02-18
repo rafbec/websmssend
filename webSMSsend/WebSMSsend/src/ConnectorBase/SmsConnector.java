@@ -1,6 +1,24 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ *
+ *
+    Copyright 2011 redrocketracoon@googlemail.com
+    This file is part of WebSMSsend.
+
+    WebSMSsend is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    WebSMSsend is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with WebSMSsend.  If not, see <http://www.gnu.org/licenses/>.
+
+ *
+ *
  */
 
 package ConnectorBase;
@@ -23,7 +41,7 @@ public abstract class SmsConnector implements ISmsConnector {
 
     public int getRemainingSMS() {
         try {
-            String remsms = gui.GetItem(getName() + REMAINING_SMS_FIELD);
+            String remsms = gui.getItem(getName() + REMAINING_SMS_FIELD);
             this.remsms = Integer.parseInt(remsms);
         } catch (Exception ex) {
             remsms=-1; //-1 if no value could be restored
@@ -33,7 +51,7 @@ public abstract class SmsConnector implements ISmsConnector {
 
     public int getMaxFreeSMS() {
         try {
-            String maxfreesms = gui.GetItem(getName() + MAX_FREE_SMS);
+            String maxfreesms = gui.getItem(getName() + MAX_FREE_SMS);
             this.maxfreesms = Integer.parseInt(maxfreesms);
         } catch (Exception ex) {
             maxfreesms = -1; //-1 if no value could be restored
@@ -47,7 +65,7 @@ public abstract class SmsConnector implements ISmsConnector {
 
     protected void SaveItem(String ItemName, String Content)
     {
-        gui.SaveItem(getName() + ItemName, Content); //saves Field with Connectorname
+        gui.saveItems(getName() + ItemName, Content); //saves Field with Connectorname
     }
 
     protected String checkRecv(String smsRecv) {

@@ -86,23 +86,23 @@ public class NetworkHandler {
             byte[] testByte = {(byte) 0x80};
             String testString = new String(testByte, "Cp1252");
         } catch (UnsupportedEncodingException ex) {
-            GUI.Debug(ex.toString());
-            GUI.Debug("JVM doesn't support Cp1252 encoding, falling  back to internal decoding.");
+            GUI.debug(ex.toString());
+            GUI.debug("JVM doesn't support Cp1252 encoding, falling  back to internal decoding.");
             cp1252internal = false;
         } catch (Exception ex){
-            GUI.Debug("Exception at NetworkHandler: "+ex.toString());
+            GUI.debug("Exception at NetworkHandler: "+ex.toString());
         }
     }
 
     //Save Startline
     private void SaveStartLine(int Startline)
     {
-        GUI.SaveItem(START_LINE_SAVE_NAME, Startline + "");
+        GUI.saveItems(START_LINE_SAVE_NAME, Startline + "");
     }
 
     private int GetStartLine()
     {
-        String line = GUI.GetItem(START_LINE_SAVE_NAME);
+        String line = GUI.getItem(START_LINE_SAVE_NAME);
         try {
             return Integer.parseInt(line);
         } catch (Exception ex) {
@@ -128,7 +128,7 @@ public class NetworkHandler {
 
     //statical query line 850!
     public String[] getSendPostRequest(boolean getRemSMS, int SENDERMODE) throws Exception{
-        GUI.Debug("getSendPostRequest( " + getRemSMS + " )");
+        GUI.debug("getSendPostRequest( " + getRemSMS + " )");
         String[] lineSplit=null;
         
         RE split=new RE('\n'+"");
@@ -160,12 +160,12 @@ public class NetworkHandler {
         String[] argumentStrings=new String[19];
         int smsFormLine=0;
         int startline = GetStartLine();
-        GUI.Debug("Saved Startline: " + startline);
+        GUI.debug("Saved Startline: " + startline);
         try{
             smsFormLine=getRegexLineMatch(lineSplit,"<form name=\"frmSMS\" action=\"/smscenter_send.osp\" onsubmit=\"return false\" onreset=\"return false\" method=\"post\">",startline,false)+1;
         }
         catch (ArrayIndexOutOfBoundsException e) { //Fallback: Regex the whole html string
-            GUI.Debug("Fallback: RegexLineMatch: Startline is not correct");
+            GUI.debug("Fallback: RegexLineMatch: Startline is not correct");
             smsFormLine=getRegexLineMatch(lineSplit,"<form name=\"frmSMS\" action=\"/smscenter_send.osp\" onsubmit=\"return false\" onreset=\"return false\" method=\"post\">",0,false)+1;
         }
         catch (Exception ex){
@@ -173,7 +173,7 @@ public class NetworkHandler {
         }
         startline= (lineSplit.length-smsFormLine);
         SaveStartLine(startline);
-        GUI.Debug("Current Startline: " + startline);
+        GUI.debug("Current Startline: " + startline);
         String remSMSstring=null;
         if (getRemSMS){
             int remSMSline=getRegexLineMatch(lineSplit,"<span class=\"FREESMS\"><strong>Frei-SMS: (.+) Web2SMS noch in diesem Monat mit Ihrem Internet-Pack inklusive!</strong></span><br>",lineSplit.length-smsFormLine,false);
@@ -222,14 +222,14 @@ public class NetworkHandler {
     }*/
 
     public String getRegexMatch(String lineSplit,String expression,int paren) {
-        GUI.Debug("getRegexMatch( " + lineSplit + ", " + expression + ", " + paren + " )");
+        GUI.debug("getRegexMatch( " + lineSplit + ", " + expression + ", " + paren + " )");
         String content;
         RE regexp=new RE(expression,RE.MATCH_CASEINDEPENDENT);
 
         regexp.match(lineSplit);
         content=regexp.getParen(paren);
 
-        GUI.Debug("getRegexMatch return " + content);
+        GUI.debug("getRegexMatch return " + content);
         return content;
     }
 
@@ -265,7 +265,7 @@ public class NetworkHandler {
 	}
 
      public String getFlowExecutionKey() throws Exception{
-         GUI.Debug("Using getFlowExecutionkeyALT()");
+         GUI.debug("Using getFlowExecutionkeyALT()");
          String key = getFlowExecutionkeyALT(content);
          if (key.equals("")) {
              throw new Exception("flowExecutionKey not found!");
@@ -437,7 +437,7 @@ public class NetworkHandler {
 
     public int httpHandler(String requestMode, String url, String host,String postReq,boolean loadContent) throws CertificateException, IOException, Exception {
 //        GUI.debug("httpHandler( " + requestMode + ", " + url + ", " + host + ", " + postReq + ", " + loadContent + " )");
-        GUI.Debug("httpHandler( " + requestMode + ", " + url + ", " + host + ", postReq, " + loadContent + " )");
+        GUI.debug("httpHandler( " + requestMode + ", " + url + ", " + host + ", postReq, " + loadContent + " )");
         byte[] data;
         HttpConnection con=null;
         content="";
@@ -448,7 +448,7 @@ public class NetworkHandler {
              try {
                con = (HttpConnection)Connector.open(url,Connector.READ_WRITE);
              } catch (Exception ex) {
-                 GUI.Debug("Connector.open failed, exception: " + ex.toString());
+                 GUI.debug("Connector.open failed, exception: " + ex.toString());
                  throw ex;
              }
 
@@ -470,7 +470,7 @@ public class NetworkHandler {
                     os = con.openOutputStream();
                     os.write(postReq.getBytes());
                 } catch (IOException ex) {
-                    GUI.Debug("writing to output stream failed, exception: " + ex.toString());
+                    GUI.debug("writing to output stream failed, exception: " + ex.toString());
                     throw ex;
                 }
 
@@ -478,7 +478,7 @@ public class NetworkHandler {
                  con.setRequestMethod(HttpConnection.GET);
              }
              } catch (IOException ex) {
-                 GUI.Debug("con.setRequestProperty failed, exception: " + ex.toString());
+                 GUI.debug("con.setRequestProperty failed, exception: " + ex.toString());
                  throw ex;
              }
              
@@ -509,10 +509,10 @@ public class NetworkHandler {
                  try {
              is = con.openDataInputStream();
                  } catch (IOException ex) {
-                     GUI.Debug("con.openDataInputStream failed, exception: " + ex.toString());
+                     GUI.debug("con.openDataInputStream failed, exception: " + ex.toString());
                      throw ex;
                  }
-             GUI.Debug("HTTP Response Code: "+con.getResponseCode());
+             GUI.debug("HTTP Response Code: "+con.getResponseCode());
              if (con.getResponseCode() == HttpConnection.HTTP_OK) {
                  
                  // Get length and process data
@@ -549,7 +549,7 @@ public class NetworkHandler {
                     //return 1;
                  }
                  } catch (IOException ex) {
-                     GUI.Debug("reading input stream failed, exception: " + ex.toString());
+                     GUI.debug("reading input stream failed, exception: " + ex.toString());
                      throw ex;
                  }
 
