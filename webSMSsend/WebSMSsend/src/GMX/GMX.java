@@ -38,6 +38,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
+import webSMSsend.IGui;
 
 /**
  * This class implements the {@link ConnectorBase.ISmsConnector communication
@@ -109,16 +110,16 @@ public class GMX extends SmsConnector {
      * @return a {@link String} showing the number of left GMX free SMS
      *         and the maximum number of free SMS in the current month.
      */
-    public String getRemSmsText() {
+    public String getRemSmsText(IGui gui) {
         String text = "Verbleibende Frei-SMS: ";
 
-        if (getRemainingSMS() == -1 ) {
+        if (getRemainingSMS(gui) == -1 ) {
             text += "?";
         } else {
             text += remsms;
         }
 
-        if (this.getMaxFreeSMS() == -1 ) {
+        if (this.getMaxFreeSMS(gui) == -1 ) {
             text += "/?";
         } else {
             text += "/" + maxfreesms;
@@ -282,7 +283,7 @@ public class GMX extends SmsConnector {
 
                 // Determine remaining SMS this month
                 try {
-                    remsms = Integer.parseInt(result.get("free_rem_month").toString());
+                    remSMS = Integer.parseInt(result.get("free_rem_month").toString());
                 } catch (NumberFormatException ne) {
                     gui.debug("Konnte verbleibende SMS nicht bestimmen: "
                             + ne.getMessage()
@@ -294,11 +295,12 @@ public class GMX extends SmsConnector {
                     else {
                         remSMS = 0;
                     }
-                    remsms = remSMS;
                 }
             }
-
-            //Determine maximum possible free SMS this month
+            
+            // Get remaining free SMS this month
+            remsms = remSMS;
+            // Determine maximum possible free SMS this month
             freeMaxMonth = result.get("free_max_month");
             try {
                 maxfreesms = Integer.parseInt(freeMaxMonth.toString());

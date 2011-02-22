@@ -23,6 +23,8 @@
 
 package ConnectorBase;
 
+import webSMSsend.IGui;
+
 /**
  *
  * @author Copyright 2011 redrocketracoon@googlemail.com
@@ -46,19 +48,19 @@ public interface ISmsConnector {
      *
      * @return
      */
-    public int getRemainingSMS();
+    public int getRemainingSMS(IGui gui);
 
     /**
      *
      * @return
      */
-    public int getMaxFreeSMS();
+    public int getMaxFreeSMS(IGui gui);
 
     /**
      *
      * @return
      */
-    public String getRemSmsText();
+    public String getRemSmsText(IGui gui);
 
     /**
      *

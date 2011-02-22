@@ -39,7 +39,7 @@ public abstract class SmsConnector implements ISmsConnector {
     protected int maxfreesms = -1;
     protected ConnectorSpecification specs = new ConnectorSpecification();
 
-    public int getRemainingSMS() {
+    public int getRemainingSMS(IGui gui) {
         try {
             String remsms = gui.getItem(getName() + REMAINING_SMS_FIELD);
             this.remsms = Integer.parseInt(remsms);
@@ -49,7 +49,7 @@ public abstract class SmsConnector implements ISmsConnector {
         return remsms;
     }
 
-    public int getMaxFreeSMS() {
+    public int getMaxFreeSMS(IGui gui) {
         try {
             String maxfreesms = gui.getItem(getName() + MAX_FREE_SMS);
             this.maxfreesms = Integer.parseInt(maxfreesms);

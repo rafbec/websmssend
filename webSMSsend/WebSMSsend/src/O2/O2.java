@@ -29,6 +29,7 @@ import ConnectorBase.Properties;
 import ConnectorBase.SmsData;
 import java.io.IOException;
 import javax.microedition.pki.CertificateException;
+import webSMSsend.IGui;
 
 /**
  *
@@ -53,8 +54,8 @@ public class O2 extends SmsConnector {
         return "Passwort:";
     }
 
-    public String getRemSmsText() {
-        if (this.getRemainingSMS() == -1) {
+    public String getRemSmsText(IGui gui) {
+        if (this.getRemainingSMS(gui) == -1) {
             return "Verbleibende Frei-SMS: ?";
         } else {
             return "Verbleibende Frei-SMS: " + remsms;

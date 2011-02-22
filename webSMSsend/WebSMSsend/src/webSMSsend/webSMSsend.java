@@ -175,7 +175,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     }
 
     private String getRemSMSText() {
-            return SmsConnector.getRemSmsText() + "\nBenutzerkonto " + (ActiveAccount + 1);
+            return SmsConnector.getRemSmsText(this) + "\nBenutzerkonto " + (ActiveAccount + 1);
     }
 
     public void setWaitScreenText(String Text) {
@@ -290,8 +290,6 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
      */
     private void initialize() {//GEN-END:|0-initialize|0|0-preInitialize
             startTime = System.currentTimeMillis();
-
-
 //GEN-LINE:|0-initialize|1|0-postInitialize
             // write post-initialize user code here
     }//GEN-BEGIN:|0-initialize|2|
@@ -305,8 +303,8 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             if (ioSettings.getUsername().equals("")) {
                 switchDisplayable(null, getSetup());
             } else {
-                SyncSettings();
                 switchDisplayable(null, getMainMenu());
+                SyncSettings();
                 textField3.notifyStateChanged();
             }
 //GEN-LINE:|3-startMIDlet|1|3-postAction
