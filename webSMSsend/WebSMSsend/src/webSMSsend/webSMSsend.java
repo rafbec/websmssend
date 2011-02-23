@@ -187,7 +187,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         debug("Installiere Update");
         switchDisplayable(null, updateWaitScreen);
         try {
-            platformRequest(Update.BUILD_URL);
+            platformRequest(Update.getBuildUrl());
         } catch (ConnectionNotFoundException ex) {
             debug("Update fehlgeschlagen: " + ex.getMessage());
         }
@@ -2111,7 +2111,8 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                     if (Update.isUpdateAvailable(getVersion())) {
                         debug("Update ist verfügbar."
                                 + "\nInstallierte Version: " + getVersion()
-                                + "\nVerfügbare Version: " + currentVersion);
+                                + "\nVerfügbare Version: " + currentVersion
+                                + "\nUrl: " + Update.getBuildUrl());
                         updateAvailable = true;
                     } else {
                         debug("Kein Update verfügbar."

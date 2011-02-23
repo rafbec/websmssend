@@ -46,12 +46,15 @@ public class Update {
      * stored.
      */
     private static final String CURRENT_VERSION_URL =
-            "http://websmssend.googlecode.com/files/current_version.txt";
+            "http://websmssend.googlecode.com/svn/trunk/webSMSsend/WebSMSsend/current_version.txt";
 
     private static String currentVersion = null;
 
-    public static final String BUILD_URL =
-            "http://websmssend.googlecode.com/files/WebSMSsend.jad";
+    private static String build_URL = null;
+
+    public static String getBuildUrl(){
+        return build_URL;
+    }
 
     public static String getCurrentVersion() throws Exception {
         if (currentVersion == null) {
@@ -93,7 +96,11 @@ public class Update {
         reader.close();
         connection.close();
 
-        return asString;
+        //extract build_Url in the second line
+        int newline = asString.indexOf("\r\n");
+        build_URL = asString.substring(newline + 2, asString.length()).trim();
+
+        return asString.substring(0, newline).trim();
     }
 
     private static Hashtable splitVersionNumber(String versionNumber) {
