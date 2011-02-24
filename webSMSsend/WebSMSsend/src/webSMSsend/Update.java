@@ -1,10 +1,8 @@
 /*
  *
  *
-Copyright 2009 Max Hänze --- maximum.blogsite.org
-Copyright 2010 Christian Morlok --- cmorlok.de
-modifiziert 2010 von RedRocket ---
-modifiziert 2011 von schirinowski@gmail.com
+Copyright 2011 von schirinowski@gmail.com
+Copyright 2011 redrocketracoon@googlemail.com
 This file is part of WebSMSsend.
 
 WebSMSsend is free software: you can redistribute it and/or modify
@@ -27,16 +25,13 @@ package webSMSsend;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.io.Reader;
-import java.io.Writer;
 import java.util.Hashtable;
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
-import javax.microedition.midlet.MIDlet;
 
 /**
- * This static class implements the update facility for webSMSsend.
+ * This class implements static methods for the update facility of webSMSsend.
  *
  * @author umoenks
  */
@@ -49,21 +44,23 @@ public class Update {
             "http://websmssend.googlecode.com/svn/trunk/webSMSsend/WebSMSsend/current_version.txt";
 
     private static String currentVersion = null;
+    private static String buildURL = null;
 
-    private static String build_URL = null;
-
-    public static String getBuildUrl(){
-        return build_URL;
+    public static String getBuildUrl() throws Exception {
+       if (buildURL == null) {
+            retrieveCurrentVersion();
+        }
+        return buildURL;
     }
 
     public static String getCurrentVersion() throws Exception {
         if (currentVersion == null) {
-            currentVersion = retrieveCurrentVersion();
+            retrieveCurrentVersion();
         }
         return currentVersion;
     }
 
-    private static String retrieveCurrentVersion() throws Exception {
+    private static void retrieveCurrentVersion() throws Exception {
         HttpConnection connection = (HttpConnection) Connector.open(CURRENT_VERSION_URL);
 
         if (connection == null) {
@@ -96,11 +93,10 @@ public class Update {
         reader.close();
         connection.close();
 
-        //extract build_Url in the second line
         int newline = asString.indexOf("\r\n");
-        build_URL = asString.substring(newline + 2, asString.length()).trim();
-
-        return asString.substring(0, newline).trim();
+        currentVersion = asString.substring(0, newline).trim();
+        // extract buildURL in the second line
+        buildURL = asString.substring(newline + 2, asString.length()).trim();
     }
 
     private static Hashtable splitVersionNumber(String versionNumber) {

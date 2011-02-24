@@ -91,9 +91,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     private Command okCommand1;
     private Command switchAccount;
     private Command cancelCommand;
-    private Command okCommandResumeSendSms;
-    private Command cancelUpdateCmd;
     private Command installUpdateCmd;
+    private Command cancelUpdateCmd;
+    private Command okCommandResumeSendSms;
     private Command backToPropertiesCmd;
     private Form MainMenu;
     private TextField textField;
@@ -137,8 +137,8 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     private Alert NoEmail;
     private Alert noMoreFreeSmsScreen;
     private WaitScreen updateWaitScreen;
-    private Alert errorAlert;
     private Alert installUpdateQuery;
+    private Alert errorAlert;
     private SimpleCancellableTask task;
     private Font font;
     private Image image1;
@@ -188,8 +188,11 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         switchDisplayable(null, updateWaitScreen);
         try {
             platformRequest(Update.getBuildUrl());
-        } catch (ConnectionNotFoundException ex) {
+        } catch (Exception ex) {
             debug("Update fehlgeschlagen: " + ex.getMessage());
+            getErrorAlert().setString(ex.getMessage());
+            switchDisplayable(getErrorAlert(), getList());
+            errorAlert = null;
         }
     }
 
@@ -633,7 +636,11 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             }//GEN-BEGIN:|7-commandAction|73|402-preAction
         } else if (displayable == updateWaitScreen) {
             if (command == WaitScreen.FAILURE_COMMAND) {//GEN-END:|7-commandAction|73|402-preAction
-                getErrorAlert().setString("Update fehlgeschlagen");
+                getErrorAlert().setString("Update fehlgeschlagen:\n"
+                        + getCheckForUpdateTask().getFailureMessage());
+                getErrorAlert().setType(null);
+                debug("Update fehlgeschlagen: "
+                        + getCheckForUpdateTask().getFailureMessage());
                 switchDisplayable(getErrorAlert(), getList());//GEN-LINE:|7-commandAction|74|402-postAction
                 errorAlert = null;
                 // Reset update process
@@ -642,6 +649,8 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                 if (getUpdateWaitScreen().getTask() != getCheckForUpdateTask()) {
                     getErrorAlert().setTitle("Update fortsetzen");
                     getErrorAlert().setString("Das System wurde angewiesen, "
+                            + "die aktuellste Version zu installieren.");
+                    debug("Das System wurde angewiesen, "
                             + "die aktuellste Version zu installieren.");
                     getErrorAlert().setType(null);
                     switchDisplayable(getErrorAlert(), getList());
@@ -2112,12 +2121,13 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                         debug("Update ist verfügbar."
                                 + "\nInstallierte Version: " + getVersion()
                                 + "\nVerfügbare Version: " + currentVersion
-                                + "\nUrl: " + Update.getBuildUrl());
+                                + "\nURL: " + Update.getBuildUrl());
                         updateAvailable = true;
                     } else {
                         debug("Kein Update verfügbar."
                                 + "\nInstallierte Version: " + getVersion()
-                                + "\nVerfügbare Version: " + currentVersion);
+                                + "\nVerfügbare Version: " + currentVersion
+                                + "\nURL: " + Update.getBuildUrl());
                     }
                 }//GEN-BEGIN:|403-getter|2|403-postInit
             });//GEN-END:|403-getter|2|403-postInit
