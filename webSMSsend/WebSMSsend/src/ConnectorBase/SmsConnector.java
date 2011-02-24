@@ -24,6 +24,7 @@
 package ConnectorBase;
 
 import webSMSsend.IGui;
+import webSMSsend.ConnectorSettings;
 
 /**
  *
@@ -41,7 +42,7 @@ public abstract class SmsConnector implements ISmsConnector {
 
     public int getRemainingSMS(IGui gui) {
         try {
-            String remsms = gui.getItem(getName() + REMAINING_SMS_FIELD);
+            String remsms = ConnectorSettings.getItem(getName() + REMAINING_SMS_FIELD);
             this.remsms = Integer.parseInt(remsms);
         } catch (Exception ex) {
             remsms=-1; //-1 if no value could be restored
@@ -51,7 +52,7 @@ public abstract class SmsConnector implements ISmsConnector {
 
     public int getMaxFreeSMS(IGui gui) {
         try {
-            String maxfreesms = gui.getItem(getName() + MAX_FREE_SMS);
+            String maxfreesms = ConnectorSettings.getItem(getName() + MAX_FREE_SMS);
             this.maxfreesms = Integer.parseInt(maxfreesms);
         } catch (Exception ex) {
             maxfreesms = -1; //-1 if no value could be restored
@@ -65,7 +66,7 @@ public abstract class SmsConnector implements ISmsConnector {
 
     protected void SaveItem(String ItemName, String Content)
     {
-        gui.saveItems(getName() + ItemName, Content); //saves Field with Connectorname
+        ConnectorSettings.saveItems(getName() + ItemName, Content); //saves Field with Connectorname
     }
 
     protected String checkRecv(String smsRecv) {

@@ -24,11 +24,26 @@
 package webSMSsend;
 
 /**
- *
+ * Gives Sms-Connectors the ability to save settings
  * @author Copyright 2011 redrocketracoon@googlemail.com
  */
+public class ConnectorSettings {
+    /**
+     *
+     * @param itemName
+     * @param content
+     */
+    public static void saveItems(String itemName, String content) {
+        String[] data = {content};
+        ioSettings.saveData(ioSettings.MakeFieldName(itemName), data, data.length);
+    }
 
-public interface IGui {
-    public void debug(String debugText);
-    public void setWaitScreenText(String Text);
+    /**
+     *
+     * @param itemName
+     * @return Value of Setting
+     */
+    public static String getItem(String itemName) {
+        return ioSettings.getData(ioSettings.MakeFieldName(itemName), 1);
+    }
 }

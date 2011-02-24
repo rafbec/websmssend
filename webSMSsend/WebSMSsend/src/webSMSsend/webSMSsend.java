@@ -212,16 +212,6 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         }
     }
 
-    public void saveItems(String itemName, String content) {
-        String[] data = {content};
-        debug(itemName + " " + content);
-        ioSettings.saveData(ioSettings.MakeFieldName(itemName), data, data.length);
-    }
-
-    public String getItem(String itemName) {
-        return ioSettings.getData(ioSettings.MakeFieldName(itemName), 1);
-    }
-
     public int sendSMS(String smsRecv, String smsText) throws Exception {
         if (resumeMode) {
             resumeMode=false;

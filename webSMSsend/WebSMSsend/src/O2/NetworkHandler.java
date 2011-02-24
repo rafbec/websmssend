@@ -35,6 +35,7 @@ import javax.microedition.io.HttpConnection;
 import javax.microedition.io.HttpsConnection;
 import javax.microedition.pki.CertificateException;
 import me.regexp.RE;
+import webSMSsend.ConnectorSettings;
 import webSMSsend.IGui;
 
 
@@ -97,12 +98,12 @@ public class NetworkHandler {
     //Save Startline
     private void SaveStartLine(int Startline)
     {
-        GUI.saveItems(START_LINE_SAVE_NAME, Startline + "");
+        ConnectorSettings.saveItems(START_LINE_SAVE_NAME, Startline + "");
     }
 
     private int GetStartLine()
     {
-        String line = GUI.getItem(START_LINE_SAVE_NAME);
+        String line = ConnectorSettings.getItem(START_LINE_SAVE_NAME);
         try {
             return Integer.parseInt(line);
         } catch (Exception ex) {
