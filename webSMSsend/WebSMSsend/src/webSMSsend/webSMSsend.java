@@ -177,7 +177,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
 //#if Test
 //#         return "0.62.9";
 //#else
-    return "0.63.1";
+    return getAppProperty("MIDlet-Version");
 //#endif
     }
 
