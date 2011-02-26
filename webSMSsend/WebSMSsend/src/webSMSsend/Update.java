@@ -46,15 +46,19 @@ public class Update {
     private static String currentVersion = null;
     private static String buildURL = null;
 
+    public static boolean alreadyCheckedForUpdate() {
+        return !(currentVersion == null || buildURL == null);
+    }
+
     public static String getBuildUrl() throws Exception {
-       if (buildURL == null) {
+       if (!alreadyCheckedForUpdate()) {
             retrieveCurrentVersion();
         }
         return buildURL;
     }
 
     public static String getCurrentVersion() throws Exception {
-        if (currentVersion == null) {
+        if (!alreadyCheckedForUpdate()) {
             retrieveCurrentVersion();
         }
         return currentVersion;

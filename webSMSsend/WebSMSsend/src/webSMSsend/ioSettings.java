@@ -38,6 +38,15 @@ public class ioSettings {
         return data;
     }
 
+    protected static String getAutoUpdate() {
+        String data = getData(MakeFieldName("autoUpdate"), 1);
+        if (data.equals(""))
+        {
+            data="true"; //standard true
+        }
+        return data;
+    }
+
     protected static String getDebug() {
         return getData(MakeFieldName("debug"), 1);
     }
@@ -113,6 +122,10 @@ public class ioSettings {
         return saveData(MakeFieldName("debug"), data, 1);
     }
 
+    protected static int saveAutoUpdate(String autoUpdate) {
+        String[] data = {autoUpdate};
+        return saveData(MakeFieldName("autoUpdate"), data, 1);
+    }
     protected static int saveSetup(String provider) {
         String[] data = {provider};
         return saveData(MakeFieldName("setup"), data, 1);

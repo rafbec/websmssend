@@ -31,7 +31,6 @@ import ConnectorBase.Properties;
 import ConnectorBase.SmsData;
 import java.io.IOException;
 import java.io.PrintStream;
-import javax.microedition.io.ConnectionNotFoundException;
 import javax.microedition.lcdui.*;
 import javax.microedition.midlet.*;
 import org.netbeans.microedition.lcdui.WaitScreen;
@@ -61,6 +60,8 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     String SenderName; //Name bei Text als Absender
     int SenderMode; //0=Phonenumber, 1=Text( SenderName )
     private boolean midletPaused = false;
+    /** Determines the app's automatic update behaviour */
+    boolean autoUpdate = true;
     /** Saves the update status, whether there is one available */
     private boolean updateAvailable = false;
     /** Stores the update's versio number */
@@ -123,7 +124,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     private Form loginScreen;
     private TextField textField7;
     private TextField textField6;
-    private List ChooseAccount;
+    private List chooseAccount;
     private Alert BenutzerwahlBestaetigung;
     private TextBox Debug;
     private WaitScreen waitScreen1;
@@ -160,7 +161,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
 //#endif
     }
 
-    private boolean CheckCharacters(String text) {
+    private boolean checkCharacters(String text) {
         boolean correctcharacters = true;
         char[] checkname = text.toCharArray();
         for (int i = 0; i < checkname.length; i++) {
@@ -181,8 +182,26 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
 //#endif
     }
 
+    private void checkForUpdate() throws Exception {
+        debug("Prüfe auf Update");
+        // Check for update and store the most current version number
+        currentVersion = Update.getCurrentVersion();
+        if (Update.isUpdateAvailable(getVersion())) {
+            debug("Update ist verfügbar."
+                    + "\nInstallierte Version: " + getVersion()
+                    + "\nVerfügbare Version: " + currentVersion
+                    + "\nURL: " + Update.getBuildUrl());
+            updateAvailable = true;
+        } else {
+            debug("Kein Update verfügbar."
+                    + "\nInstallierte Version: " + getVersion()
+                    + "\nVerfügbare Version: " + currentVersion
+                    + "\nURL: " + Update.getBuildUrl());
+        }
+    }
+
     private void installUpdate() {
-        updateWaitScreen.setTitle("Installiere Update");
+        getUpdateWaitScreen().setTitle("Installiere Update");
         updateWaitScreen.setTask(null);
         debug("Installiere Update");
         switchDisplayable(null, updateWaitScreen);
@@ -191,7 +210,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         } catch (Exception ex) {
             debug("Update fehlgeschlagen: " + ex.getMessage());
             getErrorAlert().setString(ex.getMessage());
-            switchDisplayable(getErrorAlert(), getList());
+            switchDisplayable(getErrorAlert(), getMainMenu());
             errorAlert = null;
         }
     }
@@ -208,7 +227,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     public void setWaitScreenText(String Text) {
         if (waitScreen != null) {
             waitScreen.setText(Text);
-            GUI.debug(Text);
+            debug(Text);
         }
     }
 
@@ -239,7 +258,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         return 0;
     }
     
-    private void SyncSettings() {
+    private void syncSettings() {
         username = ioSettings.getUsername();
         password = ioSettings.getPassword();
         provider = ioSettings.getSetup();
@@ -248,6 +267,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         SenderMode = ioSettings.getSenderMode();
         SenderName = ioSettings.getSenderName();
         debug = ioSettings.getDebug().equals("true");
+        autoUpdate = ioSettings.getAutoUpdate().equals("true");
 
         if (simulation) {
             debug = true;
@@ -271,14 +291,14 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         }
     }
 
-    private void RetrieveTempSMS() {
+    private void retrieveTempSMS() {
         textField3.setString("" + ioSettings.getTempSMStext());
         textField.setString("" + ioSettings.getTempSMSto());
         textField3.notifyStateChanged();
         getDisplay().setCurrentItem(textField);
     }
 
-    private void ClearSMSInput() {
+    private void clearSMSInput() {
         textField3.setString("");
         textField3.setLabel(MESSAGE_TEXTFIELD_LABEL);
         textField.setString("");
@@ -321,7 +341,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                 switchDisplayable(null, getSetup());
             } else {
                 switchDisplayable(null, getMainMenu());
-                SyncSettings();
+                syncSettings();
                 textField3.notifyStateChanged();
             }
 //GEN-LINE:|3-startMIDlet|1|3-postAction
@@ -370,102 +390,102 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
      */
     public void commandAction(Command command, Displayable displayable) {//GEN-END:|7-commandAction|0|7-preCommandAction
             // write pre-action user code here
-        if (displayable == ChooseAccount) {//GEN-BEGIN:|7-commandAction|1|249-preAction
-            if (command == List.SELECT_COMMAND) {//GEN-END:|7-commandAction|1|249-preAction
+        if (displayable == Debug) {//GEN-BEGIN:|7-commandAction|1|294-preAction
+            if (command == Clear) {//GEN-END:|7-commandAction|1|294-preAction
                     // write pre-action user code here
-                ChooseAccountAction();//GEN-LINE:|7-commandAction|2|249-postAction
+                getDebug().setString(getDebug().size() +" Zeichen gel\u00F6scht");//GEN-LINE:|7-commandAction|2|294-postAction
                     // write post-action user code here
-                    switchDisplayable(getBenutzerwahlBestaetigung(), getList());
-                    BenutzerwahlBestaetigung = null;
-            } else if (command == back) {//GEN-LINE:|7-commandAction|3|255-preAction
+            } else if (command == SendEmail) {//GEN-LINE:|7-commandAction|3|298-preAction
                     // write pre-action user code here
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|4|255-postAction
-                // write post-action user code here
-            } else if (command == okCommand5) {//GEN-LINE:|7-commandAction|5|254-preAction
-                debug("resumeMode: "+ resumeMode);
-                ChooseAccountAction();
-
-                if (resumeMode) {
-                    waitScreen = null;
-                    switchDisplayable(getBenutzerwahlBestaetigung(), getWaitScreen());
-                } else {
-                    // write pre-action user code here
-                    switchDisplayable(getBenutzerwahlBestaetigung(), getList());//GEN-LINE:|7-commandAction|6|254-postAction
+                switchDisplayable(null, getSendEmailForm());//GEN-LINE:|7-commandAction|4|298-postAction
                     // write post-action user code here
-                }
-                BenutzerwahlBestaetigung = null;
-            }//GEN-BEGIN:|7-commandAction|7|294-preAction
-        } else if (displayable == Debug) {
-            if (command == Clear) {//GEN-END:|7-commandAction|7|294-preAction
+            } else if (command == back) {//GEN-LINE:|7-commandAction|5|291-preAction
                     // write pre-action user code here
-                getDebug().setString(getDebug().size() +" Zeichen gel\u00F6scht");//GEN-LINE:|7-commandAction|8|294-postAction
+                switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|6|291-postAction
                     // write post-action user code here
-            } else if (command == SendEmail) {//GEN-LINE:|7-commandAction|9|298-preAction
-                    // write pre-action user code here
-                switchDisplayable(null, getSendEmailForm());//GEN-LINE:|7-commandAction|10|298-postAction
-                    // write post-action user code here
-            } else if (command == back) {//GEN-LINE:|7-commandAction|11|291-preAction
-                    // write pre-action user code here
-                switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|12|291-postAction
-                    // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|13|348-preAction
+            }//GEN-BEGIN:|7-commandAction|7|348-preAction
         } else if (displayable == MainMenu) {
-            if (command == LastSMS) {//GEN-END:|7-commandAction|13|348-preAction
+            if (command == LastSMS) {//GEN-END:|7-commandAction|7|348-preAction
                 // write pre-action user code here
-                textField.setString("" + ioSettings.getLastSMSto());//GEN-BEGIN:|7-commandAction|14|348-postAction
+                textField.setString("" + ioSettings.getLastSMSto());//GEN-BEGIN:|7-commandAction|8|348-postAction
                 textField3.setString("" + ioSettings.getLastSMStext());
-                textField3.notifyStateChanged();//GEN-END:|7-commandAction|14|348-postAction
+                textField3.notifyStateChanged();//GEN-END:|7-commandAction|8|348-postAction
                 // write post-action user code here
-            } else if (command == eingabeLeeren) {//GEN-LINE:|7-commandAction|15|245-preAction
+            } else if (command == eingabeLeeren) {//GEN-LINE:|7-commandAction|9|245-preAction
                     // write pre-action user code here
-                ClearSMSInput();//GEN-LINE:|7-commandAction|16|245-postAction
+                clearSMSInput();//GEN-LINE:|7-commandAction|10|245-postAction
                     // write post-action user code here
-            } else if (command == exitCommand) {//GEN-LINE:|7-commandAction|17|19-preAction
+            } else if (command == exitCommand) {//GEN-LINE:|7-commandAction|11|19-preAction
                     // write pre-action user code here
-                exitMIDlet();//GEN-LINE:|7-commandAction|18|19-postAction
+                exitMIDlet();//GEN-LINE:|7-commandAction|12|19-postAction
                     // write post-action user code here
-            } else if (command == goToSettings) {//GEN-LINE:|7-commandAction|19|82-preAction
+            } else if (command == goToSettings) {//GEN-LINE:|7-commandAction|13|82-preAction
                     // write pre-action user code here
-                switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|20|82-postAction
+                switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|14|82-postAction
 
-            } else if (command == writeSMS) {//GEN-LINE:|7-commandAction|21|29-preAction
+            } else if (command == writeSMS) {//GEN-LINE:|7-commandAction|15|29-preAction
                     recvNB = textField.getString();
                     text = textField3.getString();
                     debug("Senden pressed");
                     resumeMode = false;
                     noMoreFreeSMS = false;
                     if (!password.equals("")) {
-                        switchDisplayable(null, getWaitScreen());//GEN-LINE:|7-commandAction|22|29-postAction
+                        switchDisplayable(null, getWaitScreen());//GEN-LINE:|7-commandAction|16|29-postAction
                     } else {
                         switchDisplayable(null, getLoginScreen());
                         textField6.setString(username);
                     }
 
-            }//GEN-BEGIN:|7-commandAction|23|323-preAction
+            }//GEN-BEGIN:|7-commandAction|17|323-preAction
         } else if (displayable == NoEmail) {
-            if (command == back) {//GEN-END:|7-commandAction|23|323-preAction
+            if (command == back) {//GEN-END:|7-commandAction|17|323-preAction
                     // write pre-action user code here
-                switchDisplayable(null, getSendEmailForm());//GEN-LINE:|7-commandAction|24|323-postAction
+                switchDisplayable(null, getSendEmailForm());//GEN-LINE:|7-commandAction|18|323-postAction
                     // write post-action user code here
-            } else if (command == okCommand1) {//GEN-LINE:|7-commandAction|25|325-preAction
+            } else if (command == okCommand1) {//GEN-LINE:|7-commandAction|19|325-preAction
                     // write pre-action user code here
-                switchDisplayable(null, getWaitScreen1());//GEN-LINE:|7-commandAction|26|325-postAction
+                switchDisplayable(null, getWaitScreen1());//GEN-LINE:|7-commandAction|20|325-postAction
                     // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|27|307-preAction
+            }//GEN-BEGIN:|7-commandAction|21|307-preAction
         } else if (displayable == SendEmailForm) {
-            if (command == back) {//GEN-END:|7-commandAction|27|307-preAction
+            if (command == back) {//GEN-END:|7-commandAction|21|307-preAction
                     // write pre-action user code here
-                switchDisplayable(null, getDebug());//GEN-LINE:|7-commandAction|28|307-postAction
+                switchDisplayable(null, getDebug());//GEN-LINE:|7-commandAction|22|307-postAction
                     // write post-action user code here
-            } else if (command == startEmailClient) {//GEN-LINE:|7-commandAction|29|306-preAction
+            } else if (command == startEmailClient) {//GEN-LINE:|7-commandAction|23|306-preAction
                     // write pre-action user code here
-                isEmailNotEntered();//GEN-LINE:|7-commandAction|30|306-postAction
+                isEmailNotEntered();//GEN-LINE:|7-commandAction|24|306-postAction
                     // write post-action user code here
+            }//GEN-BEGIN:|7-commandAction|25|249-preAction
+        } else if (displayable == chooseAccount) {
+            if (command == List.SELECT_COMMAND) {//GEN-END:|7-commandAction|25|249-preAction
+                    // write pre-action user code here
+                chooseAccountAction();//GEN-LINE:|7-commandAction|26|249-postAction
+                    // write post-action user code here
+                    switchDisplayable(getBenutzerwahlBestaetigung(), getList());
+                    BenutzerwahlBestaetigung = null;
+            } else if (command == back) {//GEN-LINE:|7-commandAction|27|255-preAction
+                    // write pre-action user code here
+                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|28|255-postAction
+                // write post-action user code here
+            } else if (command == okCommand5) {//GEN-LINE:|7-commandAction|29|254-preAction
+                debug("resumeMode: "+ resumeMode);
+                chooseAccountAction();
+
+                if (resumeMode) {
+                    waitScreen = null;
+                    switchDisplayable(getBenutzerwahlBestaetigung(), getWaitScreen());
+                } else {
+                    // write pre-action user code here
+                    switchDisplayable(getBenutzerwahlBestaetigung(), getList());//GEN-LINE:|7-commandAction|30|254-postAction
+                    // write post-action user code here
+                }
+                BenutzerwahlBestaetigung = null;
             }//GEN-BEGIN:|7-commandAction|31|408-preAction
         } else if (displayable == installUpdateQuery) {
             if (command == cancelUpdateCmd) {//GEN-END:|7-commandAction|31|408-preAction
                 // write pre-action user code here
-                switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|32|408-postAction
+                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|32|408-postAction
                 // write post-action user code here
             } else if (command == installUpdateCmd) {//GEN-LINE:|7-commandAction|33|410-preAction
                 // write pre-action user code here
@@ -516,7 +536,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                     }
                     username = textField1.getString();
                     ioSettings.saveToRMS(username, password);
-                    SyncSettings();
+                    syncSettings();
                     switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|48|85-postAction
                     // write post-action user code here
             }//GEN-BEGIN:|7-commandAction|49|383-preAction
@@ -562,7 +582,14 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                         ioSettings.saveDebug("false");
                         debug = false;
                     }
-                    SyncSettings();
+                    if (choiceGroup.isSelected(2)) {
+                        ioSettings.saveAutoUpdate("true");
+                        autoUpdate = true;
+                    } else {
+                        ioSettings.saveAutoUpdate("false");
+                        autoUpdate = false;
+                    }
+                    syncSettings();
                     switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|60|208-postAction
                     // write post-action user code here
             }//GEN-BEGIN:|7-commandAction|61|189-preAction
@@ -580,7 +607,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                         textField2.setLabel(getPasswordFieldLabel());
                     }
                 }
-                SyncSettings();
+                syncSettings();
                 switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|64|232-postAction
             }//GEN-BEGIN:|7-commandAction|65|227-preAction
         } else if (displayable == setup) {
@@ -599,14 +626,15 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                     ioSettings.saveSetup("" + (provider));
                     ioSettings.saveToRMS(username, password);
                     switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|66|227-postAction
-                    SyncSettings();
+                    syncSettings();
                     // write post-action user code here
             }//GEN-BEGIN:|7-commandAction|67|107-preAction
         } else if (displayable == smsSend) {
             if (command == okCommand2) {//GEN-END:|7-commandAction|67|107-preAction
                     // write pre-action user code here
-                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|68|107-postAction
-                stringItem1.setText(getRemSMSText());
+                switchDisplayable(null, getMainMenu());
+                isAutomaticUpdateWished();//GEN-LINE:|7-commandAction|68|107-postAction
+//                stringItem1.setText(getRemSMSText());
             }//GEN-BEGIN:|7-commandAction|69|183-preAction
         } else if (displayable == smsSettings) {
             if (command == back) {//GEN-END:|7-commandAction|69|183-preAction
@@ -620,7 +648,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                         StatusLabel.setLabel("Achtung!");
                     } else {
                         // write pre-action user code here
-                        CharactersCorrect();//GEN-LINE:|7-commandAction|72|270-postAction
+                        charactersCorrect();//GEN-LINE:|7-commandAction|72|270-postAction
                         // write post-action user code here
                     }
             }//GEN-BEGIN:|7-commandAction|73|402-preAction
@@ -643,7 +671,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                     debug("Das System wurde angewiesen, "
                             + "die aktuellste Version zu installieren.");
                     getErrorAlert().setType(null);
-                    switchDisplayable(getErrorAlert(), getList());
+                    switchDisplayable(getErrorAlert(), getMainMenu());
                     // Reset update process
                     updateWaitScreen = null;
                 } else {
@@ -662,10 +690,11 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             } else if (command == WaitScreen.SUCCESS_COMMAND) {//GEN-LINE:|7-commandAction|81|50-preAction
                     //Save LastSMS
                     ioSettings.saveLastSMS(textField.getString(), textField3.getString());
-                    ClearSMSInput();
-                    switchDisplayable(getSmsSend(), getMainMenu());//GEN-LINE:|7-commandAction|82|50-postAction
-                    smsSend.setString("SMS gesendet\n" + getRemSMSText());
-                    stringItem1.setText(getRemSMSText());
+                    clearSMSInput();
+                    getSmsSend().setString("SMS gesendet\n" + getRemSMSText());
+                    getStringItem1().setText(getRemSMSText());
+                    switchDisplayable(null, getSmsSend());//GEN-LINE:|7-commandAction|82|50-postAction
+
             } else if (command == exitCommand1) {//GEN-LINE:|7-commandAction|83|99-preAction
                     // write pre-action user code here
                 switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|84|99-postAction
@@ -738,7 +767,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                 }
             };
             MainMenu.setItemStateListener(listener);
-            RetrieveTempSMS();
+            retrieveTempSMS();
         }//GEN-BEGIN:|14-getter|2|
         return MainMenu;
     }
@@ -1023,6 +1052,12 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             task.setExecutable(new org.netbeans.microedition.util.Executable() {
                 public void execute() throws Exception {//GEN-END:|140-getter|1|140-execute
                     sendSMS(recvNB, text);
+                    if (autoUpdate && (!Update.alreadyCheckedForUpdate() || updateAvailable)) {
+                        checkForUpdate();
+                    }
+                    else {
+                        updateAvailable = false;
+                    }
                 }//GEN-BEGIN:|140-getter|2|140-postInit
             });//GEN-END:|140-getter|2|140-postInit
             // write post-init user code here
@@ -1102,7 +1137,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                 // write pre-action user code here
                 switchDisplayable(null, getChooseAccount());//GEN-LINE:|165-action|2|260-postAction
                 // write post-action user code here
-                ChooseAccount.setSelectedIndex(ActiveAccount, true);
+                chooseAccount.setSelectedIndex(ActiveAccount, true);
             } else if (__selectedString.equals("Zugangsdaten")) {//GEN-LINE:|165-action|3|168-preAction
                 // write pre-action user code here
                 switchDisplayable(null, getLoginSettings());//GEN-LINE:|165-action|4|168-postAction
@@ -1126,7 +1161,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                 // write pre-action user code here
                 switchDisplayable(null, getOptimSettings());//GEN-LINE:|165-action|8|170-postAction
 
-                boolean[] selected = {saveEachCharacter, debug};
+                boolean[] selected = {saveEachCharacter, debug, autoUpdate};
                 choiceGroup.setSelectedFlags(selected);
             } else if (__selectedString.equals("SMS-Anbieter")) {//GEN-LINE:|165-action|9|171-preAction
                 // write pre-action user code here
@@ -1232,13 +1267,12 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     public ChoiceGroup getChoiceGroup() {
         if (choiceGroup == null) {//GEN-END:|204-getter|0|204-preInit
             // write pre-init user code here
-            choiceGroup = new ChoiceGroup("Folgende Ver\u00E4nderungen k\u00F6nnen das Programm beschleunigen.\nSie funktionieren nicht auf allen Systemen!", Choice.MULTIPLE);//GEN-BEGIN:|204-getter|1|204-postInit
+            choiceGroup = new ChoiceGroup("Folgende Ver\u00E4nderungen k\u00F6nnen die Programmbedienung optimieren.", Choice.MULTIPLE);//GEN-BEGIN:|204-getter|1|204-postInit
             choiceGroup.append("SMS-Text nach jedem Zeichen speichern", null);
             choiceGroup.append("Debug-Meldungen schreiben", null);
+            choiceGroup.append("Automatisch auf Updates pr\u00FCfen", null);
             choiceGroup.setFitPolicy(Choice.TEXT_WRAP_DEFAULT);
-            choiceGroup.setSelectedFlags(new boolean[] { false, false });
-            choiceGroup.setFont(0, getFont());
-            choiceGroup.setFont(1, null);//GEN-END:|204-getter|1|204-postInit
+            choiceGroup.setSelectedFlags(new boolean[] { false, false, false });//GEN-END:|204-getter|1|204-postInit
             // write post-init user code here
         }//GEN-BEGIN:|204-getter|2|
         return choiceGroup;
@@ -1507,33 +1541,33 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     }
     //</editor-fold>//GEN-END:|253-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: ChooseAccount ">//GEN-BEGIN:|248-getter|0|248-preInit
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: chooseAccount ">//GEN-BEGIN:|248-getter|0|248-preInit
     /**
-     * Returns an initiliazed instance of ChooseAccount component.
+     * Returns an initiliazed instance of chooseAccount component.
      * @return the initialized component instance
      */
     public List getChooseAccount() {
-        if (ChooseAccount == null) {//GEN-END:|248-getter|0|248-preInit
+        if (chooseAccount == null) {//GEN-END:|248-getter|0|248-preInit
             // write pre-init user code here
-            ChooseAccount = new List("Benutzerkonto ausw\u00E4hlen", Choice.IMPLICIT);//GEN-BEGIN:|248-getter|1|248-postInit
-            ChooseAccount.append("Benutzerkonto 1", null);
-            ChooseAccount.append("Benutzerkonto 2", null);
-            ChooseAccount.append("Benutzerkonto 3", null);
-            ChooseAccount.addCommand(getOkCommand5());
-            ChooseAccount.addCommand(getBack());
-            ChooseAccount.setCommandListener(this);
-            ChooseAccount.setSelectedFlags(new boolean[] { true, false, false });//GEN-END:|248-getter|1|248-postInit
+            chooseAccount = new List("Benutzerkonto ausw\u00E4hlen", Choice.IMPLICIT);//GEN-BEGIN:|248-getter|1|248-postInit
+            chooseAccount.append("Benutzerkonto 1", null);
+            chooseAccount.append("Benutzerkonto 2", null);
+            chooseAccount.append("Benutzerkonto 3", null);
+            chooseAccount.addCommand(getOkCommand5());
+            chooseAccount.addCommand(getBack());
+            chooseAccount.setCommandListener(this);
+            chooseAccount.setSelectedFlags(new boolean[] { true, false, false });//GEN-END:|248-getter|1|248-postInit
             // write post-init user code here
         }//GEN-BEGIN:|248-getter|2|
-        return ChooseAccount;
+        return chooseAccount;
     }
     //</editor-fold>//GEN-END:|248-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Method: ChooseAccountAction ">//GEN-BEGIN:|248-action|0|248-preAction
+    //<editor-fold defaultstate="collapsed" desc=" Generated Method: chooseAccountAction ">//GEN-BEGIN:|248-action|0|248-preAction
     /**
-     * Performs an action assigned to the selected list element in the ChooseAccount component.
+     * Performs an action assigned to the selected list element in the chooseAccount component.
      */
-    public void ChooseAccountAction() {//GEN-END:|248-action|0|248-preAction
+    public void chooseAccountAction() {//GEN-END:|248-action|0|248-preAction
         // enter pre-action user code here
         String __selectedString = getChooseAccount().getString(getChooseAccount().getSelectedIndex());//GEN-BEGIN:|248-action|1|251-preAction
         if (__selectedString != null) {
@@ -1556,7 +1590,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         }//GEN-END:|248-action|7|248-postAction
         // enter post-action user code here
         //theoretisch wäre ioSettings.saveActiveAccount(""+getChooseAccount().getSelectedIndex()); sinnvoller
-        SyncSettings();
+        syncSettings();
     }//GEN-BEGIN:|248-action|8|
     //</editor-fold>//GEN-END:|248-action|8|
 
@@ -1898,17 +1932,17 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     }//GEN-BEGIN:|330-if|6|
     //</editor-fold>//GEN-END:|330-if|6|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Method: CharactersCorrect ">//GEN-BEGIN:|336-if|0|336-preIf
+    //<editor-fold defaultstate="collapsed" desc=" Generated Method: charactersCorrect ">//GEN-BEGIN:|336-if|0|336-preIf
     /**
-     * Performs an action assigned to the CharactersCorrect if-point.
+     * Performs an action assigned to the charactersCorrect if-point.
      */
-    public void CharactersCorrect() {//GEN-END:|336-if|0|336-preIf
+    public void charactersCorrect() {//GEN-END:|336-if|0|336-preIf
         // enter pre-if user code here
-        if (CheckCharacters(txtSenderName.getString())) {//GEN-LINE:|336-if|1|337-preAction
+        if (checkCharacters(txtSenderName.getString())) {//GEN-LINE:|336-if|1|337-preAction
             SenderMode = choiceGroup4.getSelectedIndex();
             SenderName = txtSenderName.getString();
             ioSettings.saveSenderSetup(SenderMode, SenderName);
-            SyncSettings();
+            syncSettings();
             // write pre-action user code here
             switchDisplayable(null, getList());//GEN-LINE:|336-if|2|337-postAction
             // write post-action user code here
@@ -2080,7 +2114,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
      */
     public WaitScreen getUpdateWaitScreen() {
         if (updateWaitScreen == null) {//GEN-END:|400-getter|0|400-preInit
-            debug("Prüfe auf neue Updates");
+            debug("Auf Update prüfen gewählt");
             updateWaitScreen = new WaitScreen(getDisplay());//GEN-BEGIN:|400-getter|1|400-postInit
             updateWaitScreen.setTitle("Pr\u00FCfe auf Update");
             updateWaitScreen.addCommand(getBackToPropertiesCmd());
@@ -2105,20 +2139,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             checkForUpdateTask = new SimpleCancellableTask();//GEN-BEGIN:|403-getter|1|403-execute
             checkForUpdateTask.setExecutable(new org.netbeans.microedition.util.Executable() {
                 public void execute() throws Exception {//GEN-END:|403-getter|1|403-execute
-                    // Check for update and store the most current version number
-                    currentVersion = Update.getCurrentVersion();
-                    if (Update.isUpdateAvailable(getVersion())) {
-                        debug("Update ist verfügbar."
-                                + "\nInstallierte Version: " + getVersion()
-                                + "\nVerfügbare Version: " + currentVersion
-                                + "\nURL: " + Update.getBuildUrl());
-                        updateAvailable = true;
-                    } else {
-                        debug("Kein Update verfügbar."
-                                + "\nInstallierte Version: " + getVersion()
-                                + "\nVerfügbare Version: " + currentVersion
-                                + "\nURL: " + Update.getBuildUrl());
-                    }
+                    checkForUpdate();
                 }//GEN-BEGIN:|403-getter|2|403-postInit
             });//GEN-END:|403-getter|2|403-postInit
             // write post-init user code here
@@ -2142,7 +2163,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             getErrorAlert().setString("Die installierte Version " + getVersion() +
                     " ist die aktuellste.\n(Verfügbar ist "+ currentVersion +")");
             getErrorAlert().setType(null);
-            switchDisplayable(getErrorAlert(), getList());//GEN-LINE:|411-if|4|413-postAction
+            switchDisplayable(getErrorAlert(), getMainMenu());//GEN-LINE:|411-if|4|413-postAction
             errorAlert = null;
         }//GEN-LINE:|411-if|5|411-postIf
         // enter post-if user code here
@@ -2234,6 +2255,44 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         return backToPropertiesCmd;
     }
     //</editor-fold>//GEN-END:|425-getter|2|
+
+    //<editor-fold defaultstate="collapsed" desc=" Generated Method: isAutomaticUpdateAvailable ">//GEN-BEGIN:|430-if|0|430-preIf
+    /**
+     * Performs an action assigned to the isAutomaticUpdateAvailable if-point.
+     */
+    public void isAutomaticUpdateAvailable() {//GEN-END:|430-if|0|430-preIf
+
+        if (updateAvailable) {//GEN-LINE:|430-if|1|431-preAction
+
+            switchDisplayable(getInstallUpdateQuery(), getUpdateWaitScreen());//GEN-LINE:|430-if|2|431-postAction
+            // write post-action user code here
+        } else {//GEN-LINE:|430-if|3|432-preAction
+            // write pre-action user code here
+            switchDisplayable(null, getMainMenu());//GEN-LINE:|430-if|4|432-postAction
+            // write post-action user code here
+        }//GEN-LINE:|430-if|5|430-postIf
+        // enter post-if user code here
+    }//GEN-BEGIN:|430-if|6|
+    //</editor-fold>//GEN-END:|430-if|6|
+
+    //<editor-fold defaultstate="collapsed" desc=" Generated Method: isAutomaticUpdateWished ">//GEN-BEGIN:|439-if|0|439-preIf
+    /**
+     * Performs an action assigned to the isAutomaticUpdateWished if-point.
+     */
+    public void isAutomaticUpdateWished() {//GEN-END:|439-if|0|439-preIf
+
+        if (autoUpdate) {//GEN-LINE:|439-if|1|440-preAction
+
+            isAutomaticUpdateAvailable();//GEN-LINE:|439-if|2|440-postAction
+            // write post-action user code here
+        } else {//GEN-LINE:|439-if|3|441-preAction
+            // write pre-action user code here
+            switchDisplayable(null, getMainMenu());//GEN-LINE:|439-if|4|441-postAction
+            // write post-action user code here
+        }//GEN-LINE:|439-if|5|439-postIf
+        // enter post-if user code here
+    }//GEN-BEGIN:|439-if|6|
+    //</editor-fold>//GEN-END:|439-if|6|
 
     /**
      * Returns a display instance.
