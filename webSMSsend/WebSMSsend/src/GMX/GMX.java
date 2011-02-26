@@ -110,16 +110,16 @@ public class GMX extends SmsConnector {
      * @return a {@link String} showing the number of left GMX free SMS
      *         and the maximum number of free SMS in the current month.
      */
-    public String getRemSmsText(IGui gui) {
+    public String getRemSmsText() {
         StringBuffer text = new StringBuffer("Verbleibende Frei-SMS: ");
 
-        if (getRemainingSMS(gui) == -1 ) {
+        if (getRemainingSMS() == -1 ) {
             text.append("?");
         } else {
             text.append(remsms);
         }
 
-        if (this.getMaxFreeSMS(gui) == -1 ) {
+        if (this.getMaxFreeSMS() == -1 ) {
             text.append("/?");
         } else {
             text.append("/").append(maxfreesms);

@@ -220,7 +220,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     }
 
     private String getRemSMSText() {
-            return SmsConnector.getRemSmsText(this)
+            return SmsConnector.getRemSmsText()
                     + "\nBenutzerkonto " + (ActiveAccount + 1);
     }
 

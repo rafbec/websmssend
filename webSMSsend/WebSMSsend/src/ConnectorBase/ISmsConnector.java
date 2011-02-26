@@ -48,19 +48,19 @@ public interface ISmsConnector {
      *
      * @return
      */
-    public int getRemainingSMS(IGui gui);
+    public abstract int getRemainingSMS();
 
     /**
      *
      * @return
      */
-    public int getMaxFreeSMS(IGui gui);
+    public abstract int getMaxFreeSMS();
 
     /**
      *
      * @return
      */
-    public String getRemSmsText(IGui gui);
+    public abstract String getRemSmsText();
 
     /**
      *
