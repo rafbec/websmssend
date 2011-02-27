@@ -250,7 +250,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
 
             int retValue = SmsConnector.send(new SmsData(username, password, this, smsRecv, smsText, sendername, simulation));
 
-            if (retValue == -1) { //Send process aborted having no more free sms
+            if (retValue == SmsConnector.NO_MORE_FREE_SMS) { //Send process aborted having no more free sms
                 noMoreFreeSMS = true;
                 throw new Exception("No more Free-SMS");
             }

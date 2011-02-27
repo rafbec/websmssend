@@ -74,14 +74,20 @@ public class GMX extends SmsConnector {
      * into it.
      */
     String senderPhoneNumber;
+    /** Stores if the send process was canceled previously due to no free SMS */
+    boolean resumingSendProcess = false;
+    /** Stores the SMS to be sent using a different account */
+    SmsData resumeSMS = null;
 
     /**
      * The constructor initializes the connector's properties. Until now, the
-     * GMX connector has only the {@link Properties#CAN_SIMULATE_SEND_PROCESS
-     * CAN_SIMULATE_SEND_PROCESS} property.
+     * GMX connector has the {@link Properties#CAN_SIMULATE_SEND_PROCESS
+     * CAN_SIMULATE_SEND_PROCESS} as well as the {@link Properties#CAN_ABORT_SEND_PROCESS_WHEN_NO_FREE_SMS_AVAILABLE
+     * CAN_ABORT_SEND_PROCESS_WHEN_NO_FREE_SMS_AVAILABLE} property.
      */
     public GMX(){
-        specs.AddProperty(new int[]{Properties.CAN_SIMULATE_SEND_PROCESS});
+        specs.AddProperty(new int[]{Properties.CAN_SIMULATE_SEND_PROCESS,
+            Properties.CAN_ABORT_SEND_PROCESS_WHEN_NO_FREE_SMS_AVAILABLE});
     }
 
     /**
@@ -152,7 +158,10 @@ public class GMX extends SmsConnector {
     }
 
     public boolean resumeSending() throws Exception {
-        throw new Exception("not implemented"); //not implemented
+        gui.debug("Wiederaufnahme des Sendeprozesses");
+        resumingSendProcess = true;
+        send(resumeSMS);
+        return true;
     }
 
     /**
@@ -234,9 +243,13 @@ public class GMX extends SmsConnector {
             Object customerIDObj = result.get("customer_id");
             Object senderPhoneNumberObj = result.get("cell_phone");
             // Maximum number of free SMS a user can send
-            Object freeMaxMonth = result.get("free_max_month");
+            String freeMaxMonth = result.get("free_max_month").toString();
             // Number of free SMS remaining the current month
             String freeRemainingMonth = result.get("free_rem_month").toString();
+            // Maximum number of free SMS a user can send the current day
+            String freeMaxDay = result.get("free_max_day").toString();
+            // Number of free SMS remaining the current day
+            String freeRemainingDay = result.get("free_rem_day").toString();
 
             gui.setWaitScreenText("Senden wird vorbereitet...");
             //#if Test
@@ -248,9 +261,24 @@ public class GMX extends SmsConnector {
             if(senderPhoneNumberObj == null || freeMaxMonth == null || freeRemainingMonth == null)
                 throw new Exception("Fehler beim Lesen der Serverantwort");
 
+            maxfreesms = Integer.parseInt(freeMaxMonth);
+            int remSMS = Integer.parseInt(freeRemainingMonth);
+            int maxDay = Integer.parseInt(freeMaxDay);
+            int remSMStoday = Integer.parseInt(freeRemainingDay);
+
+            // Cancel send process if no free SMS are available and the send
+            // process was not canceled before
+            if (((maxfreesms > 0 && remSMS <= 0)
+                    || (maxDay >0 && remSMStoday <= 0))
+                    && !resumingSendProcess) {
+                resumeSMS = sms;
+                return NO_MORE_FREE_SMS;
+            } else {
+                resumingSendProcess = false;
+            }
+
             senderPhoneNumber = senderPhoneNumberObj.toString();
             customerID = customerIDObj.toString();
-            int remSMS = Integer.parseInt(freeRemainingMonth);
 
             if(customerID == null)
                 throw new Exception("Keine Kundennummer empfangen");
@@ -305,15 +333,8 @@ public class GMX extends SmsConnector {
             // Get remaining free SMS this month
             remsms = remSMS;
             // Determine maximum possible free SMS this month
-            freeMaxMonth = result.get("free_max_month");
-            try {
-                maxfreesms = Integer.parseInt(freeMaxMonth.toString());
-            } catch (NumberFormatException ne) {
-                gui.debug("Konnte maximal in diesem Monat mögliche SMS "
-                        + "nicht bestimmen: "
-                        + ne.getMessage());
-                maxfreesms = 0;
-            }
+            freeMaxMonth = result.get("free_max_month").toString();
+            maxfreesms = Integer.parseInt(freeMaxMonth.toString());
 
             SaveItem(REMAINING_SMS_FIELD, remsms+"");
             SaveItem(MAX_FREE_SMS, maxfreesms+"");
@@ -321,7 +342,7 @@ public class GMX extends SmsConnector {
             gui.debug("Fertig mit " + getClass().getName()
                     + ".Send(), Dauer: "
                     + (System.currentTimeMillis() - totaltime) + " ms");
-            return 0;
+            return SMS_SENT;
         } catch (OutOfMemoryError ex) {
             gui.setWaitScreenText("Systemspeicher voll. " + ex.getMessage());
             Thread.sleep(3000);

@@ -28,7 +28,8 @@ package ConnectorBase;
  * @author Copyright 2011 redrocketracoon@googlemail.com
  */
 public interface ISmsConnector {
-// Maximum SMS length
+    public static final int NO_MORE_FREE_SMS = -1;
+    public static final int SMS_SENT = 0;
 
     /**
      *
