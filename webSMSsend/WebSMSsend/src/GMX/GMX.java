@@ -38,7 +38,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
-import webSMSsend.IGui;
 
 /**
  * This class implements the {@link ConnectorBase.ISmsConnector communication
@@ -142,7 +141,7 @@ public class GMX extends SmsConnector {
      * @param smsText the SMS text to be sent.
      * @return the number of SMS the sent text will result in.
      */
-    public int CountSms(String smsText) {
+    public int countSms(String smsText) {
         if (smsText.length() > 160) {
             return (int) Math.floor((smsText.length() + 151) / 152);
         } else if (smsText.length() == 0) {
@@ -222,6 +221,11 @@ public class GMX extends SmsConnector {
                 gui.setWaitScreenText("Unbekannte Serverantwort: " + returnCode);
             }
 
+            int appliedForDebit = Integer.parseInt(result.get("gmx_ls_flag").toString());
+            if(appliedForDebit != 10) {
+                throw new Exception("Nicht zum Lastschriftverfahren bei GMX angemeldet");
+            }
+
             int senderPhoneNumberConfirmed = Integer.parseInt(result.get("cell_phone_confirmed").toString());
             if(senderPhoneNumberConfirmed != 1) {
                 throw new Exception("Handynummer im GMX SMS-Manager nicht bestätigt");
@@ -277,7 +281,7 @@ public class GMX extends SmsConnector {
                 }
 
                 // Counting amount of used SMS
-                int SMSneeded = CountSms(sms.getSmsText());
+                int SMSneeded = countSms(sms.getSmsText());
                 gui.debug("Die SMS ist Zeichen lang: " + sms.getSmsText().length());
                 gui.debug("Anzahl SMS: " + SMSneeded);
 

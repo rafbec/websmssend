@@ -752,7 +752,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                 public void itemStateChanged(Item item) {
                     if (item == textField3) {
                         StringBuffer smsInputLabel = new StringBuffer().append(textField3.getString().length())
-                                .append(" (").append(SmsConnector.CountSms(textField3.getString()))
+                                .append(" (").append(SmsConnector.countSms(textField3.getString()))
                                 .append(" SMS)");
                         if (textField3.size() > SmsConnector.getMaxSMSLength()) {
                             smsInputLabel.append("\nSMS ist zu lang! Max. ")
@@ -1053,6 +1053,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                 public void execute() throws Exception {//GEN-END:|140-getter|1|140-execute
                     sendSMS(recvNB, text);
                     if (autoUpdate && (!Update.alreadyCheckedForUpdate() || updateAvailable)) {
+                        setWaitScreenText("Prüfe auf Update...");
                         checkForUpdate();
                     }
                     else {

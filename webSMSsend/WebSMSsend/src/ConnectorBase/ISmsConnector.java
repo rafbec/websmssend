@@ -23,8 +23,6 @@
 
 package ConnectorBase;
 
-import webSMSsend.IGui;
-
 /**
  *
  * @author Copyright 2011 redrocketracoon@googlemail.com
@@ -95,5 +93,5 @@ public interface ISmsConnector {
      * @param smsText
      * @return
      */
-    public int CountSms(String smsText);
+    public int countSms(String smsText);
 }

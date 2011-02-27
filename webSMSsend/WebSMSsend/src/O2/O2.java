@@ -29,7 +29,6 @@ import ConnectorBase.Properties;
 import ConnectorBase.SmsData;
 import java.io.IOException;
 import javax.microedition.pki.CertificateException;
-import webSMSsend.IGui;
 
 /**
  *
@@ -39,12 +38,14 @@ public class O2 extends SmsConnector {
 
     private ResumeData resumeData = null;
 
-    public O2() {
-        specs.AddProperty(new int[]{Properties.CAN_SEND_NAME_AS_SENDER, Properties.CAN_SIMULATE_SEND_PROCESS
-                , Properties.CAN_ABORT_SEND_PROCESS_WHEN_NO_FREE_SMS_AVAILABLE});
-    }
-    // Maximum SMS length allowed
+    /** Maximum SMS length allowed */
     protected static final int MAX_SMS_LENGTH = 1800;
+
+    public O2() {
+        specs.AddProperty(new int[]{Properties.CAN_SEND_NAME_AS_SENDER,
+            Properties.CAN_SIMULATE_SEND_PROCESS,
+            Properties.CAN_ABORT_SEND_PROCESS_WHEN_NO_FREE_SMS_AVAILABLE});
+    }
 
     public String getName() {
         return "O2";
@@ -66,7 +67,7 @@ public class O2 extends SmsConnector {
         return MAX_SMS_LENGTH;
     }
 
-    public int CountSms(String smsText) {
+    public int countSms(String smsText) {
         return (smsText.length() > 0) ? ((smsText.length() + 160 - 1) / 160) : 0;         //ceiled division
     }
 
@@ -82,7 +83,7 @@ public class O2 extends SmsConnector {
         try {
             gui.debug("starte sendSMS02()" + (Sms.isSimulation() ? " SIMULATION!" : ""));
             gui.debug("Die SMS ist Zeichen lang: " + Sms.getSmsText().length());
-            gui.debug("Anzahl SMS: " + CountSms(Sms.getSmsText()));
+            gui.debug("Anzahl SMS: " + countSms(Sms.getSmsText()));
             long totaltime = System.currentTimeMillis();
             if (Sms.getSmsRecv().equals("")) {
                 gui.setWaitScreenText("kein Empf\u00E4nger angegeben!");
@@ -184,7 +185,7 @@ public class O2 extends SmsConnector {
 
             try {
                 remsms = Integer.parseInt(returnValue[1]);
-                remsms = remsms - CountSms(Sms.getSmsText()); //Counting amount of used SMS and subtract from remaining freesms
+                remsms = remsms - countSms(Sms.getSmsText()); //Counting amount of used SMS and subtract from remaining freesms
             } catch (Exception ex) {
                 gui.debug("Failed to receive remaining SMS: " + ex.toString() + ex.getMessage());
                 failedToGetRemSms = true;
