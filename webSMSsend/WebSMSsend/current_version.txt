@@ -1,2 +1,2 @@
-0.63.0
-http://websmssend.googlecode.com/files/WebSMSsend.jad
+0.64.0
+http://websmssend.googlecode.com/files/webSMSsend_0.64.0.jad
