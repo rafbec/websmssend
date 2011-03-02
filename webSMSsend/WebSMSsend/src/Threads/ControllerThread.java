@@ -25,7 +25,7 @@ public class ControllerThread implements Runnable {
     private static final int THREAD_STATE_INACTIVE = 0x00;
 
     /** the task being monitored */
-    LongRunningTask task;
+    ILongRunningTask task;
 
     /** this controlling thread's state */
     volatile int wait_state = THREAD_STATE_INACTIVE;
@@ -49,14 +49,14 @@ public class ControllerThread implements Runnable {
     private long totalTimeout;
 
     /** the observer object that is invoked at task completion */
-    private Observer observer;
+    private IObserver observer;
 
     /**
      * use this method to check on progress
      */
     public int getState() { return wait_state; }
 
-    public LongRunningTask getTask() { return task; }
+    public ILongRunningTask getTask() { return task; }
 
     /**
      * this will be used by clients of this controller thread to
@@ -103,15 +103,15 @@ public class ControllerThread implements Runnable {
      * indicated by {@link #getFailureMessage()}.
      *
      */
-    public ControllerThread(LongRunningTask task, long waitInterval,
+    public ControllerThread(ILongRunningTask task, long waitInterval,
             long timeout) {
         this.task = task;
         this.waitTimeout = waitInterval;
         this.totalTimeout = timeout;
     }
 
-    public ControllerThread(LongRunningTask task, long waitInterval,
-            long timeout, Observer observer) {
+    public ControllerThread(ILongRunningTask task, long waitInterval,
+            long timeout, IObserver observer) {
         this(task, waitInterval, timeout);
         setObserver(observer);
 
@@ -180,11 +180,11 @@ public class ControllerThread implements Runnable {
         }
     }
 
-    public Observer getObserver() {
+    public IObserver getObserver() {
         return observer;
     }
 
-    public void setObserver(Observer observer) {
+    public void setObserver(IObserver observer) {
         this.observer = observer;
     }
 
