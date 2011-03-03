@@ -175,27 +175,23 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     }
 
     private String getVersion() {
-//#if Test
-//#         return "0.62.9";
-//#else
-    return getAppProperty("MIDlet-Version");
-//#endif
+        return getAppProperty("MIDlet-Version");
     }
 
     private void checkForUpdate() throws Exception {
-        debug("Prüfe auf Update");
+        debug("Pr\u00FCfe auf Update");
         // Check for update and store the most current version number
         currentVersion = Update.getCurrentVersion();
         if (Update.isUpdateAvailable(getVersion())) {
-            debug("Update ist verfügbar."
+            debug("Update ist verf\u00FCgbar."
                     + "\nInstallierte Version: " + getVersion()
-                    + "\nVerfügbare Version: " + currentVersion
+                    + "\nVerf\u00FCgbare Version: " + currentVersion
                     + "\nURL: " + Update.getBuildUrl());
             updateAvailable = true;
         } else {
-            debug("Kein Update verfügbar."
+            debug("Kein Update verf\u00FCgbar."
                     + "\nInstallierte Version: " + getVersion()
-                    + "\nVerfügbare Version: " + currentVersion
+                    + "\nVerf\u00FCgbare Version: " + currentVersion
                     + "\nURL: " + Update.getBuildUrl());
         }
     }
@@ -257,7 +253,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         }
         return 0;
     }
-    
+
     private void syncSettings() {
         username = ioSettings.getUsername();
         password = ioSettings.getPassword();
@@ -1053,7 +1049,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                 public void execute() throws Exception {//GEN-END:|140-getter|1|140-execute
                     sendSMS(recvNB, text);
                     if (autoUpdate && (!Update.alreadyCheckedForUpdate() || updateAvailable)) {
-                        setWaitScreenText("Prüfe auf Update...");
+                        setWaitScreenText("Pr\u00FCfe auf Update...");
                         checkForUpdate();
                     }
                     else {
@@ -1155,7 +1151,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                     StatusLabel.setLabel("");
                 }
                 else{
-                    StatusLabel.setText("nicht unterstützt!");
+                    StatusLabel.setText("nicht unterst\u00FCtzt!");
                 }
                 //hier muss die der richtige Eintrag markiert werden und der Absender eingetragen werden
             } else if (__selectedString.equals("Optimierung")) {//GEN-LINE:|165-action|7|170-preAction
@@ -2032,8 +2028,8 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     public Alert getNoMoreFreeSmsScreen() {
         if (noMoreFreeSmsScreen == null) {//GEN-END:|378-getter|0|378-preInit
             // write pre-init user code here
-            noMoreFreeSmsScreen = new Alert("Keine Frei-SMS!", "Es sind keine Frei-SMS mehr vorhanden.\r\n" +//GEN-BEGIN:|378-getter|1|378-postInit
-                    "Soll die SMS trotzdem versendet werden\r\n" +
+            noMoreFreeSmsScreen = new Alert("Keine Frei-SMS!", "Nicht mehr gen\u00FCgend Frei-SMS vorhanden.\r\n" +//GEN-BEGIN:|378-getter|1|378-postInit
+                    "Soll die SMS trotzdem versendet werden " +
                     "oder der Account gewechselt werden?", null, null);
             noMoreFreeSmsScreen.addCommand(getSwitchAccount());
             noMoreFreeSmsScreen.addCommand(getCancelCommand());
@@ -2107,7 +2103,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         return errorAlert;
     }
     //</editor-fold>//GEN-END:|397-getter|2|
- 
+
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: updateWaitScreen ">//GEN-BEGIN:|400-getter|0|400-preInit
     /**
      * Returns an initiliazed instance of updateWaitScreen component.
@@ -2115,7 +2111,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
      */
     public WaitScreen getUpdateWaitScreen() {
         if (updateWaitScreen == null) {//GEN-END:|400-getter|0|400-preInit
-            debug("Auf Update prüfen gewählt");
+            debug("Auf Update pr\u00FCfen gewählt");
             updateWaitScreen = new WaitScreen(getDisplay());//GEN-BEGIN:|400-getter|1|400-postInit
             updateWaitScreen.setTitle("Pr\u00FCfe auf Update");
             updateWaitScreen.addCommand(getBackToPropertiesCmd());
@@ -2128,7 +2124,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         return updateWaitScreen;
     }
     //</editor-fold>//GEN-END:|400-getter|2|
- 
+
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: checkForUpdateTask ">//GEN-BEGIN:|403-getter|0|403-preInit
     /**
      * Returns an initiliazed instance of checkForUpdateTask component.
@@ -2160,9 +2156,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             switchDisplayable(null, getInstallUpdateQuery());//GEN-LINE:|411-if|2|412-postAction
             // write post-action user code here
         } else {//GEN-LINE:|411-if|3|413-preAction
-            getErrorAlert().setTitle("Kein Update verfügbar");
+            getErrorAlert().setTitle("Kein Update verf\u00FCgbar");
             getErrorAlert().setString("Die installierte Version " + getVersion() +
-                    " ist die aktuellste.\n(Verfügbar ist "+ currentVersion +")");
+                    " ist die aktuellste.\n(Verf\u00FCgbar ist "+ currentVersion +")");
             getErrorAlert().setType(null);
             switchDisplayable(getErrorAlert(), getMainMenu());//GEN-LINE:|411-if|4|413-postAction
             errorAlert = null;
@@ -2209,8 +2205,8 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     public Alert getInstallUpdateQuery() {
         if (installUpdateQuery == null) {//GEN-END:|406-getter|0|406-preInit
             // write pre-init user code here
-            installUpdateQuery = new Alert("Update verf\u00FCgbar", "Es ist ein Update verfügbar.\n" +//GEN-BEGIN:|406-getter|1|406-postInit
-                    "Aktuell verfügbar: " + currentVersion +
+            installUpdateQuery = new Alert("Update verf\u00FCgbar", "Es ist ein Update verf\u00FCgbar.\n" +//GEN-BEGIN:|406-getter|1|406-postInit
+                    "Aktuell verf\u00FCgbar: " + currentVersion +
                     "\nInstalliert: " + getVersion() +
                     "\nAktuelle Version herunterladen und installieren?", null, null);
             installUpdateQuery.addCommand(getCancelUpdateCmd());

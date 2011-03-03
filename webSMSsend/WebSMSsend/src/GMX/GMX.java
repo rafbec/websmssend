@@ -266,7 +266,11 @@ public class GMX extends SmsConnector {
             int maxDay = Integer.parseInt(freeMaxDay);
             int remSMStoday = Integer.parseInt(freeRemainingDay);
 
-            // Cancel send process if no free SMS are available and the send
+            int numSMS = countSms(sms.getSmsText());
+            remSMS -= numSMS;
+            remSMStoday -= numSMS;
+
+            // Cancel send process if no free SMS would be available and the send
             // process was not canceled before
             if (((maxfreesms > 0 && remSMS <= 0)
                     || (maxDay >0 && remSMStoday <= 0))
