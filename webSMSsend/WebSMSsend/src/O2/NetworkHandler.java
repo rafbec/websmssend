@@ -182,11 +182,15 @@ public class NetworkHandler {
         SaveStartLine(startline);
         GUI.debug("Current Startline: " + startline);
         String remSMSstring=null;
-        if (getRemSMS){
+
+        //Try to get remaining SMS if it fails make a debug message and go on
+        try {
             int remSMSline=getRegexLineMatch(lineSplit,"<span class=\"FREESMS\"><strong>Frei-SMS: (.+) Web2SMS noch in diesem Monat mit Ihrem Internet-Pack inklusive!</strong></span><br>",lineSplit.length-smsFormLine,false);
             remSMSstring=lineSplit[remSMSline];
             remSMSstring=getRegexMatch(remSMSstring,"<span class=\"FREESMS\"><strong>Frei-SMS: (.+) Web2SMS noch in diesem Monat mit Ihrem Internet-Pack inklusive!</strong></span><br>",1);
             //System.out.println("remaining SMS: "+remSMSstring);
+        } catch (Exception e){
+            GUI.debug("RemainingSMS konnten nicht ermittelt werden: " + e.getMessage());
         }
 
         System.arraycopy(lineSplit, smsFormLine , argumentStrings, 0, 19);
@@ -202,7 +206,7 @@ public class NetworkHandler {
         }
         String[] returnValue=new String[2];
         returnValue[0]=content;
-        if(getRemSMS){
+        if(remSMSstring != null){
             returnValue[1]=remSMSstring;
         }
         return returnValue;
