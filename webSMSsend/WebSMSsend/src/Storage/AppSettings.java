@@ -35,6 +35,8 @@ public class AppSettings {
     private boolean saveEachCharacter;
     private String tempSmsText;
     private String tempSmsTo;
+    private String lastSmsText;
+    private String lastSmsTo;
 
     public AppSettings(AppSettingsManager appSettingsManager) {
         this.appSettingsManager = appSettingsManager;
@@ -78,6 +80,7 @@ public class AppSettings {
     }
 
     /**
+     * Determines the app's automatic update behaviour
      * @param autoUpdate the autoUpdate to set
      */
     public void setAutoUpdate(boolean autoUpdate) {
@@ -127,6 +130,36 @@ public class AppSettings {
      */
     public void setTempSmsTo(String tempSmsTo) {
         this.tempSmsTo = tempSmsTo;
+        changed();
+    }
+
+    /**
+     * @return the lastSmsText
+     */
+    public String getLastSmsText() {
+        return lastSmsText == null ? "" : lastSmsText;
+    }
+
+    /**
+     * @param lastSmsText the lastSmsText to set
+     */
+    public void setLastSmsText(String lastSmsText) {
+        this.lastSmsText = lastSmsText;
+        changed();
+    }
+
+    /**
+     * @return the lastSmsTo
+     */
+    public String getLastSmsTo() {
+        return lastSmsTo == null ? "" : lastSmsTo;
+    }
+
+    /**
+     * @param lastSmsTo the lastSmsTo to set
+     */
+    public void setLastSmsTo(String lastSmsTo) {
+        this.lastSmsTo = lastSmsTo;
         changed();
     }
 

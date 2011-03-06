@@ -25,6 +25,7 @@
  */
 
 package O2;
+import ConnectorBase.SmsConnector;
 import ConnectorBase.URLEncoder;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +36,6 @@ import javax.microedition.io.HttpConnection;
 import javax.microedition.io.HttpsConnection;
 import javax.microedition.pki.CertificateException;
 import me.regexp.RE;
-import webSMSsend.ConnectorSettings;
 import webSMSsend.IGui;
 
 
@@ -54,6 +54,7 @@ public class NetworkHandler {
     private String content="";
     private String cookie="";
     private IGui GUI;
+    private O2 parent;
 
 
     public String getCookie(){
@@ -76,10 +77,11 @@ public class NetworkHandler {
         cookie=cookie2;
     }
 
-    public NetworkHandler(String usernameIn, String passwordIn, IGui parent) {
+    public NetworkHandler(String usernameIn, String passwordIn, IGui Debugger, O2 parent) {
         username=usernameIn;
         password=passwordIn;
-        GUI = parent;
+        GUI = Debugger;
+        this.parent = parent;
 
         // test if jvm supports cp1252 encoding
         cp1252internal = true;
@@ -98,16 +100,20 @@ public class NetworkHandler {
     //Save Startline
     private void SaveStartLine(int Startline)
     {
-        ConnectorSettings.saveItems(START_LINE_SAVE_NAME, Startline + "");
+        if (parent != null){
+            parent.saveSetting(START_LINE_SAVE_NAME, Startline + "");
+        }
     }
 
-    private int GetStartLine()
-    {
-        String line = ConnectorSettings.getItem(START_LINE_SAVE_NAME);
+    private int GetStartLine() {
+        int startline=0;
         try {
-            return Integer.parseInt(line);
-        } catch (Exception ex) {
-            return 0;
+            if (parent != null) {
+                String line = parent.getSetting(START_LINE_SAVE_NAME);
+                startline = Integer.parseInt(line);
+            }
+        } finally {
+            return startline;
         }
     }
 

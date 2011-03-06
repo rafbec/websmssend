@@ -99,7 +99,7 @@ public class O2 extends SmsConnector {
             Thread.sleep(500);
             String url;
 
-            NetworkHandler connection = new NetworkHandler(Sms.getUsername(), Sms.getPassword(), gui);
+            NetworkHandler connection = new NetworkHandler(Sms.getUsername(), Sms.getPassword(), gui,this);
             gui.setWaitScreenText("Login wird geladen...");
 
             String smsRecv = checkRecv(Sms.getSmsRecv());
@@ -253,6 +253,16 @@ public class O2 extends SmsConnector {
         }
 
         gui.setWaitScreenText("SMS wurde versandt!");
-        SaveItem(REMAINING_SMS_FIELD, remsms + "");
+        saveItem(REMAINING_SMS_FIELD, remsms + "");
     }
+
+    //<editor-fold defaultstate="collapsed" desc="Save- and Get-Function for Networkhandler">
+    void saveSetting(String itemName, String value){
+        saveItem(itemName, value);
+    }
+
+    String getSetting(String itemName){
+        return getItem(itemName);
+    }
+    //</editor-fold>
 }

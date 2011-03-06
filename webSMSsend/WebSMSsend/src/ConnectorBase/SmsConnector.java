@@ -23,8 +23,8 @@
 
 package ConnectorBase;
 
+import Storage.IConnectorSettings;
 import webSMSsend.IGui;
-import webSMSsend.ConnectorSettings;
 
 /**
  *
@@ -39,10 +39,11 @@ public abstract class SmsConnector implements ISmsConnector {
     protected int remsms = -1;
     protected int maxfreesms = -1;
     protected ConnectorSpecification specs = new ConnectorSpecification();
+    protected IConnectorSettings connectorSettings;
 
     public int getRemainingSMS() {
         try {
-            String remsms = ConnectorSettings.getItem(getName() + REMAINING_SMS_FIELD);
+            String remsms = getItem(REMAINING_SMS_FIELD);
             this.remsms = Integer.parseInt(remsms);
         } catch (Exception ex) {
             remsms=-1; //-1 if no value could be restored
@@ -52,7 +53,7 @@ public abstract class SmsConnector implements ISmsConnector {
 
     public int getMaxFreeSMS() {
         try {
-            String maxfreesms = ConnectorSettings.getItem(getName() + MAX_FREE_SMS);
+            String maxfreesms = getItem(MAX_FREE_SMS);
             this.maxfreesms = Integer.parseInt(maxfreesms);
         } catch (Exception ex) {
             maxfreesms = -1; //-1 if no value could be restored
@@ -64,9 +65,23 @@ public abstract class SmsConnector implements ISmsConnector {
         return specs.HasPropterty(Property);
     }
 
-    protected void SaveItem(String ItemName, String Content)
+    public void setConnectorSettings(IConnectorSettings connectorSettings) {
+        this.connectorSettings = connectorSettings;
+    }
+
+    protected void saveItem(String ItemName, String Content)
     {
-        ConnectorSettings.saveItems(getName() + ItemName, Content); //saves Field with Connectorname
+        if (connectorSettings != null) {
+            connectorSettings.saveItem(ItemName, Content);
+        }
+    }
+
+    protected String getItem(String ItemName){
+        if (connectorSettings != null){
+            return connectorSettings.getItem(ItemName);
+        } else{
+            return "";
+        }
     }
 
     protected String checkRecv(String smsRecv) {

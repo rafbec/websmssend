@@ -26,6 +26,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.Vector;
 
 /**
@@ -118,10 +120,22 @@ public class UserAccountManager extends StorageManager {
     /**
      *
      * @param userAccount
-     * @return user account number
+     * @return user account number, returns -1 if the account is not found.
      */
-    public int getAccountNumber(UserAccount userAccount){
-       return userAccounts.indexOf(userAccount);
+    public int getAccountNumber(UserAccount userAccount) {
+        return userAccounts.indexOf(userAccount);
+    }
+
+    /**
+     *
+     * @return Count of user accounts
+     */
+    public int getAccountCount() {
+        if (userAccounts != null) {
+            return userAccounts.size();
+        } else {
+            return 0;
+        }
     }
 
     /**
@@ -141,9 +155,11 @@ public class UserAccountManager extends StorageManager {
         try {
             byte[] data = this.getData();
             accounts = changeAccountsFromByteArray(data);
+            return accounts;
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
+        accounts = new Vector();
         return accounts;
     }
 
@@ -164,6 +180,7 @@ public class UserAccountManager extends StorageManager {
     private byte[] changeAccountsToByteArray() {
         byte[] data = null;
         UserAccount account;
+        Hashtable connectorSettings;
 
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -179,6 +196,17 @@ public class UserAccountManager extends StorageManager {
                 dos.writeUTF(account.getSenderName());
                 dos.writeInt(account.getProvider());
                 dos.writeInt(account.getSenderMode());
+
+                connectorSettings = account.getConnectorSettings().getConnectorSettings();
+                dos.writeInt(connectorSettings.size());
+
+                Enumeration keys = connectorSettings.keys();
+                Enumeration values = connectorSettings.elements();
+
+                while (keys.hasMoreElements() && values.hasMoreElements()){
+                    dos.writeUTF((String) keys.nextElement());
+                    dos.writeUTF((String) values.nextElement());
+                }
             }
 
             baos.close();
@@ -193,6 +221,9 @@ public class UserAccountManager extends StorageManager {
     private Vector changeAccountsFromByteArray(byte[] data) {
         Vector accounts = new Vector();
         UserAccount account;
+        ConnectorSettings connectorSettings;
+        int conSetNumber;
+
         try {
             ByteArrayInputStream bais = new ByteArrayInputStream(data);
             DataInputStream dis = new DataInputStream(bais);
@@ -207,6 +238,13 @@ public class UserAccountManager extends StorageManager {
                 account.setSenderName(dis.readUTF());
                 account.setProvider(dis.readInt());
                 account.setSenderMode(dis.readInt());
+
+                connectorSettings = account.getConnectorSettings();
+                conSetNumber = dis.readInt();
+                for (int j = 0; j < conSetNumber; j++) {
+                    connectorSettings.addKeyValuePair(dis.readUTF(), dis.readUTF());
+                }
+
                 accounts.addElement(account);
                 account.setAccountManager(this);
             }

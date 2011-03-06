@@ -23,12 +23,20 @@
 
 package ConnectorBase;
 
+import Storage.IConnectorSettings;
+
 /**
  *
  * @author Copyright 2011 redrocketracoon@googlemail.com
  */
 public interface ISmsConnector {
+    /**
+     *
+     */
     public static final int NO_MORE_FREE_SMS = -1;
+    /**
+     *
+     */
     public static final int SMS_SENT = 0;
 
     /**
@@ -36,12 +44,6 @@ public interface ISmsConnector {
      * @return
      */
     public int getMaxSMSLength();
-
-    /**
-     *
-     * @return
-     */
-    public String getName();
 
     /**
      *
@@ -95,4 +97,10 @@ public interface ISmsConnector {
      * @return
      */
     public int countSms(String smsText);
+
+    /**
+     *
+     * @param connectorSettings
+     */
+    public void setConnectorSettings(IConnectorSettings connectorSettings);
 }
