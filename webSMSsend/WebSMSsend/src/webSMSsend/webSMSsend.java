@@ -90,11 +90,11 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     private Command cancelUpdateCmd;
     private Command okCommandResumeSendSms;
     private Command backToPropertiesCmd;
+    private Command exitCommand2;
     private Command cancelCommand1;
     private Command deleteAccount;
     private Command editAccount;
     private Command createAccount;
-    private Command exitCommand2;
     private Form MainMenu;
     private TextField textField;
     private StringItem stringItem1;
@@ -2307,7 +2307,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     public Command getExitCommand2() {
         if (exitCommand2 == null) {//GEN-END:|475-getter|0|475-preInit
             // write pre-init user code here
-            exitCommand2 = new Command("Exit", Command.EXIT, 0);//GEN-LINE:|475-getter|1|475-postInit
+            exitCommand2 = new Command("Beenden", Command.EXIT, 0);//GEN-LINE:|475-getter|1|475-postInit
             // write post-init user code here
         }//GEN-BEGIN:|475-getter|2|
         return exitCommand2;
