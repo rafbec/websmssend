@@ -272,8 +272,8 @@ public class GMX extends SmsConnector {
 
             // Cancel send process if no free SMS would be available and the send
             // process was not canceled before
-            if (((maxfreesms > 0 && remSMS <= 0)
-                    || (maxDay >0 && remSMStoday <= 0))
+            if (((maxfreesms > 0 && remSMS < 0)
+                    || (maxDay > 0 && remSMStoday < 0))
                     && !resumingSendProcess) {
                 resumeSMS = sms;
                 return NO_MORE_FREE_SMS;
