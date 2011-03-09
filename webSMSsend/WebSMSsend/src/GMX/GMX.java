@@ -266,14 +266,20 @@ public class GMX extends SmsConnector {
             int maxDay = Integer.parseInt(freeMaxDay);
             int remSMStoday = Integer.parseInt(freeRemainingDay);
 
-            int numSMS = countSms(sms.getSmsText());
-            remSMS -= numSMS;
-            remSMStoday -= numSMS;
+            // Counting amount of used SMS
+            int SMSneeded = countSms(sms.getSmsText());
+            gui.debug("Die SMS ist Zeichen lang: " + sms.getSmsText().length());
+            gui.debug("Anzahl SMS: " + SMSneeded);
+            remSMS -= SMSneeded;
+            remSMStoday -= SMSneeded;
 
+            // Determine if the user has free SMS left in this month and if
+            // there is any limitation of free SMS for one day
+            boolean freeSmsLeft = maxfreesms > 0 && remSMS >= 0;
+            boolean unlimitedDailyFreeSms = maxDay == 0 || (maxDay > 0 && remSMStoday >= 0);
             // Cancel send process if no free SMS would be available and the send
             // process was not canceled before
-            if (((maxfreesms > 0 && remSMS < 0)
-                    || (maxDay > 0 && remSMStoday < 0))
+            if ((!freeSmsLeft || !unlimitedDailyFreeSms)
                     && !resumingSendProcess) {
                 resumeSMS = sms;
                 return NO_MORE_FREE_SMS;
@@ -311,11 +317,6 @@ public class GMX extends SmsConnector {
                 else {
                     gui.setWaitScreenText("Unbekannte Serverantwort: " + returnCode);
                 }
-
-                // Counting amount of used SMS
-                int SMSneeded = countSms(sms.getSmsText());
-                gui.debug("Die SMS ist Zeichen lang: " + sms.getSmsText().length());
-                gui.debug("Anzahl SMS: " + SMSneeded);
 
                 // Determine remaining SMS this month
                 try {
