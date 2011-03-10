@@ -127,13 +127,13 @@ public class Update {
 
         if (installedMajor < currentMajor) {
             updateAvailable = true;
-        } else {
+        } else if (installedMajor == currentMajor) {
             int currentMinor = Integer.parseInt(current.get("minor").toString());
             int installedMinor = Integer.parseInt(installed.get("minor").toString());
 
             if (installedMinor < currentMinor) {
                 updateAvailable = true;
-            } else {
+            } else if (installedMinor == currentMinor) {
                 int currentBuild = Integer.parseInt(current.get("build").toString());
                 int installedBuild = Integer.parseInt(installed.get("build").toString());
 
