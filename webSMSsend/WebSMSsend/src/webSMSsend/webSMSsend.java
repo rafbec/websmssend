@@ -304,18 +304,18 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
      */
     private void initializeChooseAccount() {
         // write post-action user code here
-        chooseAccount.deleteAll();
+        getChooseAccount().deleteAll();
         String[] accountNames = userAccountManager.getAccountNames();
         String name;
         for (int i = 0; i < accountNames.length; i++) {
             name = accountNames[i];
             if (name.equals("")) {
-                chooseAccount.append("Benutzeraccount " + i, null);
+                getChooseAccount().append("Benutzeraccount " + i, null);
             } else {
-                chooseAccount.append(name, null);
+                getChooseAccount().append(name, null);
             }
         }
-        chooseAccount.setSelectedIndex(appSettings.getActiveAccount(), true);
+        getChooseAccount().setSelectedIndex(appSettings.getActiveAccount(), true);
     }
 
     private void deleteAccount() {
@@ -596,6 +596,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                 // write pre-action user code here
                 switchDisplayable(null, getChooseAccount());//GEN-LINE:|7-commandAction|50|381-postAction
                 // write post-action user code here
+                initializeChooseAccount();
             }//GEN-BEGIN:|7-commandAction|51|112-preAction
         } else if (displayable == notSend) {
             if (command == okCommand3) {//GEN-END:|7-commandAction|51|112-preAction
