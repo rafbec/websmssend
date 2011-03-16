@@ -152,29 +152,30 @@ public class UserAccountManager extends StorageManager {
 
     private Vector readUserAccounts() {
         Vector accounts = null;
-        try {
-            byte[] data = this.getData();
-            accounts = changeAccountsFromByteArray(data);
-            return accounts;
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+//        try {
+//            byte[] data = this.getData();
+//            accounts = changeAccountsFromByteArray(data);
+//            return accounts;
+//        } catch (Exception e) {
+//            System.out.println(e.getMessage());
+//        }
         accounts = new Vector();
         return accounts;
     }
 
     private boolean saveUserAccounts() {
-        boolean saved = false;
-        if (userAccounts != null) {
-            try {
-                byte[] data = changeAccountsToByteArray();
-                this.saveData(data);
-                saved = true;
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-        }
-        return saved;
+//        boolean saved = false;
+//        if (userAccounts != null) {
+//            try {
+//                byte[] data = changeAccountsToByteArray();
+//                this.saveData(data);
+//                saved = true;
+//            } catch (Exception e) {
+//                System.out.println(e.getMessage());
+//            }
+//        }
+//        return saved;
+        return true;
     }
 
     private byte[] changeAccountsToByteArray() {

@@ -57,26 +57,27 @@ public class AppSettingsManager extends StorageManager {
     }
 
     private void readAppSettings() {
-        try {
-            byte[] data = this.getData();
-            changeAppSettingsFromByteArray(data);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+//        try {
+//            byte[] data = this.getData();
+//            changeAppSettingsFromByteArray(data);
+//        } catch (Exception e) {
+//            System.out.println(e.getMessage());
+//        }
     }
 
     private boolean saveAppSettings() {
-        boolean saved = false;
-        if (appSettings != null) {
-            try {
-                byte[] data = changeAppSettingsToByteArray();
-                this.saveData(data);
-                saved = true;
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-        }
-        return saved;
+//        boolean saved = false;
+//        if (appSettings != null) {
+//            try {
+//                byte[] data = changeAppSettingsToByteArray();
+//                this.saveData(data);
+//                saved = true;
+//            } catch (Exception e) {
+//                System.out.println(e.getMessage());
+//            }
+//        }
+//        return saved;
+        return true;
     }
 
     private byte[] changeAppSettingsToByteArray() {
