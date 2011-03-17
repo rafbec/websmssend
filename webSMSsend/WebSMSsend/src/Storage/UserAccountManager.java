@@ -152,30 +152,29 @@ public class UserAccountManager extends StorageManager {
 
     private Vector readUserAccounts() {
         Vector accounts = null;
-//        try {
-//            byte[] data = this.getData();
-//            accounts = changeAccountsFromByteArray(data);
-//            return accounts;
-//        } catch (Exception e) {
-//            System.out.println(e.getMessage());
-//        }
+        try {
+            byte[] data = this.getData();
+            accounts = changeAccountsFromByteArray(data);
+            return accounts;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
         accounts = new Vector();
         return accounts;
     }
 
     private boolean saveUserAccounts() {
-//        boolean saved = false;
-//        if (userAccounts != null) {
-//            try {
-//                byte[] data = changeAccountsToByteArray();
-//                this.saveData(data);
-//                saved = true;
-//            } catch (Exception e) {
-//                System.out.println(e.getMessage());
-//            }
-//        }
-//        return saved;
-        return true;
+        boolean saved = false;
+        if (userAccounts != null) {
+            try {
+                byte[] data = changeAccountsToByteArray();
+                this.saveData(data);
+                saved = true;
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        return saved;
     }
 
     private byte[] changeAccountsToByteArray() {
@@ -210,9 +209,10 @@ public class UserAccountManager extends StorageManager {
                 }
             }
 
-            baos.close();
-            dos.close();
             data = baos.toByteArray();
+
+            dos.close();
+            baos.close();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -250,8 +250,8 @@ public class UserAccountManager extends StorageManager {
                 account.setAccountManager(this);
             }
 
-            bais.close();
             dis.close();
+            bais.close();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
