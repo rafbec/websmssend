@@ -213,7 +213,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
 
     private void initializeSmsConnector() {
          if (curUserAcc == null) {
-              if (stringItem1 != null) {
+              if (getStringItem1() != null) {
                  stringItem1.setText("Kein Benutzeraccount vorhanden.\nBitte unter Einstellungen\\Benutzer\neinen Account anlegen");
              }
          } else {
@@ -225,7 +225,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
              }
              SmsConnector.setConnectorSettings(curUserAcc.getConnectorSettings());
 
-             if (stringItem1 != null) {
+             if (getStringItem1() != null) {
                  stringItem1.setText(getRemSMSText());
              }
 
