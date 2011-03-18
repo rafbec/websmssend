@@ -423,7 +423,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             getTextField3().notifyStateChanged();
         }
 //GEN-LINE:|3-startMIDlet|1|3-postAction
-        //debugSystemProperties();
+        debugSystemProperties();
     }//GEN-BEGIN:|3-startMIDlet|2|
     //</editor-fold>//GEN-END:|3-startMIDlet|2|
 
