@@ -315,7 +315,12 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                 getChooseAccount().append(name, null);
             }
         }
-        getChooseAccount().setSelectedIndex(appSettings.getActiveAccount(), true);
+        //Try to select activeaccount
+        try {
+            getChooseAccount().setSelectedIndex(appSettings.getActiveAccount(), true);
+        } catch (Exception ex) {
+            debug("getChooseAccount().setSelectedIndex: " + ex.getMessage());
+        }
     }
 
     private void deleteAccount() {
