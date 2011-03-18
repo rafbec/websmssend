@@ -420,7 +420,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         } else {
             switchDisplayable(null, getMainMenu());
             initializeSmsConnector();
-//            getTextField3().notifyStateChanged();
+            getTextField3().notifyStateChanged();
         }
 //GEN-LINE:|3-startMIDlet|1|3-postAction
         //debugSystemProperties();
