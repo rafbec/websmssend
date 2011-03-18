@@ -414,12 +414,12 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
      * Performs an action assigned to the Mobile Device - MIDlet Started point.
      */
     public void startMIDlet() {//GEN-END:|3-startMIDlet|0|3-preAction
-//        initializeSettings();
+        initializeSettings();
 //        if (curUserAcc == null) {
 //            switchDisplayable(null, getSetup());
 //        } else {
             switchDisplayable(null, getMainMenu());
-//            initializeSmsConnector();
+            initializeSmsConnector();
 //            getTextField3().notifyStateChanged();
 //        }
 //GEN-LINE:|3-startMIDlet|1|3-postAction
