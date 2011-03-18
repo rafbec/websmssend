@@ -239,17 +239,17 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     //<editor-fold defaultstate="collapsed" desc="Temp-SMS handling methods">
 
     private void saveTempSMS() {
-        if (getMainMenu() != null) {
-            appSettings.setTempSmsTo(textField.getString());
-            appSettings.setTempSmsText(textField3.getString());
-        }
+//        if (getMainMenu() != null) {
+//            appSettings.setTempSmsTo(textField.getString());
+//            appSettings.setTempSmsText(textField3.getString());
+//        }
     }
 
     private void retrieveTempSMS() {
-        textField3.setString(appSettings.getTempSmsText());
-        textField.setString(appSettings.getTempSmsTo());
-        textField3.notifyStateChanged();
-        getDisplay().setCurrentItem(textField);
+//        textField3.setString(appSettings.getTempSmsText());
+//        textField.setString(appSettings.getTempSmsTo());
+//        textField3.notifyStateChanged();
+//        getDisplay().setCurrentItem(textField);
     }
 
     private void clearSMSInput() {
@@ -409,16 +409,16 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
      * Performs an action assigned to the Mobile Device - MIDlet Started point.
      */
     public void startMIDlet() {//GEN-END:|3-startMIDlet|0|3-preAction
-        initializeSettings();
-        if (curUserAcc == null) {
-            switchDisplayable(null, getSetup());
-        } else {
+//        initializeSettings();
+//        if (curUserAcc == null) {
+//            switchDisplayable(null, getSetup());
+//        } else {
             switchDisplayable(null, getMainMenu());
-            initializeSmsConnector();
-            textField3.notifyStateChanged();
-        }
+//            initializeSmsConnector();
+//            getTextField3().notifyStateChanged();
+//        }
 //GEN-LINE:|3-startMIDlet|1|3-postAction
-        debugSystemProperties();
+        //debugSystemProperties();
     }//GEN-BEGIN:|3-startMIDlet|2|
     //</editor-fold>//GEN-END:|3-startMIDlet|2|
 
