@@ -214,7 +214,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     private void initializeSmsConnector() {
          if (curUserAcc == null) {
               if (getStringItem1() != null) {
-                 stringItem1.setText("Kein Benutzeraccount vorhanden.\nBitte unter Einstellungen\\Benutzer\neinen Account anlegen");
+                 getStringItem1().setText("Kein Benutzeraccount vorhanden.\nBitte unter Einstellungen\\Benutzer\neinen Account anlegen");
              }
          } else {
              //set correct SMS-Provider
@@ -226,7 +226,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
              SmsConnector.setConnectorSettings(curUserAcc.getConnectorSettings());
 
              if (getStringItem1() != null) {
-                 stringItem1.setText(getRemSMSText());
+                 getStringItem1().setText(getRemSMSText());
              }
 
              appSettings.setActiveAccount(curUserAcc.getAccountNumber());
@@ -236,7 +236,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     
     //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="Temp-SMS handling methods">
+    //<editor-fold defaultstate="collapsed" desc="Temp-SMS and Last-SMS handling methods">
 
     private void saveTempSMS() {
         if (appSettings != null) {
@@ -267,6 +267,25 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         getTextField3().setLabel(MESSAGE_TEXTFIELD_LABEL);
         getTextField().setString("");
         getDisplay().setCurrentItem(getTextField());
+    }
+    
+    private void retrieveLastSms() {
+        try {
+            getTextField3().setString(appSettings.getLastSmsText());
+            getTextField().setString(appSettings.getLastSmsTo());
+            getTextField3().notifyStateChanged();
+        } catch (Exception ex) {
+            debug("retrieveLastSms failed");
+        }
+    }
+    
+    private void saveLastSms() {
+        try {
+            appSettings.setLastSmsText(getTextField3().getString());
+            appSettings.setLastSmsTo(getTextField3().getString());
+        } catch (Exception ex) {
+            debug("saveLastSms failed");
+        }
     }
     
     //</editor-fold>
@@ -364,12 +383,12 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
      */
     private void loadAccount() {
         if (curUserAcc != null) {
-            txtFieldAccountName.setString(curUserAcc.getAccountName());
-            choiceGroup2.setSelectedIndex(curUserAcc.getProvider(), true);
-            txtFieldUserName.setString(curUserAcc.getUserName());
-            txtFieldPassword.setString(curUserAcc.getPassWord());
+            getTxtFieldAccountName().setString(curUserAcc.getAccountName());
+            getChoiceGroup2().setSelectedIndex(curUserAcc.getProvider(), true);
+            getTxtFieldUserName().setString(curUserAcc.getUserName());
+            getTxtFieldPassword().setString(curUserAcc.getPassWord());
             getSetup().addCommand(getCancelCommand1());
-            getDisplay().setCurrentItem(txtFieldAccountName);
+            getDisplay().setCurrentItem(getTxtFieldAccountName());
         }
     }
 
@@ -495,9 +514,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         } else if (displayable == MainMenu) {
             if (command == LastSMS) {//GEN-END:|7-commandAction|7|348-preAction
                 // write pre-action user code here
-                textField3.setString(appSettings.getLastSmsText());//GEN-BEGIN:|7-commandAction|8|348-postAction
-                textField.setString(appSettings.getLastSmsTo());
-                textField3.notifyStateChanged();//GEN-END:|7-commandAction|8|348-postAction
+                retrieveLastSms();//GEN-LINE:|7-commandAction|8|348-postAction
                 // write post-action user code here
             } else if (command == eingabeLeeren) {//GEN-LINE:|7-commandAction|9|245-preAction
                 // write pre-action user code here
@@ -673,10 +690,10 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                     jumpToMainMenu = true;
                 }
 
-                curUserAcc.setAccountName(txtFieldAccountName.getString());
-                curUserAcc.setProvider(choiceGroup2.getSelectedIndex());
-                curUserAcc.setUserName(txtFieldUserName.getString());
-                curUserAcc.setPassWord(txtFieldPassword.getString());
+                curUserAcc.setAccountName(getTxtFieldAccountName().getString());
+                curUserAcc.setProvider(getChoiceGroup2().getSelectedIndex());
+                curUserAcc.setUserName(getTxtFieldUserName().getString());
+                curUserAcc.setPassWord(getTxtFieldPassword().getString());
 
                 if (userAccountManager.getAccountNumber(curUserAcc) == -1) {
                     userAccountManager.addUserAccount(curUserAcc);
@@ -710,8 +727,8 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             } else if (command == okCommand6) {//GEN-LINE:|7-commandAction|71|270-preAction
                 if (txtSenderName.getString().length() < 5 && choiceGroup4.getSelectedIndex() != 0) {
                     //Fehlermeldung "Name zu kurz" falls Text als Absender gewählt
-                    StatusLabel.setText("Der Absender muss mindestens 5 Buchstaben lang sein");
-                    StatusLabel.setLabel("Achtung!");
+                    getStatusLabel().setText("Der Absender muss mindestens 5 Buchstaben lang sein");
+                    getStatusLabel().setLabel("Achtung!");
                 } else {
                     // write pre-action user code here
                     charactersCorrect();//GEN-LINE:|7-commandAction|72|270-postAction
@@ -754,9 +771,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                 noMoreFreeSmsAvailable();//GEN-LINE:|7-commandAction|80|51-postAction
 
             } else if (command == WaitScreen.SUCCESS_COMMAND) {//GEN-LINE:|7-commandAction|81|50-preAction
-                //Save LastSMS
-                appSettings.setLastSmsText(textField3.getString());
-                appSettings.setLastSmsTo(textField.getString());
+                saveLastSms();
                 clearSMSInput();
                 getSmsSend().setString("SMS gesendet\n" + getRemSMSText());
                 getStringItem1().setText(getRemSMSText());
@@ -819,12 +834,12 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             ItemStateListener listener = new ItemStateListener() {
 
                 public void itemStateChanged(Item item) {
-                    if (item == textField3) {
-                        StringBuffer smsInputLabel = new StringBuffer().append(textField3.getString().length()).append(" (").append(SmsConnector.countSms(textField3.getString())).append(" SMS)");
-                        if (textField3.size() > SmsConnector.getMaxSMSLength()) {
+                    if (item == getTextField3()) {
+                        StringBuffer smsInputLabel = new StringBuffer().append(getTextField3().getString().length()).append(" (").append(SmsConnector.countSms(getTextField3().getString())).append(" SMS)");
+                        if (getTextField3().size() > SmsConnector.getMaxSMSLength()) {
                             smsInputLabel.append("\nSMS ist zu lang! Max. ").append(SmsConnector.getMaxSMSLength()).append(" Zeichen!");
                         }
-                        textField3.setLabel(smsInputLabel.toString());
+                        getTextField3().setLabel(smsInputLabel.toString());
                         if (appSettings.isSaveEachCharacter()) {
                             saveTempSMS();
                         }
@@ -1134,10 +1149,10 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                 if (SmsConnector.hasProperty(Properties.CAN_SEND_NAME_AS_SENDER)) {
                     choiceGroup4.setSelectedIndex(curUserAcc.getSenderMode(), true);
                     txtSenderName.setString(curUserAcc.getSenderName());
-                    StatusLabel.setText("");
-                    StatusLabel.setLabel("");
+                    getStatusLabel().setText("");
+                    getStatusLabel().setLabel("");
                 } else {
-                    StatusLabel.setText("nicht unterst\u00FCtzt!");
+                    getStatusLabel().setText("nicht unterst\u00FCtzt!");
                 }
                 //hier muss die der richtige Eintrag markiert werden und der Absender eingetragen werden
             } else if (__selectedString.equals("Optimierung")) {//GEN-LINE:|165-action|5|170-preAction
@@ -1308,12 +1323,12 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             ItemStateListener listener = new ItemStateListener() {
 
                 public void itemStateChanged(Item item) {
-                    if (item == choiceGroup2) {
+                    if (item == getChoiceGroup2()) {
                         // Change the password field label, if GMX is selected
-                        if (choiceGroup2.isSelected(1)) {
-                            txtFieldPassword.setLabel("SMS-Manager Freischaltcode:");
+                        if (getChoiceGroup2().isSelected(1)) {
+                            getTxtFieldPassword().setLabel("SMS-Manager Freischaltcode:");
                         } else {
-                            txtFieldPassword.setLabel("Passwort:");
+                            getTxtFieldPassword().setLabel("Passwort:");
                         }
                     }
                 }
@@ -2259,8 +2274,8 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         StringBuffer error_Msg = new StringBuffer("Die SMS kann nicht versendet werden.\nFolgende Angaben fehlen:\n");
         boolean ready = true;
 
-        recvNB = textField.getString();
-        smsText = textField3.getString();
+        recvNB = getTextField3().getString();
+        smsText = getTextField3().getString();
 
         if (recvNB.equals("")) {
             ready =false;
