@@ -1082,7 +1082,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         if (textField == null) {//GEN-END:|156-getter|0|156-preInit
             // write pre-init user code here
             textField = new TextField("Empf\u00E4nger (Handynummer):", null, 32, TextField.PHONENUMBER);//GEN-BEGIN:|156-getter|1|156-postInit
-            textField.setLayout(ImageItem.LAYOUT_CENTER | Item.LAYOUT_TOP | Item.LAYOUT_BOTTOM | Item.LAYOUT_VCENTER | Item.LAYOUT_2);
+            textField.setLayout(ImageItem.LAYOUT_LEFT);
             textField.setPreferredSize(-1, -1);//GEN-END:|156-getter|1|156-postInit
             // write post-init user code here
         }//GEN-BEGIN:|156-getter|2|
@@ -1437,7 +1437,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         if (textField3 == null) {//GEN-END:|247-getter|0|247-preInit
             // write pre-init user code here
             textField3 = new TextField(MESSAGE_TEXTFIELD_LABEL, null, 1800, TextField.ANY);//GEN-BEGIN:|247-getter|1|247-postInit
-            textField3.setLayout(ImageItem.LAYOUT_CENTER | Item.LAYOUT_VEXPAND);//GEN-END:|247-getter|1|247-postInit
+            textField3.setLayout(ImageItem.LAYOUT_LEFT | Item.LAYOUT_VEXPAND);//GEN-END:|247-getter|1|247-postInit
             // write post-init user code here
         }//GEN-BEGIN:|247-getter|2|
         return textField3;
