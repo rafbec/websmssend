@@ -69,6 +69,10 @@ public abstract class SmsConnector implements ISmsConnector {
         this.connectorSettings = connectorSettings;
     }
 
+    public int countSmsTextCharacters(String smsText) {
+        return smsText.length();
+    }
+
     protected void saveItem(String ItemName, String Content)
     {
         if (connectorSettings != null) {

@@ -100,6 +100,13 @@ public interface ISmsConnector {
 
     /**
      *
+     * @param smsText
+     * @return
+     */
+    public int countSmsTextCharacters(String smsText);
+
+    /**
+     *
      * @param connectorSettings
      */
     public void setConnectorSettings(IConnectorSettings connectorSettings);

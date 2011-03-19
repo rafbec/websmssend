@@ -174,6 +174,11 @@ public class GMX extends SmsConnector {
         }
     }
 
+    public int countSmsTextCharacters(String smsText) {
+        //ToDo add GMX specific CharacterCount-Code
+        return smsText.length();
+    }
+
     public boolean resumeSending() throws Exception {
         gui.debug("Wiederaufnahme des Sendeprozesses");
         resumingSendProcess = true;
