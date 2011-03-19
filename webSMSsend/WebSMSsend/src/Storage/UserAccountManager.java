@@ -209,9 +209,10 @@ public class UserAccountManager extends StorageManager {
                 }
             }
 
-            baos.close();
-            dos.close();
             data = baos.toByteArray();
+
+            dos.close();
+            baos.close();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -249,8 +250,8 @@ public class UserAccountManager extends StorageManager {
                 account.setAccountManager(this);
             }
 
-            bais.close();
             dis.close();
+            bais.close();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
