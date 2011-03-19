@@ -240,17 +240,25 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
 
     private void saveTempSMS() {
         if (appSettings != null) {
-            appSettings.setTempSmsTo(getTextField().getString());
-            appSettings.setTempSmsText(getTextField3().getString());
+            try {
+                appSettings.setTempSmsTo(getTextField().getString());
+                appSettings.setTempSmsText(getTextField3().getString());
+            } catch (Exception ex) {
+                debug("saveTempSMS failed");
+            }
         }
     }
 
     private void retrieveTempSMS() {
         if (appSettings != null) {
-            getTextField3().setString(appSettings.getTempSmsText());
-            getTextField().setString(appSettings.getTempSmsTo());
-            getTextField3().notifyStateChanged();
-            getDisplay().setCurrentItem(getTextField());
+            try {
+                getTextField3().setString(appSettings.getTempSmsText());
+                getTextField().setString(appSettings.getTempSmsTo());
+                getTextField3().notifyStateChanged();
+                getDisplay().setCurrentItem(getTextField());
+            } catch (Exception ex) {
+                debug("retrieveTempSMS failed");
+            }
         }
     }
 
