@@ -26,6 +26,7 @@
 
 package GMX;
 
+import ConnectorBase.CP1252Coder;
 import ConnectorBase.SmsConnector;
 import ConnectorBase.Properties;
 import ConnectorBase.SmsData;
@@ -443,11 +444,11 @@ public class GMX extends SmsConnector {
         //#endif
         
         String request = createRequest(method, version, params, gmxFlag);
-        byte[] reqEnc = encodeCP1252(request.toCharArray());
+        byte[] reqEnc = CP1252Coder.encode(request.toCharArray());
 
         //#if Test
 //#         // Output as is only on developer site, message contains sensitive data
-//#         gui.debug("Serveranfrage: " + new String(decodeCP1252(reqEnc)));
+//#         gui.debug("Serveranfrage: " + new String(CP1252Coder.decode(reqEnc)));
         //#else
         gui.debug("Serveranfrage: " + anonymizeProtocolMsg(new String(decodeCP1252(reqEnc))));
         //#endif
@@ -474,7 +475,7 @@ public class GMX extends SmsConnector {
         is.read(buffer, 0, length);
         is.close();
 
-        String asString = new String(decodeCP1252(buffer));
+        String asString = new String(CP1252Coder.decode(buffer));
 
         //#if Test
 //#         // Output as is only during development, message contains sensitive data
@@ -490,110 +491,6 @@ public class GMX extends SmsConnector {
         String line = asString.substring(asString.indexOf("<WR TYPE=\"RSPNS\""), asString.indexOf("</WR>") + 5);
 
         return parseResponse(line);
-    }
-
-    private byte[] encodeCP1252(char[] string) {
-        byte[] isoString = new byte[0];
-
-        // Taken from ftp://ftp.unicode.org/Public/MAPPINGS/VENDORS/MICSFT/WINDOWS/CP1252.TXT
-        Hashtable unicodeToCP1252 = new Hashtable();
-        unicodeToCP1252.put("\u20AC", new Byte((byte) 0x80)); //EURO SIGN
-        unicodeToCP1252.put("\u201A", new Byte((byte) 0x82)); //SINGLE LOW-9 QUOTATION MARK
-        unicodeToCP1252.put("\u0192", new Byte((byte) 0x83)); //LATIN SMALL LETTER F WITH HOOK
-        unicodeToCP1252.put("\u201E", new Byte((byte) 0x84)); //DOUBLE LOW-9 QUOTATION MARK
-        unicodeToCP1252.put("\u2026", new Byte((byte) 0x85)); //HORIZONTAL ELLIPSIS
-        unicodeToCP1252.put("\u2020", new Byte((byte) 0x86)); //DAGGER
-        unicodeToCP1252.put("\u2021", new Byte((byte) 0x87)); //DOUBLE DAGGER
-        unicodeToCP1252.put("\u02C6", new Byte((byte) 0x88)); //MODIFIER LETTER CIRCUMFLEX ACCENT
-        unicodeToCP1252.put("\u2030", new Byte((byte) 0x89)); //PER MILLE SIGN
-        unicodeToCP1252.put("\u0160", new Byte((byte) 0x8A)); //LATIN CAPITAL LETTER S WITH CARON
-        unicodeToCP1252.put("\u2039", new Byte((byte) 0x8B)); //SINGLE LEFT-POINTING ANGLE QUOTATION MARK
-        unicodeToCP1252.put("\u0152", new Byte((byte) 0x8C)); //LATIN CAPITAL LIGATURE OE
-        unicodeToCP1252.put("\u017D", new Byte((byte) 0x8E)); //LATIN CAPITAL LETTER Z WITH CARON
-        unicodeToCP1252.put("\u2018", new Byte((byte) 0x91)); //LEFT SINGLE QUOTATION MARK
-        unicodeToCP1252.put("\u2019", new Byte((byte) 0x92)); //RIGHT SINGLE QUOTATION MARK
-        unicodeToCP1252.put("\u201C", new Byte((byte) 0x93)); //LEFT DOUBLE QUOTATION MARK
-        unicodeToCP1252.put("\u201D", new Byte((byte) 0x94)); //RIGHT DOUBLE QUOTATION MARK
-        unicodeToCP1252.put("\u2022", new Byte((byte) 0x95)); //BULLET
-        unicodeToCP1252.put("\u2013", new Byte((byte) 0x96)); //EN DASH
-        unicodeToCP1252.put("\u2014", new Byte((byte) 0x97)); //EM DASH
-        unicodeToCP1252.put("\u02DC", new Byte((byte) 0x98)); //SMALL TILDE
-        unicodeToCP1252.put("\u2122", new Byte((byte) 0x99)); //TRADE MARK SIGN
-        unicodeToCP1252.put("\u0161", new Byte((byte) 0x9A)); //LATIN SMALL LETTER S WITH CARON
-        unicodeToCP1252.put("\u203A", new Byte((byte) 0x9B)); //SINGLE RIGHT-POINTING ANGLE QUOTATION MARK
-        unicodeToCP1252.put("\u0153", new Byte((byte) 0x9C)); //LATIN SMALL LIGATURE OE
-        unicodeToCP1252.put("\u017E", new Byte((byte) 0x9E)); //LATIN SMALL LETTER Z WITH CARON
-        unicodeToCP1252.put("\u0178", new Byte((byte) 0x9F)); //LATIN CAPITAL LETTER Y WITH DIAERESIS
-
-        for (int i = 0; i < string.length; i++) {
-            byte[] extended = new byte[isoString.length + 1];
-            System.arraycopy(isoString, 0, extended, 0, isoString.length);
-            isoString = extended;
-
-            // Transform Unicode character to unsigned byte
-            if (unicodeToCP1252.containsKey("" + string[i])) {
-                Byte subst = (Byte) unicodeToCP1252.get("" + string[i]);
-                isoString[isoString.length - 1] = (byte) (subst.byteValue() & 0xFF);
-            } else {
-                isoString[isoString.length - 1] = (byte) (string[i] & 0xFF);
-            }
-        }
-        return isoString;
-    }
-
-    private char[] decodeCP1252(byte[] bytes) {
-        char[] utfString = new char[0];
-
-        Hashtable cp1252toUnicode = new Hashtable();
-        cp1252toUnicode.put(new Byte((byte) 0x80), "\u20AC"); // EURO SIGN
-        cp1252toUnicode.put(new Byte((byte) 0x81), "\u003F"); // UNDEFINED
-        cp1252toUnicode.put(new Byte((byte) 0x82), "\u201A"); // SINGLE LOW-9 QUOTATION MARK
-        cp1252toUnicode.put(new Byte((byte) 0x83), "\u0192"); // LATIN SMALL LETTER F WITH HOOK
-        cp1252toUnicode.put(new Byte((byte) 0x84), "\u201E"); // DOUBLE LOW-9 QUOTATION MARK
-        cp1252toUnicode.put(new Byte((byte) 0x85), "\u2026"); // HORIZONTAL ELLIPSIS
-        cp1252toUnicode.put(new Byte((byte) 0x86), "\u2020"); // DAGGER
-        cp1252toUnicode.put(new Byte((byte) 0x87), "\u2021"); // DOUBLE DAGGER
-        cp1252toUnicode.put(new Byte((byte) 0x88), "\u02C6"); // MODIFIER LETTER CIRCUMFLEX ACCENT
-        cp1252toUnicode.put(new Byte((byte) 0x89), "\u2030"); // PER MILLE SIGN
-        cp1252toUnicode.put(new Byte((byte) 0x8A), "\u0160"); // LATIN CAPITAL LETTER S WITH CARON
-        cp1252toUnicode.put(new Byte((byte) 0x8B), "\u2039"); // SINGLE LEFT-POINTING ANGLE QUOTATION MARK
-        cp1252toUnicode.put(new Byte((byte) 0x8C), "\u0152"); // LATIN CAPITAL LIGATURE OE
-        cp1252toUnicode.put(new Byte((byte) 0x8D), "\u003F"); // UNDEFINED
-        cp1252toUnicode.put(new Byte((byte) 0x8E), "\u017D"); // LATIN CAPITAL LETTER Z WITH CARON
-        cp1252toUnicode.put(new Byte((byte) 0x8F), "\u003F"); // UNDEFINED
-        cp1252toUnicode.put(new Byte((byte) 0x90), "\u003F"); // UNDEFINED
-        cp1252toUnicode.put(new Byte((byte) 0x91), "\u2018"); // LEFT SINGLE QUOTATION MARK
-        cp1252toUnicode.put(new Byte((byte) 0x92), "\u2019"); // RIGHT SINGLE QUOTATION MARK
-        cp1252toUnicode.put(new Byte((byte) 0x93), "\u201C"); // LEFT DOUBLE QUOTATION MARK
-        cp1252toUnicode.put(new Byte((byte) 0x94), "\u201D"); // RIGHT DOUBLE QUOTATION MARK
-        cp1252toUnicode.put(new Byte((byte) 0x95), "\u2022"); // BULLET
-        cp1252toUnicode.put(new Byte((byte) 0x96), "\u2013"); // EN DASH
-        cp1252toUnicode.put(new Byte((byte) 0x97), "\u2014"); // EM DASH
-        cp1252toUnicode.put(new Byte((byte) 0x98), "\u02DC"); // SMALL TILDE
-        cp1252toUnicode.put(new Byte((byte) 0x99), "\u2122"); // TRADE MARK SIGN
-        cp1252toUnicode.put(new Byte((byte) 0x9A), "\u0161"); // LATIN SMALL LETTER S WITH CARON
-        cp1252toUnicode.put(new Byte((byte) 0x9B), "\u203A"); // SINGLE RIGHT-POINTING ANGLE QUOTATION MARK
-        cp1252toUnicode.put(new Byte((byte) 0x9C), "\u0153"); // LATIN SMALL LIGATURE OE
-        cp1252toUnicode.put(new Byte((byte) 0x9D), "\u003F"); // UNDEFINED
-        cp1252toUnicode.put(new Byte((byte) 0x9E), "\u017E"); // LATIN SMALL LETTER Z WITH CARON
-        cp1252toUnicode.put(new Byte((byte) 0x9F), "\u0178"); // LATIN CAPITAL LETTER Y WITH DIAERESIS
-
-        for (int i = 0; i < bytes.length; i++) {
-            char[] extended = new char[utfString.length + 1];
-            System.arraycopy(utfString, 0, extended, 0, utfString.length);
-            utfString = extended;
-
-            Byte b = new Byte(bytes[i]);
-            if (cp1252toUnicode.containsKey(b)) {
-                String subst = (String) cp1252toUnicode.get(b);
-                utfString[utfString.length - 1] = subst.charAt(0);
-            } else {
-                // Create the Unicode char for further processing
-                // from the unsigned byte value
-                utfString[utfString.length - 1] = (char) (bytes[i] & 0xFF);
-            }
-        }
-        return utfString;
     }
 
     /**
