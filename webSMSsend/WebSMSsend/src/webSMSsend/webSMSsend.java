@@ -2275,7 +2275,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         StringBuffer error_Msg = new StringBuffer("Die SMS kann nicht versendet werden.\nFolgende Angaben fehlen:\n");
         boolean ready = true;
 
-        recvNB = getTextField3().getString();
+        recvNB = getTextField().getString();
         smsText = getTextField3().getString();
 
         if (recvNB.equals("")) {
