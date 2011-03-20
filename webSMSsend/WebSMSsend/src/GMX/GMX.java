@@ -147,6 +147,17 @@ public class GMX extends SmsConnector {
      * @return the number of SMS the sent text will result in.
      */
     public int countSms(String smsText) {
+        int completeLength = countSmsTextCharacters(smsText);
+        if (completeLength > 160) {
+            return (int) Math.floor((completeLength + 151) / 152);
+        } else if (completeLength == 0) {
+            return 0;
+        } else {
+            return 1;
+        }
+    }
+
+    public int countSmsTextCharacters(String smsText) {
         // Taken from the web SMS manager:
         // (^ { } \ [ ~ ] | € are special characters and count twice; if they are
         //  at the last position of a sms part, they have to be moved into the
@@ -163,20 +174,7 @@ public class GMX extends SmsConnector {
                 start = smsText.indexOf(specialChars[i], ++start);
             }
         }
-
-        int completeLength = smsText.length() + addChars;
-        if (completeLength > 160) {
-            return (int) Math.floor((completeLength + 151) / 152);
-        } else if (completeLength == 0) {
-            return 0;
-        } else {
-            return 1;
-        }
-    }
-
-    public int countSmsTextCharacters(String smsText) {
-        //ToDo add GMX specific CharacterCount-Code
-        return smsText.length();
+        return smsText.length() + addChars;
     }
 
     public boolean resumeSending() throws Exception {

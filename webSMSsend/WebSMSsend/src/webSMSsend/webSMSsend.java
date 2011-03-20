@@ -34,7 +34,6 @@ import Storage.AppSettingsManager;
 import Storage.UserAccount;
 import Storage.UserAccountManager;
 import java.io.IOException;
-import java.io.PrintStream;
 import javax.microedition.lcdui.*;
 import javax.microedition.midlet.*;
 import org.netbeans.microedition.lcdui.WaitScreen;
@@ -835,8 +834,10 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
 
                 public void itemStateChanged(Item item) {
                     if (item == getTextField3()) {
-                        StringBuffer smsInputLabel = new StringBuffer().append(getTextField3().getString().length()).append(" (").append(SmsConnector.countSms(getTextField3().getString())).append(" SMS)");
-                        if (getTextField3().size() > SmsConnector.getMaxSMSLength()) {
+                        int charsUsed = SmsConnector.countSmsTextCharacters(getTextField3().getString());
+                        int smsUsed = SmsConnector.countSms(getTextField3().getString());
+                        StringBuffer smsInputLabel = new StringBuffer().append(charsUsed).append(" (").append(smsUsed).append(" SMS)");
+                        if (charsUsed > SmsConnector.getMaxSMSLength()) {
                             smsInputLabel.append("\nSMS ist zu lang! Max. ").append(SmsConnector.getMaxSMSLength()).append(" Zeichen!");
                         }
                         getTextField3().setLabel(smsInputLabel.toString());
