@@ -444,11 +444,11 @@ public class GMX extends SmsConnector {
         //#endif
         
         String request = createRequest(method, version, params, gmxFlag);
-        byte[] reqEnc = CP1252Coder.encode(request.toCharArray());
+        byte[] reqEnc = CP1252Coder.encode(request);
 
         //#if Test
 //#         // Output as is only on developer site, message contains sensitive data
-//#         gui.debug("Serveranfrage: " + new String(CP1252Coder.decode(reqEnc)));
+//#         gui.debug("Serveranfrage: " + CP1252Coder.decodeToString(reqEnc));
         //#else
         gui.debug("Serveranfrage: " + anonymizeProtocolMsg(new String(decodeCP1252(reqEnc))));
         //#endif
@@ -475,7 +475,7 @@ public class GMX extends SmsConnector {
         is.read(buffer, 0, length);
         is.close();
 
-        String asString = new String(CP1252Coder.decode(buffer));
+        String asString = CP1252Coder.decodeToString(buffer);
 
         //#if Test
 //#         // Output as is only during development, message contains sensitive data
