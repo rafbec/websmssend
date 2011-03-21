@@ -281,7 +281,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     private void saveLastSms() {
         try {
             appSettings.setLastSmsText(getTextField3().getString());
-            appSettings.setLastSmsTo(getTextField3().getString());
+            appSettings.setLastSmsTo(getTextField().getString());
         } catch (Exception ex) {
             debug("saveLastSms failed");
         }
