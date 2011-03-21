@@ -450,7 +450,7 @@ public class GMX extends SmsConnector {
 //#         // Output as is only on developer site, message contains sensitive data
 //#         gui.debug("Serveranfrage: " + CP1252Coder.decodeToString(reqEnc));
         //#else
-        gui.debug("Serveranfrage: " + anonymizeProtocolMsg(new String(decodeCP1252(reqEnc))));
+        gui.debug("Serveranfrage: " + anonymizeProtocolMsg(CP1252Coder.decodeToString(reqEnc)));
         //#endif
 
         connection.setRequestProperty("Content-Length", "" + reqEnc.length);
