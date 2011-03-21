@@ -95,9 +95,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     private Command editAccount;
     private Command createAccount;
     private Form MainMenu;
-    private TextField textField;
+    private TextField txtFieldPhoneNumber;
     private StringItem stringItem1;
-    private TextField textField3;
+    private TextField txtFieldSmsText;
     private WaitScreen waitScreen;
     private Alert smsSend;
     private Alert notSend;
@@ -240,8 +240,8 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     private void saveTempSMS() {
         if (appSettings != null) {
             try {
-                appSettings.setTempSmsTo(getTextField().getString());
-                appSettings.setTempSmsText(getTextField3().getString());
+                appSettings.setTempSmsTo(getTxtFieldPhoneNumber().getString());
+                appSettings.setTempSmsText(getTxtFieldSmsText().getString());
             } catch (Exception ex) {
                 debug("saveTempSMS failed");
             }
@@ -251,10 +251,10 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     private void retrieveTempSMS() {
         if (appSettings != null) {
             try {
-                getTextField3().setString(appSettings.getTempSmsText());
-                getTextField().setString(appSettings.getTempSmsTo());
-                getTextField3().notifyStateChanged();
-                getDisplay().setCurrentItem(getTextField());
+                getTxtFieldSmsText().setString(appSettings.getTempSmsText());
+                getTxtFieldPhoneNumber().setString(appSettings.getTempSmsTo());
+                getTxtFieldSmsText().notifyStateChanged();
+                getDisplay().setCurrentItem(getTxtFieldPhoneNumber());
             } catch (Exception ex) {
                 debug("retrieveTempSMS failed");
             }
@@ -262,17 +262,17 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     }
 
     private void clearSMSInput() {
-        getTextField3().setString("");
-        getTextField3().setLabel(MESSAGE_TEXTFIELD_LABEL);
-        getTextField().setString("");
-        getDisplay().setCurrentItem(getTextField());
+        getTxtFieldSmsText().setString("");
+        getTxtFieldSmsText().setLabel(MESSAGE_TEXTFIELD_LABEL);
+        getTxtFieldPhoneNumber().setString("");
+        getDisplay().setCurrentItem(getTxtFieldPhoneNumber());
     }
     
     private void retrieveLastSms() {
         try {
-            getTextField3().setString(appSettings.getLastSmsText());
-            getTextField().setString(appSettings.getLastSmsTo());
-            getTextField3().notifyStateChanged();
+            getTxtFieldSmsText().setString(appSettings.getLastSmsText());
+            getTxtFieldPhoneNumber().setString(appSettings.getLastSmsTo());
+            getTxtFieldSmsText().notifyStateChanged();
         } catch (Exception ex) {
             debug("retrieveLastSms failed");
         }
@@ -280,8 +280,8 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     
     private void saveLastSms() {
         try {
-            appSettings.setLastSmsText(getTextField3().getString());
-            appSettings.setLastSmsTo(getTextField().getString());
+            appSettings.setLastSmsText(getTxtFieldSmsText().getString());
+            appSettings.setLastSmsTo(getTxtFieldPhoneNumber().getString());
         } catch (Exception ex) {
             debug("saveLastSms failed");
         }
@@ -448,7 +448,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         } else {
             switchDisplayable(null, getMainMenu());
             initializeSmsConnector();
-            getTextField3().notifyStateChanged();
+            getTxtFieldSmsText().notifyStateChanged();
         }
 //GEN-LINE:|3-startMIDlet|1|3-postAction
         debugSystemProperties();
@@ -822,7 +822,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     public Form getMainMenu() {
         if (MainMenu == null) {//GEN-END:|14-getter|0|14-preInit
 
-            MainMenu = new Form("webSMSsend", new Item[] { getTextField(), getTextField3(), getStringItem1() });//GEN-BEGIN:|14-getter|1|14-postInit
+            MainMenu = new Form("webSMSsend", new Item[] { getTxtFieldPhoneNumber(), getTxtFieldSmsText(), getStringItem1() });//GEN-BEGIN:|14-getter|1|14-postInit
             MainMenu.addCommand(getExitCommand());
             MainMenu.addCommand(getWriteSMS());
             MainMenu.addCommand(getGoToSettings());
@@ -833,14 +833,14 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             ItemStateListener listener = new ItemStateListener() {
 
                 public void itemStateChanged(Item item) {
-                    if (item == getTextField3()) {
-                        int charsUsed = SmsConnector.countSmsTextCharacters(getTextField3().getString());
-                        int smsUsed = SmsConnector.countSms(getTextField3().getString());
+                    if (item == getTxtFieldSmsText()) {
+                        int charsUsed = SmsConnector.countSmsTextCharacters(getTxtFieldSmsText().getString());
+                        int smsUsed = SmsConnector.countSms(getTxtFieldSmsText().getString());
                         StringBuffer smsInputLabel = new StringBuffer().append(charsUsed).append(" (").append(smsUsed).append(" SMS)");
                         if (charsUsed > SmsConnector.getMaxSMSLength()) {
                             smsInputLabel.append("\nSMS ist zu lang! Max. ").append(SmsConnector.getMaxSMSLength()).append(" Zeichen!");
                         }
-                        getTextField3().setLabel(smsInputLabel.toString());
+                        getTxtFieldSmsText().setLabel(smsInputLabel.toString());
                         if (appSettings.isSaveEachCharacter()) {
                             saveTempSMS();
                         }
@@ -1073,21 +1073,23 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         return task;
     }
     //</editor-fold>//GEN-END:|140-getter|3|
+    //</editor-fold>
+    //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: textField ">//GEN-BEGIN:|156-getter|0|156-preInit
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtFieldPhoneNumber ">//GEN-BEGIN:|156-getter|0|156-preInit
     /**
-     * Returns an initiliazed instance of textField component.
+     * Returns an initiliazed instance of txtFieldPhoneNumber component.
      * @return the initialized component instance
      */
-    public TextField getTextField() {
-        if (textField == null) {//GEN-END:|156-getter|0|156-preInit
+    public TextField getTxtFieldPhoneNumber() {
+        if (txtFieldPhoneNumber == null) {//GEN-END:|156-getter|0|156-preInit
             // write pre-init user code here
-            textField = new TextField("Empf\u00E4nger (Handynummer):", null, 32, TextField.PHONENUMBER);//GEN-BEGIN:|156-getter|1|156-postInit
-            textField.setLayout(ImageItem.LAYOUT_LEFT);
-            textField.setPreferredSize(-1, -1);//GEN-END:|156-getter|1|156-postInit
+            txtFieldPhoneNumber = new TextField("Empf\u00E4nger (Handynummer):", null, 32, TextField.PHONENUMBER);//GEN-BEGIN:|156-getter|1|156-postInit
+            txtFieldPhoneNumber.setLayout(ImageItem.LAYOUT_LEFT);
+            txtFieldPhoneNumber.setPreferredSize(-1, -1);//GEN-END:|156-getter|1|156-postInit
             // write post-init user code here
         }//GEN-BEGIN:|156-getter|2|
-        return textField;
+        return txtFieldPhoneNumber;
     }
     //</editor-fold>//GEN-END:|156-getter|2|
 
@@ -1428,20 +1430,22 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         return image1;
     }
     //</editor-fold>//GEN-END:|244-getter|3|
+    //</editor-fold>
+    //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: textField3 ">//GEN-BEGIN:|247-getter|0|247-preInit
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtFieldSmsText ">//GEN-BEGIN:|247-getter|0|247-preInit
     /**
-     * Returns an initiliazed instance of textField3 component.
+     * Returns an initiliazed instance of txtFieldSmsText component.
      * @return the initialized component instance
      */
-    public TextField getTextField3() {
-        if (textField3 == null) {//GEN-END:|247-getter|0|247-preInit
+    public TextField getTxtFieldSmsText() {
+        if (txtFieldSmsText == null) {//GEN-END:|247-getter|0|247-preInit
             // write pre-init user code here
-            textField3 = new TextField(MESSAGE_TEXTFIELD_LABEL, null, 1800, TextField.ANY);//GEN-BEGIN:|247-getter|1|247-postInit
-            textField3.setLayout(ImageItem.LAYOUT_LEFT | Item.LAYOUT_VEXPAND);//GEN-END:|247-getter|1|247-postInit
+            txtFieldSmsText = new TextField(MESSAGE_TEXTFIELD_LABEL, null, 1800, TextField.ANY);//GEN-BEGIN:|247-getter|1|247-postInit
+            txtFieldSmsText.setLayout(ImageItem.LAYOUT_LEFT | Item.LAYOUT_VEXPAND);//GEN-END:|247-getter|1|247-postInit
             // write post-init user code here
         }//GEN-BEGIN:|247-getter|2|
-        return textField3;
+        return txtFieldSmsText;
     }
     //</editor-fold>//GEN-END:|247-getter|2|
 
@@ -2275,8 +2279,8 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         StringBuffer error_Msg = new StringBuffer("Die SMS kann nicht versendet werden.\nFolgende Angaben fehlen:\n");
         boolean ready = true;
 
-        recvNB = getTextField().getString();
-        smsText = getTextField3().getString();
+        recvNB = getTxtFieldPhoneNumber().getString();
+        smsText = getTxtFieldSmsText().getString();
 
         if (recvNB.equals("")) {
             ready =false;
