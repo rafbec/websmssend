@@ -1432,6 +1432,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
     //</editor-fold>//GEN-END:|244-getter|3|
     //</editor-fold>
     //</editor-fold>
+    //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtFieldSmsText ">//GEN-BEGIN:|247-getter|0|247-preInit
     /**
