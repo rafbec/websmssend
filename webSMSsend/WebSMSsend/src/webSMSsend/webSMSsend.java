@@ -738,7 +738,6 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             if (command == WaitScreen.FAILURE_COMMAND) {//GEN-END:|7-commandAction|73|402-preAction
                 getErrorAlert().setString("Update fehlgeschlagen:\n"
                         + getCheckForUpdateTask().getFailureMessage());
-                getErrorAlert().setType(null);
                 debug("Update fehlgeschlagen: "
                         + getCheckForUpdateTask().getFailureMessage());
                 switchDisplayable(getErrorAlert(), getList());//GEN-LINE:|7-commandAction|74|402-postAction
@@ -752,7 +751,6 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
                             + "die aktuellste Version zu installieren.");
                     debug("Das System wurde angewiesen, "
                             + "die aktuellste Version zu installieren.");
-                    getErrorAlert().setType(null);
                     switchDisplayable(getErrorAlert(), getMainMenu());
                     // Reset update process
                     updateWaitScreen = null;
@@ -1573,8 +1571,8 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
         if (BenutzerwahlBestaetigung == null) {//GEN-END:|281-getter|0|281-preInit
             // write pre-init user code here
             BenutzerwahlBestaetigung = new Alert("Benutzerwahl", "Das Benutzerkonto \"" + curUserAcc.getAccountName()  + "\" mit dem Benutzernamen \"" + curUserAcc.getUserName() +"\" wurde aktiviert", null, AlertType.INFO);//GEN-BEGIN:|281-getter|1|281-postInit
-            BenutzerwahlBestaetigung.setTimeout(3000);//GEN-END:|281-getter|1|281-postInit
-            // write post-init user code here
+            BenutzerwahlBestaetigung.setTimeout(Alert.FOREVER);//GEN-END:|281-getter|1|281-postInit
+            BenutzerwahlBestaetigung.setType(null);
         }//GEN-BEGIN:|281-getter|2|
         return BenutzerwahlBestaetigung;
     }
@@ -1762,7 +1760,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             // write pre-init user code here
             EmailSent = new Alert("Erfolgreich", "E-Mail wurde erfolgreich versandt", null, AlertType.CONFIRMATION);//GEN-BEGIN:|315-getter|1|315-postInit
             EmailSent.setTimeout(Alert.FOREVER);//GEN-END:|315-getter|1|315-postInit
-            // write post-init user code here
+            EmailSent.setType(null);
         }//GEN-BEGIN:|315-getter|2|
         return EmailSent;
     }
@@ -1778,7 +1776,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             // write pre-init user code here
             EmailNotSent = new Alert("Fehler", "E-Mail nicht versandt. Siehe Debug-Meldungen", null, AlertType.ERROR);//GEN-BEGIN:|318-getter|1|318-postInit
             EmailNotSent.setTimeout(Alert.FOREVER);//GEN-END:|318-getter|1|318-postInit
-            // write post-init user code here
+            EmailNotSent.setType(null);
         }//GEN-BEGIN:|318-getter|2|
         return EmailNotSent;
     }
@@ -1797,7 +1795,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             NoEmail.addCommand(getOkCommand1());
             NoEmail.setCommandListener(this);
             NoEmail.setTimeout(Alert.FOREVER);//GEN-END:|321-getter|1|321-postInit
-            // write post-init user code here
+            NoEmail.setType(null);
         }//GEN-BEGIN:|321-getter|2|
         return NoEmail;
     }
@@ -1868,7 +1866,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             // write pre-init user code here
             WrongCharacter = new Alert("Absender", "Nur Buchstaben ohne Umlaute sind erlaubt!", null, AlertType.WARNING);//GEN-BEGIN:|340-getter|1|340-postInit
             WrongCharacter.setTimeout(Alert.FOREVER);//GEN-END:|340-getter|1|340-postInit
-            // write post-init user code here
+            WrongCharacter.setType(null);
         }//GEN-BEGIN:|340-getter|2|
         return WrongCharacter;
     }
@@ -2004,7 +2002,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             // write pre-init user code here
             errorAlert = new Alert("Fehler!", "Unspezifizierter Fehler aufgetreten!", null, AlertType.ERROR);//GEN-BEGIN:|397-getter|1|397-postInit
             errorAlert.setTimeout(Alert.FOREVER);//GEN-END:|397-getter|1|397-postInit
-            // write post-init user code here
+            errorAlert.setType(null);
         }//GEN-BEGIN:|397-getter|2|
         return errorAlert;
     }
@@ -2065,7 +2063,6 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             getErrorAlert().setTitle("Kein Update verf\u00FCgbar");
             getErrorAlert().setString("Die installierte Version " + getVersion() +
                     " ist die aktuellste.\n(Verf\u00FCgbar ist "+ currentVersion +")");
-            getErrorAlert().setType(null);
             switchDisplayable(getErrorAlert(), getMainMenu());//GEN-LINE:|411-if|4|413-postAction
             errorAlert = null;
         }//GEN-LINE:|411-if|5|411-postIf
@@ -2330,7 +2327,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui {
             // write pre-init user code here
             notReadyToSend = new Alert("Fehler");//GEN-BEGIN:|473-getter|1|473-postInit
             notReadyToSend.setTimeout(Alert.FOREVER);//GEN-END:|473-getter|1|473-postInit
-            // write post-init user code here
+            notReadyToSend.setType(null);
         }//GEN-BEGIN:|473-getter|2|
         return notReadyToSend;
     }
