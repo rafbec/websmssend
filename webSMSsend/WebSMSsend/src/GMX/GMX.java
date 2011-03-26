@@ -366,7 +366,7 @@ public class GMX extends SmsConnector {
             saveItem(MAX_FREE_SMS, maxfreesms+"");
 
             gui.debug("Fertig mit " + getClass().getName()
-                    + ".Send(), Dauer: "
+                    + ".send(), Dauer: "
                     + (System.currentTimeMillis() - totaltime) + " ms");
             return SMS_SENT;
         } catch (OutOfMemoryError ex) {
