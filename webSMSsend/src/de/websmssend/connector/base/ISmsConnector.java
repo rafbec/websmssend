@@ -100,6 +100,20 @@ public interface ISmsConnector {
 
     /**
      *
+     * @param senderName
+     * @return
+     */
+    public void checkSmsSenderNameConstraints(String senderName) throws Exception;
+
+    /**
+     *
+     * @param senderName
+     * @return
+     */
+    public void checkSmsSenderNameCharacters(String senderName) throws Exception;
+
+    /**
+     *
      * @param smsText
      * @return
      */

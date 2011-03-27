@@ -86,7 +86,8 @@ public class GMX extends SmsConnector {
      * CAN_ABORT_SEND_PROCESS_WHEN_NO_FREE_SMS_AVAILABLE} property.
      */
     public GMX(){
-        specs.AddProperty(new int[]{Properties.CAN_SIMULATE_SEND_PROCESS,
+        specs.AddProperty(new int[]{Properties.CAN_SEND_NAME_AS_SENDER,
+            Properties.CAN_SIMULATE_SEND_PROCESS,
             Properties.CAN_ABORT_SEND_PROCESS_WHEN_NO_FREE_SMS_AVAILABLE});
     }
 
@@ -139,6 +140,37 @@ public class GMX extends SmsConnector {
      */
     public int getMaxSMSLength() {
         return MAX_SMS_LENGTH;
+    }
+
+    public void checkSmsSenderNameConstraints(String senderName) throws Exception {
+        if (senderName.trim().length() == 0) {
+            //Fehlermeldung "Name zu lang" falls Text als Absender gewählt
+            throw new Exception("Kein Text als Absender eingegeben!");
+        }
+        if (senderName.length() > 11) {
+            //Fehlermeldung "Name zu lang" falls Text als Absender gewählt
+            throw new Exception("Der Absender darf h\u00F6chstens 11 Buchstaben lang sein");
+        }
+    }
+
+    public void checkSmsSenderNameCharacters(String text) throws Exception {
+        char[] checkname = text.toCharArray();
+        for (int i = 0; i < checkname.length; i++) {
+            if ((checkname[i] >= 'a' && checkname[i] <= 'z') ||
+                    (checkname[i] >= 'A' && checkname[i] <= 'Z') ||
+                    checkname[i] == '\u0020' // SPACE
+                    || checkname[i] == '\u00c4' // Ä
+                    || checkname[i] == '\u00e4' // ä
+                    || checkname[i] == '\u00d6' // Ö
+                    || checkname[i] == '\u00f6' // ö
+                    || checkname[i] == '\u00dc' // Ü
+                    || checkname[i] == '\u00fc' // ü
+                    || checkname[i] == '\u00df' // ß
+                    ) {
+            } else {
+                throw new Exception("Nur Buchstaben, Leerzeichen und Umlaute sind erlaubt!");
+            }
+        }
     }
 
     /**
@@ -317,11 +349,17 @@ public class GMX extends SmsConnector {
             if(senderPhoneNumber == null)
                 throw new Exception("Keine Absender-Handynummer empfangen");
 
+            String senderName = maskSpecialChars(sms.getSenderName());
+            boolean senderTxt = (!senderName.equals(""));
+
             params.put("customer_id", customerID);
             params.put("receivers", "\\<TBL ROWS=\"1\" COLS=\"3\"\\>receiver_id\\\\;receiver_name\\\\;receiver_number\\\\;1\\\\;Bla\\\\;" + smsRecv + "\\\\;\\</TBL\\>");
             params.put("sms_text", maskSpecialChars(sms.getSmsText()));
             params.put("send_option", "sms");
-            params.put("sms_sender", senderPhoneNumber);
+            params.put("sms_sender", (senderTxt) ? senderName : senderPhoneNumber);
+            if (senderTxt) {
+                gui.debug("Text als Absenderkennung gew\u00e4hlt");
+            }
 
             if (!sms.isSimulation()) {
                 gui.setWaitScreenText("SMS wird gesendet...");
@@ -335,8 +373,11 @@ public class GMX extends SmsConnector {
                 if(sendReturnCode.equals("0")) {
                     gui.setWaitScreenText("SMS wurde gesendet");
                 }
+                else if (sendReturnCode.equals("8")) {
+                    throw new Exception((String) result.get("custom_error"));
+                }
                 else {
-                    gui.setWaitScreenText("Unbekannte Serverantwort: " + returnCode);
+                    gui.setWaitScreenText("Unbekannte Serverantwort: " + sendReturnCode);
                 }
 
                 // Determine remaining SMS this month

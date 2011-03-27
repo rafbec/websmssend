@@ -71,6 +71,26 @@ public class O2 extends SmsConnector {
         return (smsText.length() > 0) ? ((smsText.length() + 160 - 1) / 160) : 0;         //ceiled division
     }
 
+    public void checkSmsSenderNameConstraints(String senderName) throws Exception {
+        if (senderName.length() < 5) {
+            //Fehlermeldung "Name zu kurz" falls Text als Absender gewählt
+            throw new Exception("Der Absender muss mindestens 5 Buchstaben lang sein");
+        } else if (senderName.length() > 10) {
+            //Fehlermeldung "Name zu lang" falls Text als Absender gewählt
+            throw new Exception("Der Absender darf h\u00F6chstens 10 Buchstaben lang sein");
+        }
+    }
+
+    public void checkSmsSenderNameCharacters(String text) throws Exception {
+        char[] checkname = text.toCharArray();
+        for (int i = 0; i < checkname.length; i++) {
+            if ((checkname[i] >= 'a' && checkname[i] <= 'z') || (checkname[i] >= 'A' && checkname[i] <= 'Z')) {
+            } else {
+                throw new Exception("Nur Buchstaben ohne Umlaute sind erlaubt!");
+            }
+        }
+    }
+
     public int send(SmsData Sms) throws Exception {
         int SenderMode = 0; //0=Phonenumber, 1=Text( SenderName )
         boolean failedToGetRemSms = false;
