@@ -32,6 +32,7 @@ public class ContactItem {
     private String[] phoneNumbers;
     private String name;
     private String allNamesDebug;
+    private StringBuffer debugMessages=new StringBuffer();
 
     /**
      * @return the phoneNumbers
@@ -73,6 +74,18 @@ public class ContactItem {
      */
     public void setAllNamesDebug(String allNamesDebug) {
         this.allNamesDebug = allNamesDebug;
+    }
+
+    public void addDebugMsg(String debugMessages){
+        this.debugMessages.append(debugMessages).append("\r\n");
+    }
+
+    public String getDebugMessages() {
+        if (debugMessages.length() > 2) { //remove last newline
+            return debugMessages.toString().substring(0, debugMessages.length()-2);
+        } else {
+            return debugMessages.toString();
+        }
     }
 
     

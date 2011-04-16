@@ -115,7 +115,11 @@ public class ReadContactLists extends List implements Runnable, CommandListener 
 
                     try {
                         //read all Names
-                        conAllNames = contact.getStringArray(Contact.NAME, Contact.ATTR_NONE);
+                        try {
+                            conAllNames = contact.getStringArray(Contact.NAME, Contact.ATTR_NONE);
+                        } catch (Exception e) {
+                            debug("ATTR_NONE: " + e.getMessage(),conItem);
+                        }
 
                         if (conAllNames.length > Contact.NAME_FAMILY) {
                             conName = conAllNames[Contact.NAME_FAMILY];
@@ -125,18 +129,17 @@ public class ReadContactLists extends List implements Runnable, CommandListener 
                             conForName = conAllNames[Contact.NAME_GIVEN];
                         }
 
-                        StringBuffer allNames = new StringBuffer("Anzahl: " + conAllNames.length);
+                        debug("Anzahl: " + conAllNames.length,conItem);
 
                         for (int y = 0; y < conAllNames.length; y++) {
                             if (y < NAME_FIELDS.length) {
-                                allNames.append("\r\n").append(NAME_FIELDS[y]).append(": ").append(conAllNames[y]);
+                                debug(NAME_FIELDS[y]+": "+conAllNames[y],conItem);
                             } else {
-                                allNames.append("\r\n").append("PROPRIETARY").append(": ").append(conAllNames[y]);
+                                debug("PROPRIETARY: "+conAllNames[y],conItem);
                             }
                         }
-                        conItem.setAllNamesDebug(allNames.toString());
-
                     } catch (Exception e) {
+                        debug("Fehler beim Einlesen des Namens:\r\n" + e.getMessage(),conItem);
                     }
 
                     if (conName == null) {
@@ -156,13 +159,27 @@ public class ReadContactLists extends List implements Runnable, CommandListener 
                         conItem.setName(conForName);
                     } else { //Backup Method find first non null value and set as name
                         for (int y = 0; y < conAllNames.length; y++) {
-                            if (!conAllNames[y].equals("")) {
+                            if (conAllNames[y].length() !=0) {
                                 conItem.setName(conAllNames[y]);
+                                debug("AnyName: " + conItem.getName(), conItem);
                                 break;
+                            }
+                        }
+                        
+                        //if all names are null try Organisation field
+                        if (conItem.getName().length() == 0){
+                            try{
+                               if(pimlist.isSupportedField(Contact.ORG)){
+                                   conItem.setName(contact.getString(Contact.ORG, Contact.ATTR_NONE));
+                               }
+                               debug("Organisation: " + conItem.getName(), conItem);
+                            }catch(Exception ex){
+                                debug("Organisation: " + ex.getMessage(),conItem);
                             }
                         }
                     }
                 } catch (Exception e) {
+                    debug("ContactItem: " + e.getMessage(),conItem);
                 }
 
                 int phoneNos = contact.countValues(Contact.TEL);
@@ -191,6 +208,10 @@ public class ReadContactLists extends List implements Runnable, CommandListener 
         }
     }
 
+    private void debug(String debugMessage, ContactItem contact){
+        contact.addDebugMsg(debugMessage);
+    }
+
     /**
      *
      * @param c
@@ -215,7 +236,7 @@ public class ReadContactLists extends List implements Runnable, CommandListener 
         } else if (c == DebugCmd) {
             try {
                 ContactItem item = (ContactItem) contacts.elementAt(getSelectedIndex());
-                Display.getDisplay(parentMidlet).setCurrent(new Alert("Debug", item.getAllNamesDebug(), null, AlertType.CONFIRMATION), Display.getDisplay(parentMidlet).getCurrent());
+                Display.getDisplay(parentMidlet).setCurrent(new Alert("Debug", item.getDebugMessages(), null, AlertType.CONFIRMATION), Display.getDisplay(parentMidlet).getCurrent());
             } catch (Exception ex) {
             }
         }
