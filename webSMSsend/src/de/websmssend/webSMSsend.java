@@ -2194,8 +2194,11 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui, IPhoneN
 
         if (ready) {//GEN-LINE:|467-if|1|468-preAction
             // write pre-action user code here
-            switchDisplayable(null, getWaitScreen());//GEN-LINE:|467-if|2|468-postAction
-            // write post-action user code here
+            if (simulation){
+                switchDisplayable(new Alert("Testversion", "Dies ist eine Testversion von WebSMSsend, die das Versenden von SMS nur simuliert um einen unnötig hohen Verbrauch von SMS während des Testen zu vermeiden", null, AlertType.CONFIRMATION), getWaitScreen());
+            }else{
+                switchDisplayable(null, getWaitScreen());//GEN-LINE:|467-if|2|468-postAction
+            }// write post-action user code here
         } else {//GEN-LINE:|467-if|3|469-preAction
             // write pre-action user code here
             switchDisplayable(getNotReadyToSend(), getMainMenu());//GEN-LINE:|467-if|4|469-postAction
