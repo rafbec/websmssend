@@ -67,6 +67,8 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui, IPhoneN
     private AppSettings appSettings;
     //ContactListViewer
     private ReadContactLists contactListViewer;
+    //if true setup Display jumps to MainMenu (needed on first start or when no accounts available)
+    boolean jumpToMainMenu= false;
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Fields ">//GEN-BEGIN:|fields|0|
     private java.util.Hashtable __previousDisplayables = new java.util.Hashtable();
@@ -81,7 +83,6 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui, IPhoneN
     private Command nextSettings;
     private Command eingabeLeeren;
     private Command okCommand5;
-    private Command okCommand6;
     private Command startEmailClient;
     private Command Clear;
     private Command SendEmail;
@@ -93,12 +94,12 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui, IPhoneN
     private Command cancelUpdateCmd;
     private Command okCommandResumeSendSms;
     private Command backToPropertiesCmd;
+    private Command viewContactListCommand;
     private Command exitCommand2;
     private Command cancelCommand1;
     private Command deleteAccount;
     private Command editAccount;
     private Command createAccount;
-    private Command viewContactListCommand;
     private Form MainMenu;
     private TextField txtFieldPhoneNumber;
     private StringItem stringItem1;
@@ -110,17 +111,13 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui, IPhoneN
     private List list;
     private Form optimSettings;
     private ChoiceGroup choiceGroup;
-    private Form providerSettings;
-    private ChoiceGroup choiceGroup3;
-    private Form smsSettings;
-    private StringItem StatusLabel;
-    private ChoiceGroup choiceGroup4;
-    private TextField txtSenderName;
     private Form setup;
     private ChoiceGroup choiceGroup2;
     private TextField txtFieldPassword;
     private TextField txtFieldUserName;
     private TextField txtFieldAccountName;
+    private ChoiceGroup chGrSenderName;
+    private TextField txtFieldSenderName;
     private List chooseAccount;
     private Alert BenutzerwahlBestaetigung;
     private TextBox Debug;
@@ -372,14 +369,18 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui, IPhoneN
 
     private void editAccount() {
         curUserAcc = userAccountManager.getUserAccount(getChooseAccount().getSelectedIndex());
-        switchDisplayable(null, getSetup());
-        loadAccount();
+        if (curUserAcc != null) {
+            switchDisplayable(null, getSetup());
+            loadAccount();
+            loadSenderName();
+        }
     }
 
     private void createAccount() {
         curUserAcc = new UserAccount();
         switchDisplayable(null, getSetup());
         loadAccount();
+        loadSenderName();
     }
 
     /**
@@ -396,8 +397,35 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui, IPhoneN
         }
     }
 
-    //</editor-fold>
+    private void loadSenderName() {
+        initializeSmsConnector(); //makes sure the right connector is loaded
+        if (SmsConnector != null) {
+            getChGrSenderName().setSelectedIndex(0, true);
+            removeItem(getChGrSenderName(), getSetup());
+            removeItem(getTxtFieldSenderName(), getSetup());
 
+            if (SmsConnector.hasProperty(Properties.CAN_SEND_NAME_AS_SENDER)) {
+                getSetup().append(getChGrSenderName());
+                getSetup().append(getTxtFieldSenderName());
+
+                if (curUserAcc.getSenderMode() < chGrSenderName.size() && curUserAcc.getSenderMode() >= 0) {
+                    chGrSenderName.setSelectedIndex(curUserAcc.getSenderMode(), true);
+                    txtFieldSenderName.setString(curUserAcc.getSenderName());
+                }
+            }
+        }
+    }
+
+    private void removeItem(Item item, Form form) {
+        for (int y = 0; y < form.size(); y++) {
+            if (form.get(y).equals(item)) {
+                form.delete(y);
+                break;
+            }
+        }
+    }
+
+    //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc=" Generated Methods ">//GEN-BEGIN:|methods|0|
     /**
      * Switches a display to previous displayable of the current displayable.
@@ -426,6 +454,12 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui, IPhoneN
     }//GEN-BEGIN:|0-initialize|2|
     //</editor-fold>//GEN-END:|0-initialize|2|
 
+    private void initializeAppSettings() {
+        appSettings.setAutoUpdate(true);
+        appSettings.setDebug(false);
+        appSettings.setSaveEachCharacter(true);
+    }
+
     //<editor-fold defaultstate="collapsed" desc=" Generated Method: startMIDlet ">//GEN-BEGIN:|3-startMIDlet|0|3-preAction
     /**
      * Performs an action assigned to the Mobile Device - MIDlet Started point.
@@ -433,7 +467,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui, IPhoneN
     public void startMIDlet() {//GEN-END:|3-startMIDlet|0|3-preAction
         initializeSettings();
         if (curUserAcc == null) {
-            switchDisplayable(null, getSetup());
+            initializeAppSettings();
+            jumpToMainMenu = true;
+            createAccount(); //creates new account and displays setup so that user can set up the first accou
         } else {
             switchDisplayable(null, getMainMenu());
             initializeSmsConnector();
@@ -655,37 +691,15 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui, IPhoneN
                 }
                 switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|58|208-postAction
                 // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|59|189-preAction
-        } else if (displayable == providerSettings) {
-            if (command == back) {//GEN-END:|7-commandAction|59|189-preAction
-                // write pre-action user code here
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|60|189-postAction
-                // write post-action user code here
-            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|61|232-preAction
-                if (choiceGroup3.getSelectedIndex() != -1) {
-                    curUserAcc.setProvider(choiceGroup3.getSelectedIndex());
-                    initializeSmsConnector();
-                }
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|62|232-postAction
-            }//GEN-BEGIN:|7-commandAction|63|465-preAction
+            }//GEN-BEGIN:|7-commandAction|59|465-preAction
         } else if (displayable == setup) {
-            if (command == cancelCommand1) {//GEN-END:|7-commandAction|63|465-preAction
+            if (command == cancelCommand1) {//GEN-END:|7-commandAction|59|465-preAction
                 // write pre-action user code here
                 curUserAcc = userAccountManager.getUserAccount(appSettings.getActiveAccount());
                 initializeSmsConnector();
-                switchDisplayable(null, getChooseAccount());//GEN-LINE:|7-commandAction|64|465-postAction
+                switchDisplayable(null, getChooseAccount());//GEN-LINE:|7-commandAction|60|465-postAction
                 // write post-action user code here
-            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|65|227-preAction
-                boolean jumpToMainMenu= false;
-                if (curUserAcc == null) { //should only be null if there are no accounts at first start
-                    curUserAcc = new UserAccount();
-                    //Standard app settings
-                    appSettings.setAutoUpdate(true);
-                    appSettings.setDebug(false);
-                    appSettings.setSaveEachCharacter(true);
-                    jumpToMainMenu = true;
-                }
-
+            } else if (command == okCommand) {//GEN-LINE:|7-commandAction|61|227-preAction
                 curUserAcc.setAccountName(getTxtFieldAccountName().getString());
                 curUserAcc.setProvider(getChoiceGroup2().getSelectedIndex());
                 curUserAcc.setUserName(getTxtFieldUserName().getString());
@@ -694,57 +708,31 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui, IPhoneN
                 if (userAccountManager.getAccountNumber(curUserAcc) == -1) {
                     userAccountManager.addUserAccount(curUserAcc);
                 }
+                charactersCorrect();//GEN-LINE:|7-commandAction|62|227-postAction
 
-                if (jumpToMainMenu) {
-                    switchDisplayable(null, getMainMenu());
-                    initializeSmsConnector();
-                } else {
-                    switchDisplayable(null, getChooseAccount());//GEN-LINE:|7-commandAction|66|227-postAction
-                    initializeSmsConnector();
-                    initializeChooseAccount();
-                }
-            }//GEN-BEGIN:|7-commandAction|67|476-preAction
+            }//GEN-BEGIN:|7-commandAction|63|476-preAction
         } else if (displayable == smsSend) {
-            if (command == exitCommand2) {//GEN-END:|7-commandAction|67|476-preAction
+            if (command == exitCommand2) {//GEN-END:|7-commandAction|63|476-preAction
                 // write pre-action user code here
-                exitMIDlet();//GEN-LINE:|7-commandAction|68|476-postAction
+                exitMIDlet();//GEN-LINE:|7-commandAction|64|476-postAction
                 // write post-action user code here
-            } else if (command == okCommand2) {//GEN-LINE:|7-commandAction|69|107-preAction
+            } else if (command == okCommand2) {//GEN-LINE:|7-commandAction|65|107-preAction
                 // write pre-action user code here
                 switchDisplayable(null, getMainMenu());
-                isAutomaticUpdateWished();//GEN-LINE:|7-commandAction|70|107-postAction
+                isAutomaticUpdateWished();//GEN-LINE:|7-commandAction|66|107-postAction
 //                stringItem1.setText(getRemSMSText());
-            }//GEN-BEGIN:|7-commandAction|71|183-preAction
-        } else if (displayable == smsSettings) {
-            if (command == back) {//GEN-END:|7-commandAction|71|183-preAction
-                // write pre-action user code here
-                switchToPreviousDisplayable();//GEN-LINE:|7-commandAction|72|183-postAction
-                // write post-action user code here
-            } else if (command == okCommand6) {//GEN-LINE:|7-commandAction|73|270-preAction
-                if (choiceGroup4.getSelectedIndex() != 0) {
-                    try {
-                        SmsConnector.checkSmsSenderNameConstraints(txtSenderName.getString());
-                        charactersCorrect();
-                        } catch (Exception ex) {
-                        getStatusLabel().setText(ex.getMessage());
-                        getStatusLabel().setLabel("Achtung!");
-                    }
-                }
-                else {
-                    charactersCorrect();//GEN-LINE:|7-commandAction|74|270-postAction
-                }
-            }//GEN-BEGIN:|7-commandAction|75|402-preAction
+            }//GEN-BEGIN:|7-commandAction|67|402-preAction
         } else if (displayable == updateWaitScreen) {
-            if (command == WaitScreen.FAILURE_COMMAND) {//GEN-END:|7-commandAction|75|402-preAction
+            if (command == WaitScreen.FAILURE_COMMAND) {//GEN-END:|7-commandAction|67|402-preAction
                 getErrorAlert().setString("Update fehlgeschlagen:\n"
                         + getCheckForUpdateTask().getFailureMessage());
                 debug("Update fehlgeschlagen: "
                         + getCheckForUpdateTask().getFailureMessage());
-                switchDisplayable(getErrorAlert(), getList());//GEN-LINE:|7-commandAction|76|402-postAction
+                switchDisplayable(getErrorAlert(), getList());//GEN-LINE:|7-commandAction|68|402-postAction
                 errorAlert = null;
                 // Reset update process
                 updateWaitScreen = null;
-            } else if (command == WaitScreen.SUCCESS_COMMAND) {//GEN-LINE:|7-commandAction|77|401-preAction
+            } else if (command == WaitScreen.SUCCESS_COMMAND) {//GEN-LINE:|7-commandAction|69|401-preAction
                 if (getUpdateWaitScreen().getTask() != getCheckForUpdateTask()) {
                     getErrorAlert().setTitle("Update fortsetzen");
                     getErrorAlert().setString("Das System wurde angewiesen, "
@@ -755,45 +743,46 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui, IPhoneN
                     // Reset update process
                     updateWaitScreen = null;
                 } else {
-                    isUpdateAvailable();//GEN-LINE:|7-commandAction|78|401-postAction
+                    isUpdateAvailable();//GEN-LINE:|7-commandAction|70|401-postAction
                 }
-            } else if (command == backToPropertiesCmd) {//GEN-LINE:|7-commandAction|79|426-preAction
+            } else if (command == backToPropertiesCmd) {//GEN-LINE:|7-commandAction|71|426-preAction
                 // write pre-action user code here
-                switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|80|426-postAction
+                switchDisplayable(null, getList());//GEN-LINE:|7-commandAction|72|426-postAction
                 // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|81|51-preAction
+            }//GEN-BEGIN:|7-commandAction|73|51-preAction
         } else if (displayable == waitScreen) {
-            if (command == WaitScreen.FAILURE_COMMAND) {//GEN-END:|7-commandAction|81|51-preAction
+            if (command == WaitScreen.FAILURE_COMMAND) {//GEN-END:|7-commandAction|73|51-preAction
                 getNotSend().setString("SMS nicht gesendet!");
-                noMoreFreeSmsAvailable();//GEN-LINE:|7-commandAction|82|51-postAction
+                noMoreFreeSmsAvailable();//GEN-LINE:|7-commandAction|74|51-postAction
 
-            } else if (command == WaitScreen.SUCCESS_COMMAND) {//GEN-LINE:|7-commandAction|83|50-preAction
+            } else if (command == WaitScreen.SUCCESS_COMMAND) {//GEN-LINE:|7-commandAction|75|50-preAction
                 saveLastSms();
                 clearSMSInput();
                 getSmsSend().setString("SMS gesendet\n" + getRemSMSText());
                 getStringItem1().setText(getRemSMSText());
-                switchDisplayable(null, getSmsSend());//GEN-LINE:|7-commandAction|84|50-postAction
+                switchDisplayable(null, getSmsSend());//GEN-LINE:|7-commandAction|76|50-postAction
 
-            } else if (command == exitCommand1) {//GEN-LINE:|7-commandAction|85|99-preAction
+            } else if (command == exitCommand1) {//GEN-LINE:|7-commandAction|77|99-preAction
                 // write pre-action user code here
-                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|86|99-postAction
+                switchDisplayable(null, getMainMenu());//GEN-LINE:|7-commandAction|78|99-postAction
                 // write post-action user code here
                 waitScreen = null;
-            }//GEN-BEGIN:|7-commandAction|87|312-preAction
+            }//GEN-BEGIN:|7-commandAction|79|312-preAction
         } else if (displayable == waitScreen1) {
-            if (command == WaitScreen.FAILURE_COMMAND) {//GEN-END:|7-commandAction|87|312-preAction
+            if (command == WaitScreen.FAILURE_COMMAND) {//GEN-END:|7-commandAction|79|312-preAction
                 // write pre-action user code here
-                switchDisplayable(getEmailNotSent(), getSendEmailForm());//GEN-LINE:|7-commandAction|88|312-postAction
+                switchDisplayable(getEmailNotSent(), getSendEmailForm());//GEN-LINE:|7-commandAction|80|312-postAction
                 // write post-action user code here
-            } else if (command == WaitScreen.SUCCESS_COMMAND) {//GEN-LINE:|7-commandAction|89|311-preAction
+            } else if (command == WaitScreen.SUCCESS_COMMAND) {//GEN-LINE:|7-commandAction|81|311-preAction
                 // write pre-action user code here
-                switchDisplayable(getEmailSent(), getDebug());//GEN-LINE:|7-commandAction|90|311-postAction
+                switchDisplayable(getEmailSent(), getDebug());//GEN-LINE:|7-commandAction|82|311-postAction
                 // write post-action user code here
-            }//GEN-BEGIN:|7-commandAction|91|7-postCommandAction
-        }//GEN-END:|7-commandAction|91|7-postCommandAction
+            }//GEN-BEGIN:|7-commandAction|83|7-postCommandAction
+        }//GEN-END:|7-commandAction|83|7-postCommandAction
         // write post-action user code here
-    }//GEN-BEGIN:|7-commandAction|92|
-    //</editor-fold>//GEN-END:|7-commandAction|92|
+    }//GEN-BEGIN:|7-commandAction|84|
+    //</editor-fold>//GEN-END:|7-commandAction|84|
+
 
 
 
@@ -1117,7 +1106,6 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui, IPhoneN
             // write pre-init user code here
             list = new List("Einstellungen", Choice.IMPLICIT);//GEN-BEGIN:|165-getter|1|165-postInit
             list.append("Benutzer", null);
-            list.append("SMS Eigenschaften", null);
             list.append("Optimierung", null);
             list.append("Debug Meldungen", null);
             list.append("Auf Update pr\u00FCfen", null);
@@ -1125,7 +1113,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui, IPhoneN
             list.addCommand(getNextSettings());
             list.addCommand(getBack());
             list.setCommandListener(this);
-            list.setSelectedFlags(new boolean[] { false, false, false, false, false, false });//GEN-END:|165-getter|1|165-postInit
+            list.setSelectedFlags(new boolean[] { false, false, false, false, false });//GEN-END:|165-getter|1|165-postInit
             // write post-init user code here
         }//GEN-BEGIN:|165-getter|2|
         return list;
@@ -1144,61 +1132,33 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui, IPhoneN
                 // write pre-action user code here
                 switchDisplayable(null, getChooseAccount());//GEN-LINE:|165-action|2|260-postAction
                 initializeChooseAccount();
-            } else if (__selectedString.equals("SMS Eigenschaften")) {//GEN-LINE:|165-action|3|169-preAction
+            } else if (__selectedString.equals("Optimierung")) {//GEN-LINE:|165-action|3|170-preAction
                 // write pre-action user code here
-                switchDisplayable(null, getSmsSettings());//GEN-LINE:|165-action|4|169-postAction
-                // write post-action user code here
-                if (SmsConnector.hasProperty(Properties.CAN_SEND_NAME_AS_SENDER)) {
-                    choiceGroup4.setSelectedIndex(curUserAcc.getSenderMode(), true);
-                    txtSenderName.setString(curUserAcc.getSenderName());
-                    getStatusLabel().setText("");
-                    getStatusLabel().setLabel("");
-                } else {
-                    getStatusLabel().setText("nicht unterst\u00FCtzt!");
-                }
-                //hier muss die der richtige Eintrag markiert werden und der Absender eingetragen werden
-            } else if (__selectedString.equals("Optimierung")) {//GEN-LINE:|165-action|5|170-preAction
-                // write pre-action user code here
-                switchDisplayable(null, getOptimSettings());//GEN-LINE:|165-action|6|170-postAction
+                switchDisplayable(null, getOptimSettings());//GEN-LINE:|165-action|4|170-postAction
 
                 boolean[] selected = {appSettings.isSaveEachCharacter(), appSettings.isDebug(), appSettings.isAutoUpdate()};
                 choiceGroup.setSelectedFlags(selected);
-            } else if (__selectedString.equals("Debug Meldungen")) {//GEN-LINE:|165-action|7|285-preAction
+            } else if (__selectedString.equals("Debug Meldungen")) {//GEN-LINE:|165-action|5|285-preAction
                 // write pre-action user code here
-                switchDisplayable(null, getDebug());//GEN-LINE:|165-action|8|285-postAction
+                switchDisplayable(null, getDebug());//GEN-LINE:|165-action|6|285-postAction
                 // write post-action user code here
-            } else if (__selectedString.equals("Auf Update pr\u00FCfen")) {//GEN-LINE:|165-action|9|391-preAction
+            } else if (__selectedString.equals("Auf Update pr\u00FCfen")) {//GEN-LINE:|165-action|7|391-preAction
                 // write pre-action user code here
-                switchDisplayable(null, getUpdateWaitScreen());//GEN-LINE:|165-action|10|391-postAction
+                switchDisplayable(null, getUpdateWaitScreen());//GEN-LINE:|165-action|8|391-postAction
 
-            } else if (__selectedString.equals("About")) {//GEN-LINE:|165-action|11|191-preAction
+            } else if (__selectedString.equals("About")) {//GEN-LINE:|165-action|9|191-preAction
                 // write pre-action user code here
-                switchDisplayable(null, getAbout());//GEN-LINE:|165-action|12|191-postAction
+                switchDisplayable(null, getAbout());//GEN-LINE:|165-action|10|191-postAction
                 // write post-action user code here
-            }//GEN-BEGIN:|165-action|13|165-postAction
-        }//GEN-END:|165-action|13|165-postAction
+            }//GEN-BEGIN:|165-action|11|165-postAction
+        }//GEN-END:|165-action|11|165-postAction
         // enter post-action user code here
-    }//GEN-BEGIN:|165-action|14|
-    //</editor-fold>//GEN-END:|165-action|14|
+    }//GEN-BEGIN:|165-action|12|
+    //</editor-fold>//GEN-END:|165-action|12|
 
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: smsSettings ">//GEN-BEGIN:|177-getter|0|177-preInit
-    /**
-     * Returns an initiliazed instance of smsSettings component.
-     * @return the initialized component instance
-     */
-    public Form getSmsSettings() {
-        if (smsSettings == null) {//GEN-END:|177-getter|0|177-preInit
-            // write pre-init user code here
-            smsSettings = new Form("SMS Eigenschaften", new Item[] { getChoiceGroup4(), getTxtSenderName(), getStatusLabel() });//GEN-BEGIN:|177-getter|1|177-postInit
-            smsSettings.addCommand(getBack());
-            smsSettings.addCommand(getOkCommand6());
-            smsSettings.setCommandListener(this);//GEN-END:|177-getter|1|177-postInit
-            // write post-init user code here
-        }//GEN-BEGIN:|177-getter|2|
-        return smsSettings;
-    }
-    //</editor-fold>//GEN-END:|177-getter|2|
+
+
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: optimSettings ">//GEN-BEGIN:|178-getter|0|178-preInit
     /**
@@ -1218,23 +1178,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui, IPhoneN
     }
     //</editor-fold>//GEN-END:|178-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: providerSettings ">//GEN-BEGIN:|179-getter|0|179-preInit
-    /**
-     * Returns an initiliazed instance of providerSettings component.
-     * @return the initialized component instance
-     */
-    public Form getProviderSettings() {
-        if (providerSettings == null) {//GEN-END:|179-getter|0|179-preInit
-            // write pre-init user code here
-            providerSettings = new Form("Provider Auswahl", new Item[] { getChoiceGroup3() });//GEN-BEGIN:|179-getter|1|179-postInit
-            providerSettings.addCommand(getBack());
-            providerSettings.addCommand(getOkCommand());
-            providerSettings.setCommandListener(this);//GEN-END:|179-getter|1|179-postInit
-            // write post-init user code here
-        }//GEN-BEGIN:|179-getter|2|
-        return providerSettings;
-    }
-    //</editor-fold>//GEN-END:|179-getter|2|
+
 
 
 
@@ -1314,7 +1258,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui, IPhoneN
     public Form getSetup() {
         if (setup == null) {//GEN-END:|217-getter|0|217-preInit
             // write pre-init user code here
-            setup = new Form("Setup", new Item[] { getTxtFieldAccountName(), getChoiceGroup2(), getTxtFieldUserName(), getTxtFieldPassword() });//GEN-BEGIN:|217-getter|1|217-postInit
+            setup = new Form("Setup", new Item[] { getTxtFieldAccountName(), getChoiceGroup2(), getTxtFieldUserName(), getTxtFieldPassword(), getChGrSenderName(), getTxtFieldSenderName() });//GEN-BEGIN:|217-getter|1|217-postInit
             setup.addCommand(getOkCommand());
             setup.addCommand(getCancelCommand1());
             setup.setCommandListener(this);//GEN-END:|217-getter|1|217-postInit
@@ -1326,11 +1270,10 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui, IPhoneN
 
                 public void itemStateChanged(Item item) {
                     if (item == getChoiceGroup2()) {
-                        // Change the password field label, if GMX is selected
-                        if (getChoiceGroup2().isSelected(1)) {
-                            getTxtFieldPassword().setLabel("SMS-Manager Freischaltcode:");
-                        } else {
-                            getTxtFieldPassword().setLabel("Passwort:");
+                        if (curUserAcc != null) {
+                            curUserAcc.setProvider(getChoiceGroup2().getSelectedIndex());
+                            loadSenderName();
+                            getTxtFieldPassword().setLabel(getPasswordFieldLabel());
                         }
                     }
                 }
@@ -1391,25 +1334,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui, IPhoneN
     }
     //</editor-fold>//GEN-END:|226-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: choiceGroup3 ">//GEN-BEGIN:|229-getter|0|229-preInit
-    /**
-     * Returns an initiliazed instance of choiceGroup3 component.
-     * @return the initialized component instance
-     */
-    public ChoiceGroup getChoiceGroup3() {
-        if (choiceGroup3 == null) {//GEN-END:|229-getter|0|229-preInit
-            // write pre-init user code here
-            choiceGroup3 = new ChoiceGroup("Bei einem Wechsel: \u00C4ndern der Zugangsdaten nicht vergessen!", Choice.EXCLUSIVE);//GEN-BEGIN:|229-getter|1|229-postInit
-            choiceGroup3.append("O2-Internet-Pack", null);
-            choiceGroup3.append("GMX", null);
-            choiceGroup3.setSelectedFlags(new boolean[] { false, false });
-            choiceGroup3.setFont(0, getFont());
-            choiceGroup3.setFont(1, getFont());//GEN-END:|229-getter|1|229-postInit
-            // write post-init user code here
-        }//GEN-BEGIN:|229-getter|2|
-        return choiceGroup3;
-    }
-    //</editor-fold>//GEN-END:|229-getter|2|
+
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: image1 ">//GEN-BEGIN:|244-getter|0|244-preInit
     /**
@@ -1493,75 +1418,20 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui, IPhoneN
         // enter pre-action user code here
         String __selectedString = getChooseAccount().getString(getChooseAccount().getSelectedIndex());//GEN-LINE:|248-action|1|248-postAction
         // enter post-action user code here
-        curUserAcc = userAccountManager.getUserAccount(getChooseAccount().getSelectedIndex());
-        initializeSmsConnector();
+        if (getChooseAccount().getSelectedIndex() != -1) {
+            curUserAcc = userAccountManager.getUserAccount(getChooseAccount().getSelectedIndex());
+            initializeSmsConnector();
+        }
     }//GEN-BEGIN:|248-action|2|
     //</editor-fold>//GEN-END:|248-action|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: choiceGroup4 ">//GEN-BEGIN:|263-getter|0|263-preInit
-    /**
-     * Returns an initiliazed instance of choiceGroup4 component.
-     * @return the initialized component instance
-     */
-    public ChoiceGroup getChoiceGroup4() {
-        if (choiceGroup4 == null) {//GEN-END:|263-getter|0|263-preInit
-            // write pre-init user code here
-            choiceGroup4 = new ChoiceGroup("Als Absender verwenden:", Choice.EXCLUSIVE);//GEN-BEGIN:|263-getter|1|263-postInit
-            choiceGroup4.append("Meine Mobil-Telefonnummer", null);
-            choiceGroup4.append("Text:", null);
-            choiceGroup4.setSelectedFlags(new boolean[] { false, false });//GEN-END:|263-getter|1|263-postInit
-            // write post-init user code here
-        }//GEN-BEGIN:|263-getter|2|
-        return choiceGroup4;
-    }
-    //</editor-fold>//GEN-END:|263-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtSenderName ">//GEN-BEGIN:|266-getter|0|266-preInit
-    /**
-     * Returns an initiliazed instance of txtSenderName component.
-     * @return the initialized component instance
-     */
-    public TextField getTxtSenderName() {
-        if (txtSenderName == null) {//GEN-END:|266-getter|0|266-preInit
-            // write pre-init user code here
-            txtSenderName = new TextField("", "", 20, TextField.ANY);//GEN-BEGIN:|266-getter|1|266-postInit
-            txtSenderName.setLayout(ImageItem.LAYOUT_DEFAULT | Item.LAYOUT_EXPAND);//GEN-END:|266-getter|1|266-postInit
-            // write post-init user code here
-        }//GEN-BEGIN:|266-getter|2|
-        return txtSenderName;
-    }
-    //</editor-fold>//GEN-END:|266-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommand6 ">//GEN-BEGIN:|269-getter|0|269-preInit
-    /**
-     * Returns an initiliazed instance of okCommand6 component.
-     * @return the initialized component instance
-     */
-    public Command getOkCommand6() {
-        if (okCommand6 == null) {//GEN-END:|269-getter|0|269-preInit
-            // write pre-init user code here
-            okCommand6 = new Command("Speichern", Command.OK, 0);//GEN-LINE:|269-getter|1|269-postInit
-            // write post-init user code here
-        }//GEN-BEGIN:|269-getter|2|
-        return okCommand6;
-    }
-    //</editor-fold>//GEN-END:|269-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: StatusLabel ">//GEN-BEGIN:|272-getter|0|272-preInit
-    /**
-     * Returns an initiliazed instance of StatusLabel component.
-     * @return the initialized component instance
-     */
-    public StringItem getStatusLabel() {
-        if (StatusLabel == null) {//GEN-END:|272-getter|0|272-preInit
-            // write pre-init user code here
-            StatusLabel = new StringItem("", "", Item.PLAIN);//GEN-BEGIN:|272-getter|1|272-postInit
-            StatusLabel.setLayout(ImageItem.LAYOUT_CENTER | Item.LAYOUT_BOTTOM | Item.LAYOUT_VCENTER);//GEN-END:|272-getter|1|272-postInit
-            // write post-init user code here
-        }//GEN-BEGIN:|272-getter|2|
-        return StatusLabel;
-    }
-    //</editor-fold>//GEN-END:|272-getter|2|
+
+
+
+
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: BenutzerwahlBestaetigung ">//GEN-BEGIN:|281-getter|0|281-preInit
     /**
@@ -1842,24 +1712,34 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui, IPhoneN
      */
     public void charactersCorrect() {//GEN-END:|336-if|0|336-preIf
         boolean charactersOkay = true;
-        if (getChoiceGroup4().getSelectedIndex() != 0) {
+        if (getChGrSenderName().getSelectedIndex() == 1) {
             try {
-                SmsConnector.checkSmsSenderNameCharacters(getTxtSenderName().getString());
+                SmsConnector.checkSmsSenderNameConstraints(getTxtFieldSenderName().getString());
+                SmsConnector.checkSmsSenderNameCharacters(getTxtFieldSenderName().getString());
             } catch (Exception ex) {
                 getWrongCharacter().setString(ex.getMessage());
                 charactersOkay = false;
             }
         }
         if (charactersOkay) {//GEN-LINE:|336-if|1|337-preAction
-            curUserAcc.setSenderMode(choiceGroup4.getSelectedIndex());
-            curUserAcc.setSenderName(txtSenderName.getString());
-            // write pre-action user code here
-            switchDisplayable(null, getList());//GEN-LINE:|336-if|2|337-postAction
-            // write post-action user code here
+            curUserAcc.setSenderMode(getChGrSenderName().getSelectedIndex());
+            curUserAcc.setSenderName(getTxtFieldSenderName().getString());
+            initializeSmsConnector();
+
+            if (jumpToMainMenu) {
+                jumpToMainMenu = false;
+                switchDisplayable(null, getMainMenu());
+            } else {
+                // write pre-action user code here
+                initializeChooseAccount();
+                switchDisplayable(null, getChooseAccount());//GEN-LINE:|336-if|2|337-postAction
+                // write post-action user code here
+            }
         } else {//GEN-LINE:|336-if|3|338-preAction
             // write pre-action user code here
-            switchDisplayable(getWrongCharacter(), getSmsSettings());//GEN-LINE:|336-if|4|338-postAction
+            switchDisplayable(getWrongCharacter(), getSetup());//GEN-LINE:|336-if|4|338-postAction
             // write post-action user code here
+            getTxtFieldSenderName().notifyStateChanged();
         }//GEN-LINE:|336-if|5|336-postIf
         // enter post-if user code here
     }//GEN-BEGIN:|336-if|6|
@@ -2371,6 +2251,39 @@ public class webSMSsend extends MIDlet implements CommandListener, IGui, IPhoneN
         return viewContactListCommand;
     }
     //</editor-fold>//GEN-END:|478-getter|2|
+
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: chGrSenderName ">//GEN-BEGIN:|480-getter|0|480-preInit
+    /**
+     * Returns an initiliazed instance of chGrSenderName component.
+     * @return the initialized component instance
+     */
+    public ChoiceGroup getChGrSenderName() {
+        if (chGrSenderName == null) {//GEN-END:|480-getter|0|480-preInit
+            // write pre-init user code here
+            chGrSenderName = new ChoiceGroup("Als Absender verwenden:", Choice.EXCLUSIVE);//GEN-BEGIN:|480-getter|1|480-postInit
+            chGrSenderName.append("Meine Mobil-Telefonnummer", null);
+            chGrSenderName.append("Text als Absender", null);
+            chGrSenderName.setSelectedFlags(new boolean[] { false, false });//GEN-END:|480-getter|1|480-postInit
+            // write post-init user code here
+        }//GEN-BEGIN:|480-getter|2|
+        return chGrSenderName;
+    }
+    //</editor-fold>//GEN-END:|480-getter|2|
+
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtFieldSenderName ">//GEN-BEGIN:|483-getter|0|483-preInit
+    /**
+     * Returns an initiliazed instance of txtFieldSenderName component.
+     * @return the initialized component instance
+     */
+    public TextField getTxtFieldSenderName() {
+        if (txtFieldSenderName == null) {//GEN-END:|483-getter|0|483-preInit
+            // write pre-init user code here
+            txtFieldSenderName = new TextField("Absender-Text:", "", 32, TextField.ANY);//GEN-LINE:|483-getter|1|483-postInit
+            // write post-init user code here
+        }//GEN-BEGIN:|483-getter|2|
+        return txtFieldSenderName;
+    }
+    //</editor-fold>//GEN-END:|483-getter|2|
 
     /**
      * Returns a display instance.

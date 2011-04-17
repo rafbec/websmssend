@@ -23,18 +23,18 @@
                     <Property name="true" typeID="C#IfTrueEventSource" value="R337"/>
                     <Property name="false" typeID="C#IfFalseEventSource" value="R338"/>
                     <Component componentID="338" typeID="C#IfFalseEventSource">
-                        <Property name="eventHandler" typeID="C#EventHandler" value="R342"/>
-                        <Component componentID="342" typeID="C#SwitchDisplayableEventHandler">
+                        <Property name="eventHandler" typeID="C#EventHandler" value="R485"/>
+                        <Component componentID="485" typeID="C#SwitchDisplayableEventHandler">
                             <Property name="eventSource" typeID="C#EventSource" value="R338"/>
-                            <Property name="displayable" typeID="Cjavax.microedition.lcdui.Displayable" value="R177"/>
+                            <Property name="displayable" typeID="Cjavax.microedition.lcdui.Displayable" value="R217"/>
                             <Property name="alert" typeID="Cjavax.microedition.lcdui.Alert" value="R340"/>
                         </Component>
                     </Component>
                     <Component componentID="337" typeID="C#IfTrueEventSource">
-                        <Property name="eventHandler" typeID="C#EventHandler" value="R339"/>
-                        <Component componentID="339" typeID="C#SwitchDisplayableEventHandler">
+                        <Property name="eventHandler" typeID="C#EventHandler" value="R486"/>
+                        <Component componentID="486" typeID="C#SwitchDisplayableEventHandler">
                             <Property name="eventSource" typeID="C#EventSource" value="R337"/>
-                            <Property name="displayable" typeID="Cjavax.microedition.lcdui.Displayable" value="R165"/>
+                            <Property name="displayable" typeID="Cjavax.microedition.lcdui.Displayable" value="R248"/>
                         </Component>
                     </Component>
                 </Component>
@@ -289,12 +289,6 @@
                     <Property name="type" typeID="Pint" value="V8"/>
                     <Property name="priority" typeID="Pint" value="V5"/>
                 </Component>
-                <Component componentID="269" typeID="Cjavax.microedition.lcdui.Command">
-                    <Property name="instanceName" typeID="Pjava.lang.String" value="VokCommand6"/>
-                    <Property name="codeGenerated" typeID="Pboolean" value="Vtrue"/>
-                    <Property name="label" typeID="Pjava.lang.String" value="VSpeichern"/>
-                    <Property name="type" typeID="Pint" value="V4"/>
-                </Component>
                 <Component componentID="305" typeID="Cjavax.microedition.lcdui.Command">
                     <Property name="instanceName" typeID="Pjava.lang.String" value="VstartEmailClient"/>
                     <Property name="codeGenerated" typeID="Pboolean" value="Vtrue"/>
@@ -365,6 +359,13 @@
                     <Property name="label" typeID="Pjava.lang.String" value="VAbbrechen"/>
                     <Property name="type" typeID="Pint" value="V3"/>
                 </Component>
+                <Component componentID="478" typeID="Cjavax.microedition.lcdui.Command">
+                    <Property name="instanceName" typeID="Pjava.lang.String" value="VviewContactListCommand"/>
+                    <Property name="codeGenerated" typeID="Pboolean" value="Vtrue"/>
+                    <Property name="label" typeID="Pjava.lang.String" value="VTelefonbuch"/>
+                    <Property name="type" typeID="Pint" value="V3"/>
+                    <Property name="priority" typeID="Pint" value="V2"/>
+                </Component>
                 <Component componentID="475" typeID="Cjavax.microedition.lcdui.Command">
                     <Property name="instanceName" typeID="Pjava.lang.String" value="VexitCommand2"/>
                     <Property name="codeGenerated" typeID="Pboolean" value="Vtrue"/>
@@ -397,13 +398,6 @@
                     <Property name="label" typeID="Pjava.lang.String" value="VNeu"/>
                     <Property name="type" typeID="Pint" value="V2"/>
                     <Property name="priority" typeID="Pint" value="V1"/>
-                </Component>
-                <Component componentID="478" typeID="Cjavax.microedition.lcdui.Command">
-                    <Property name="instanceName" typeID="Pjava.lang.String" value="VviewContactListCommand"/>
-                    <Property name="codeGenerated" typeID="Pboolean" value="Vtrue"/>
-                    <Property name="label" typeID="Pjava.lang.String" value="VTelefonbuch"/>
-                    <Property name="type" typeID="Pint" value="V3"/>
-                    <Property name="priority" typeID="Pint" value="V2"/>
                 </Component>
             </Component>
             <Component componentID="10" typeID="C#DisplayablesCategory">
@@ -590,7 +584,7 @@
                     <Property name="commands" typeID="1C#CommandEventSource" value="A3:4_R1664_R1734_R184"/>
                     <Property name="title" typeID="Pjava.lang.String" value="VEinstellungen"/>
                     <Property name="commandListener" typeID="C#CommandListener" value="R7"/>
-                    <Property name="elements" typeID="1C#ListElementEventSource" value="A6:4_R2604_R1694_R1704_R2854_R3914_R191"/>
+                    <Property name="elements" typeID="1C#ListElementEventSource" value="A5:4_R2604_R1704_R2854_R3914_R191"/>
                     <Property name="selectCommand" typeID="C#CommandEventSource" value="R166"/>
                     <Component componentID="170" typeID="C#ListElementEventSource">
                         <Property name="eventHandler" typeID="C#EventHandler" value="R181"/>
@@ -598,14 +592,6 @@
                         <Component componentID="181" typeID="C#SwitchDisplayableEventHandler">
                             <Property name="eventSource" typeID="C#EventSource" value="R170"/>
                             <Property name="displayable" typeID="Cjavax.microedition.lcdui.Displayable" value="R178"/>
-                        </Component>
-                    </Component>
-                    <Component componentID="169" typeID="C#ListElementEventSource">
-                        <Property name="eventHandler" typeID="C#EventHandler" value="R180"/>
-                        <Property name="string" typeID="Pjava.lang.String" value="VSMS Eigenschaften"/>
-                        <Component componentID="180" typeID="C#SwitchDisplayableEventHandler">
-                            <Property name="eventSource" typeID="C#EventSource" value="R169"/>
-                            <Property name="displayable" typeID="Cjavax.microedition.lcdui.Displayable" value="R177"/>
                         </Component>
                     </Component>
                     <Component componentID="173" typeID="C#CommandEventSource">
@@ -708,112 +694,13 @@
                         </Component>
                     </Component>
                 </Component>
-                <Component componentID="179" typeID="Cjavax.microedition.lcdui.Form">
-                    <Property name="instanceName" typeID="Pjava.lang.String" value="VproviderSettings"/>
-                    <Property name="codeGenerated" typeID="Pboolean" value="Vtrue"/>
-                    <Property name="commands" typeID="1C#CommandEventSource" value="A2:4_R1894_R232"/>
-                    <Property name="title" typeID="Pjava.lang.String" value="VProvider Auswahl"/>
-                    <Property name="commandListener" typeID="C#CommandListener" value="R7"/>
-                    <Property name="items" typeID="1Cjavax.microedition.lcdui.Item" value="A1:4_R229"/>
-                    <Component componentID="189" typeID="C#CommandEventSource">
-                        <Property name="eventHandler" typeID="C#EventHandler" value="R190"/>
-                        <Property name="displayable" typeID="Cjavax.microedition.lcdui.Displayable" value="R179"/>
-                        <Property name="command" typeID="Cjavax.microedition.lcdui.Command" value="R33"/>
-                        <Component componentID="190" typeID="C#PreviousScreenEventHandler">
-                            <Property name="eventSource" typeID="C#EventSource" value="R189"/>
-                        </Component>
-                    </Component>
-                    <Component componentID="232" typeID="C#CommandEventSource">
-                        <Property name="eventHandler" typeID="C#EventHandler" value="R234"/>
-                        <Property name="displayable" typeID="Cjavax.microedition.lcdui.Displayable" value="R179"/>
-                        <Property name="command" typeID="Cjavax.microedition.lcdui.Command" value="R84"/>
-                        <Component componentID="234" typeID="C#PreviousScreenEventHandler">
-                            <Property name="eventSource" typeID="C#EventSource" value="R232"/>
-                        </Component>
-                    </Component>
-                    <Component componentID="229" typeID="Cjavax.microedition.lcdui.ChoiceGroup">
-                        <Property name="instanceName" typeID="Pjava.lang.String" value="VchoiceGroup3"/>
-                        <Property name="codeGenerated" typeID="Pboolean" value="Vtrue"/>
-                        <Property name="label" typeID="Pjava.lang.String" value="VBei einem Wechsel: Ändern der Zugangsdaten nicht vergessen!"/>
-                        <Property name="itemCommandListener" typeID="C#ItemCommandListener" value="R17"/>
-                        <Property name="choiceType" typeID="Pint" value="V1"/>
-                        <Property name="elements" typeID="1C#ChoiceElement" value="A2:4_R2304_R231"/>
-                        <Component componentID="231" typeID="C#ChoiceElement">
-                            <Property name="string" typeID="Pjava.lang.String" value="VGMX"/>
-                            <Property name="font" typeID="Cjavax.microedition.lcdui.Font" value="R211"/>
-                        </Component>
-                        <Component componentID="230" typeID="C#ChoiceElement">
-                            <Property name="string" typeID="Pjava.lang.String" value="VO2-Internet-Pack"/>
-                            <Property name="font" typeID="Cjavax.microedition.lcdui.Font" value="R211"/>
-                        </Component>
-                    </Component>
-                </Component>
-                <Component componentID="177" typeID="Cjavax.microedition.lcdui.Form">
-                    <Property name="instanceName" typeID="Pjava.lang.String" value="VsmsSettings"/>
-                    <Property name="codeGenerated" typeID="Pboolean" value="Vtrue"/>
-                    <Property name="commands" typeID="1C#CommandEventSource" value="A2:4_R1834_R270"/>
-                    <Property name="title" typeID="Pjava.lang.String" value="VSMS Eigenschaften"/>
-                    <Property name="commandListener" typeID="C#CommandListener" value="R7"/>
-                    <Property name="items" typeID="1Cjavax.microedition.lcdui.Item" value="A3:4_R2634_R2664_R272"/>
-                    <Component componentID="183" typeID="C#CommandEventSource">
-                        <Property name="eventHandler" typeID="C#EventHandler" value="R185"/>
-                        <Property name="displayable" typeID="Cjavax.microedition.lcdui.Displayable" value="R177"/>
-                        <Property name="command" typeID="Cjavax.microedition.lcdui.Command" value="R33"/>
-                        <Component componentID="185" typeID="C#PreviousScreenEventHandler">
-                            <Property name="eventSource" typeID="C#EventSource" value="R183"/>
-                        </Component>
-                    </Component>
-                    <Component componentID="272" typeID="Cjavax.microedition.lcdui.StringItem">
-                        <Property name="instanceName" typeID="Pjava.lang.String" value="VStatusLabel"/>
-                        <Property name="codeGenerated" typeID="Pboolean" value="Vtrue"/>
-                        <Property name="label" typeID="Pjava.lang.String" value="V"/>
-                        <Property name="layout" typeID="Pint" value="V35"/>
-                        <Property name="itemCommandListener" typeID="C#ItemCommandListener" value="R17"/>
-                        <Property name="text" typeID="Pjava.lang.String" value="V"/>
-                        <Property name="appearanceMode" typeID="Pint" value="V0"/>
-                    </Component>
-                    <Component componentID="263" typeID="Cjavax.microedition.lcdui.ChoiceGroup">
-                        <Property name="instanceName" typeID="Pjava.lang.String" value="VchoiceGroup4"/>
-                        <Property name="codeGenerated" typeID="Pboolean" value="Vtrue"/>
-                        <Property name="label" typeID="Pjava.lang.String" value="VAls Absender verwenden:"/>
-                        <Property name="commands" typeID="1C#ItemCommandEventSource" value="A0:"/>
-                        <Property name="itemCommandListener" typeID="C#ItemCommandListener" value="R17"/>
-                        <Property name="choiceType" typeID="Pint" value="V1"/>
-                        <Property name="elements" typeID="1C#ChoiceElement" value="A2:4_R2644_R265"/>
-                        <Component componentID="264" typeID="C#ChoiceElement">
-                            <Property name="string" typeID="Pjava.lang.String" value="VMeine Mobil-Telefonnummer"/>
-                        </Component>
-                        <Component componentID="265" typeID="C#ChoiceElement">
-                            <Property name="string" typeID="Pjava.lang.String" value="VText:"/>
-                        </Component>
-                    </Component>
-                    <Component componentID="266" typeID="Cjavax.microedition.lcdui.TextField">
-                        <Property name="instanceName" typeID="Pjava.lang.String" value="VtxtSenderName"/>
-                        <Property name="codeGenerated" typeID="Pboolean" value="Vtrue"/>
-                        <Property name="label" typeID="Pjava.lang.String" value="V"/>
-                        <Property name="layout" typeID="Pint" value="V4096"/>
-                        <Property name="itemCommandListener" typeID="C#ItemCommandListener" value="R17"/>
-                        <Property name="text" typeID="Pjava.lang.String" value="V"/>
-                        <Property name="maxSize" typeID="Pint" value="V20"/>
-                        <Property name="constraints" typeID="Pint" value="V0"/>
-                    </Component>
-                    <Component componentID="270" typeID="C#CommandEventSource">
-                        <Property name="eventHandler" typeID="C#EventHandler" value="R343"/>
-                        <Property name="displayable" typeID="Cjavax.microedition.lcdui.Displayable" value="R177"/>
-                        <Property name="command" typeID="Cjavax.microedition.lcdui.Command" value="R269"/>
-                        <Component componentID="343" typeID="C#MethodPointEventHandler">
-                            <Property name="eventSource" typeID="C#EventSource" value="R270"/>
-                            <Property name="methodPoint" typeID="C#MethodPoint" value="R336"/>
-                        </Component>
-                    </Component>
-                </Component>
                 <Component componentID="217" typeID="Cjavax.microedition.lcdui.Form">
                     <Property name="instanceName" typeID="Pjava.lang.String" value="Vsetup"/>
                     <Property name="codeGenerated" typeID="Pboolean" value="Vtrue"/>
                     <Property name="commands" typeID="1C#CommandEventSource" value="A2:4_R2274_R465"/>
                     <Property name="title" typeID="Pjava.lang.String" value="VSetup"/>
                     <Property name="commandListener" typeID="C#CommandListener" value="R7"/>
-                    <Property name="items" typeID="1Cjavax.microedition.lcdui.Item" value="A4:4_R4624_R2204_R2264_R219"/>
+                    <Property name="items" typeID="1Cjavax.microedition.lcdui.Item" value="A6:4_R4624_R2204_R2264_R2194_R4804_R483"/>
                     <Component componentID="220" typeID="Cjavax.microedition.lcdui.ChoiceGroup">
                         <Property name="instanceName" typeID="Pjava.lang.String" value="VchoiceGroup2"/>
                         <Property name="codeGenerated" typeID="Pboolean" value="Vtrue"/>
@@ -839,12 +726,12 @@
                         <Property name="constraints" typeID="Pint" value="V65536"/>
                     </Component>
                     <Component componentID="227" typeID="C#CommandEventSource">
-                        <Property name="eventHandler" typeID="C#EventHandler" value="R228"/>
+                        <Property name="eventHandler" typeID="C#EventHandler" value="R484"/>
                         <Property name="displayable" typeID="Cjavax.microedition.lcdui.Displayable" value="R217"/>
                         <Property name="command" typeID="Cjavax.microedition.lcdui.Command" value="R84"/>
-                        <Component componentID="228" typeID="C#SwitchDisplayableEventHandler">
+                        <Component componentID="484" typeID="C#MethodPointEventHandler">
                             <Property name="eventSource" typeID="C#EventSource" value="R227"/>
-                            <Property name="displayable" typeID="Cjavax.microedition.lcdui.Displayable" value="R248"/>
+                            <Property name="methodPoint" typeID="C#MethodPoint" value="R336"/>
                         </Component>
                     </Component>
                     <Component componentID="226" typeID="Cjavax.microedition.lcdui.TextField">
@@ -870,6 +757,29 @@
                         <Property name="label" typeID="Pjava.lang.String" value="VName des Accounts"/>
                         <Property name="itemCommandListener" typeID="C#ItemCommandListener" value="R17"/>
                         <Property name="text" typeID="Pjava.lang.String" value="VBenutzeraccount"/>
+                        <Property name="maxSize" typeID="Pint" value="V32"/>
+                        <Property name="constraints" typeID="Pint" value="V0"/>
+                    </Component>
+                    <Component componentID="480" typeID="Cjavax.microedition.lcdui.ChoiceGroup">
+                        <Property name="instanceName" typeID="Pjava.lang.String" value="VchGrSenderName"/>
+                        <Property name="codeGenerated" typeID="Pboolean" value="Vtrue"/>
+                        <Property name="label" typeID="Pjava.lang.String" value="VAls Absender verwenden:"/>
+                        <Property name="itemCommandListener" typeID="C#ItemCommandListener" value="R17"/>
+                        <Property name="choiceType" typeID="Pint" value="V1"/>
+                        <Property name="elements" typeID="1C#ChoiceElement" value="A2:4_R4814_R482"/>
+                        <Component componentID="481" typeID="C#ChoiceElement">
+                            <Property name="string" typeID="Pjava.lang.String" value="VMeine Mobil-Telefonnummer"/>
+                        </Component>
+                        <Component componentID="482" typeID="C#ChoiceElement">
+                            <Property name="string" typeID="Pjava.lang.String" value="VText als Absender"/>
+                        </Component>
+                    </Component>
+                    <Component componentID="483" typeID="Cjavax.microedition.lcdui.TextField">
+                        <Property name="instanceName" typeID="Pjava.lang.String" value="VtxtFieldSenderName"/>
+                        <Property name="codeGenerated" typeID="Pboolean" value="Vtrue"/>
+                        <Property name="label" typeID="Pjava.lang.String" value="VAbsender-Text:"/>
+                        <Property name="itemCommandListener" typeID="C#ItemCommandListener" value="R17"/>
+                        <Property name="text" typeID="Pjava.lang.String" value="V"/>
                         <Property name="maxSize" typeID="Pint" value="V32"/>
                         <Property name="constraints" typeID="Pint" value="V0"/>
                     </Component>
@@ -1263,44 +1173,42 @@
         </Component>
     </Document>
     <FlowScene version="1">
-        <Node componentID="400" descriptorID="componentNode400" x="803" y="1132"/>
-        <Node componentID="423" descriptorID="componentNode423" x="50" y="50"/>
-        <Node componentID="411" descriptorID="componentNode411" x="1030" y="1210"/>
-        <Node componentID="281" descriptorID="componentNode281" x="1733" y="861"/>
-        <Node componentID="367" descriptorID="componentNode367" x="2333" y="1722"/>
-        <Node componentID="178" descriptorID="componentNode178" x="1482" y="1174"/>
-        <Node componentID="378" descriptorID="componentNode378" x="2042" y="1552"/>
-        <Node componentID="295" descriptorID="componentNode295" x="507" y="1174"/>
-        <Node componentID="397" descriptorID="componentNode397" x="829" y="1244"/>
-        <Node componentID="248" descriptorID="componentNode248" x="1733" y="1323"/>
-        <Node componentID="287" descriptorID="componentNode287" x="741" y="861"/>
-        <Node componentID="160" descriptorID="componentNode160" x="869" y="552"/>
-        <Node componentID="217" descriptorID="componentNode217" x="262" y="861"/>
-        <Node componentID="439" descriptorID="componentNode439" x="95" y="563"/>
-        <Node componentID="177" descriptorID="componentNode177" x="1253" y="1323"/>
-        <Node componentID="179" descriptorID="componentNode179" x="1004" y="712"/>
-        <Node componentID="321" descriptorID="componentNode321" x="34" y="1552"/>
-        <Node componentID="91" descriptorID="componentNode91" x="5" y="444"/>
-        <Node componentID="301" descriptorID="componentNode301" x="262" y="1323"/>
-        <Node componentID="455" descriptorID="componentNode455" x="2082" y="1417"/>
-        <Node componentID="467" descriptorID="componentNode467" x="987" y="264"/>
-        <Node componentID="116" descriptorID="componentNode116" x="1005" y="1174"/>
-        <Node componentID="349" descriptorID="componentNode349" x="1254" y="500"/>
-        <Node componentID="340" descriptorID="componentNode340" x="1482" y="1552"/>
-        <Node componentID="458" descriptorID="componentNode458" x="2082" y="1480"/>
-        <Node componentID="165" descriptorID="componentNode165" x="1256" y="861"/>
-        <Node componentID="2" descriptorID="componentNode2" x="507" y="351"/>
-        <Node componentID="318" descriptorID="componentNode318" x="507" y="1552"/>
-        <Node componentID="315" descriptorID="componentNode315" x="507" y="712"/>
-        <Node componentID="47" descriptorID="componentNode47" x="759" y="31"/>
-        <Node componentID="473" descriptorID="componentNode473" x="757" y="285"/>
-        <Node componentID="310" descriptorID="componentNode310" x="34" y="1174"/>
-        <Node componentID="90" descriptorID="componentNode90" x="262" y="181"/>
-        <Node componentID="460" descriptorID="componentNode460" x="2083" y="1448"/>
-        <Node componentID="336" descriptorID="componentNode336" x="640" y="1347"/>
-        <Node componentID="430" descriptorID="componentNode430" x="246" y="450"/>
-        <Node componentID="14" descriptorID="componentNode14" x="625" y="498"/>
-        <Node componentID="406" descriptorID="componentNode406" x="1030" y="1303"/>
-        <Node componentID="330" descriptorID="componentNode330" x="741" y="1722"/>
+        <Node componentID="467" descriptorID="componentNode467" x="1883" y="1153"/>
+        <Node componentID="165" descriptorID="componentNode165" x="2306" y="882"/>
+        <Node componentID="439" descriptorID="componentNode439" x="815" y="1153"/>
+        <Node componentID="321" descriptorID="componentNode321" x="3401" y="882"/>
+        <Node componentID="14" descriptorID="componentNode14" x="1356" y="649"/>
+        <Node componentID="116" descriptorID="componentNode116" x="2607" y="1153"/>
+        <Node componentID="473" descriptorID="componentNode473" x="1883" y="649"/>
+        <Node componentID="367" descriptorID="componentNode367" x="2306" y="500"/>
+        <Node componentID="310" descriptorID="componentNode310" x="2842" y="1621"/>
+        <Node componentID="295" descriptorID="componentNode295" x="3151" y="1493"/>
+        <Node componentID="423" descriptorID="componentNode423" x="1122" y="122"/>
+        <Node componentID="287" descriptorID="componentNode287" x="2842" y="1323"/>
+        <Node componentID="281" descriptorID="componentNode281" x="2842" y="882"/>
+        <Node componentID="160" descriptorID="componentNode160" x="1671" y="882"/>
+        <Node componentID="430" descriptorID="componentNode430" x="1356" y="1153"/>
+        <Node componentID="349" descriptorID="componentNode349" x="1122" y="882"/>
+        <Node componentID="47" descriptorID="componentNode47" x="1883" y="313"/>
+        <Node componentID="315" descriptorID="componentNode315" x="2607" y="1493"/>
+        <Node componentID="336" descriptorID="componentNode336" x="34" y="500"/>
+        <Node componentID="455" descriptorID="componentNode455" x="296" y="313"/>
+        <Node componentID="178" descriptorID="componentNode178" x="2607" y="649"/>
+        <Node componentID="318" descriptorID="componentNode318" x="3401" y="1323"/>
+        <Node componentID="378" descriptorID="componentNode378" x="815" y="313"/>
+        <Node componentID="406" descriptorID="componentNode406" x="1356" y="313"/>
+        <Node componentID="217" descriptorID="componentNode217" x="34" y="122"/>
+        <Node componentID="2" descriptorID="componentNode2" x="1122" y="500"/>
+        <Node componentID="90" descriptorID="componentNode90" x="1671" y="500"/>
+        <Node componentID="458" descriptorID="componentNode458" x="815" y="32"/>
+        <Node componentID="397" descriptorID="componentNode397" x="815" y="649"/>
+        <Node componentID="248" descriptorID="componentNode248" x="558" y="122"/>
+        <Node componentID="400" descriptorID="componentNode400" x="296" y="1153"/>
+        <Node componentID="330" descriptorID="componentNode330" x="3633" y="1153"/>
+        <Node componentID="91" descriptorID="componentNode91" x="558" y="882"/>
+        <Node componentID="340" descriptorID="componentNode340" x="296" y="649"/>
+        <Node componentID="301" descriptorID="componentNode301" x="3151" y="1153"/>
+        <Node componentID="411" descriptorID="componentNode411" x="558" y="500"/>
+        <Node componentID="460" descriptorID="componentNode460" x="296" y="32"/>
     </FlowScene>
 </VisualDesign>
