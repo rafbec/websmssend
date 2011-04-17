@@ -94,7 +94,7 @@ public class UserAccountManager extends StorageManager {
      */
     public UserAccount getUserAccount(int number) {
         if (userAccounts != null) {
-            if (number < userAccounts.size()) {
+            if (number < userAccounts.size() && number >=0) {
                 return (UserAccount) userAccounts.elementAt(number);
             }
         }
