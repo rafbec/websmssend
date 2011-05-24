@@ -40,8 +40,19 @@ public class Update {
      * The URL to the text file in which the most current version number is
      * stored.
      */
+//#if DefaultConfiguration
     private static final String CURRENT_VERSION_URL =
-            "http://websmssend.googlecode.com/svn/trunk/webSMSsend/WebSMSsend/current_version.txt";
+            "http://websmssend.googlecode.com/svn/trunk/Current_Version_Default.txt";
+//#endif
+//#if OviStore
+//#     private static final String CURRENT_VERSION_URL =
+//#             "http://websmssend.googlecode.com/svn/trunk/Current_Version_OviStore.txt";
+//#endif
+//#if Test
+//#     private static final String CURRENT_VERSION_URL =
+//#             "http://websmssend.googlecode.com/svn/trunk/Current_Version_Test.txt";
+//#endif
+
 
     private static String currentVersion = null;
     private static String buildURL = null;
