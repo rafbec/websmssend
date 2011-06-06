@@ -353,8 +353,17 @@ public class GMX extends SmsConnector {
             boolean senderTxt = (!senderName.equals(""));
 
             params.put("customer_id", customerID);
+
+            // sendPackage("LOAD_SMS_HISTORY", "1.00", params, false);
+
             params.put("receivers", "\\<TBL ROWS=\"1\" COLS=\"3\"\\>receiver_id\\\\;receiver_name\\\\;receiver_number\\\\;1\\\\;Bla\\\\;" + smsRecv + "\\\\;\\</TBL\\>");
             params.put("sms_text", maskSpecialChars(sms.getSmsText()));
+            // send_option=sms sends a regular SMS
+            // send_option=flash sends a flash SMS
+            // send_option=<anything else> seems to not send an SMS,
+            //   at least send_option=test; anyway, the attempt is recognized in
+            //   the SMS history
+            // params.put("send_option", (sms.isSimulation()) ? "test" : "sms");
             params.put("send_option", "sms");
             params.put("sms_sender", (senderTxt) ? senderName : senderPhoneNumber);
             if (senderTxt) {
