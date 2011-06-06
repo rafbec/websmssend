@@ -1093,8 +1093,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         if (txtFieldPhoneNumber == null) {//GEN-END:|156-getter|0|156-preInit
             // write pre-init user code here
             txtFieldPhoneNumber = new TextField("Empf\u00E4nger (Handynummer):", null, 32, TextField.PHONENUMBER);//GEN-BEGIN:|156-getter|1|156-postInit
-            txtFieldPhoneNumber.setLayout(ImageItem.LAYOUT_LEFT);
-            txtFieldPhoneNumber.setPreferredSize(-1, -1);//GEN-END:|156-getter|1|156-postInit
+            txtFieldPhoneNumber.setLayout(ImageItem.LAYOUT_LEFT);//GEN-END:|156-getter|1|156-postInit
             // write post-init user code here
         }//GEN-BEGIN:|156-getter|2|
         return txtFieldPhoneNumber;
