@@ -484,9 +484,9 @@ public class GMX extends SmsConnector {
         
         connection.setRequestMethod(HttpConnection.POST);
         connection.setRequestProperty("Accept", "*/*");
-        connection.setRequestProperty("Content-Type", "text/plain");
-        connection.setRequestProperty("Content-Encoding", "wr-cs");
         connection.setRequestProperty("User-Agent", "Mozilla/3.0 (compatible)");
+        connection.setRequestProperty("Content-Encoding", "wr-cs");
+        connection.setRequestProperty("Content-Type", "text/plain");
 
         //#if Test
 //#         // Output only on developer site, message contains sensitive data
