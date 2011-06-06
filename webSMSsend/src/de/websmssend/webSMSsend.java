@@ -41,7 +41,7 @@ import javax.microedition.midlet.*;
 import org.netbeans.microedition.lcdui.WaitScreen;
 import org.netbeans.microedition.util.SimpleCancellableTask;
 
-public class webSMSsend extends MIDlet implements CommandListener, IGui, IPhoneNumberPickerObserver {
+public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneNumberPickerObserver {
 
     public static final String MESSAGE_TEXTFIELD_LABEL = "0 (0 SMS)";
     //FOR DEBUG ONLY!! SMS will not be sent if true

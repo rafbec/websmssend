@@ -24,7 +24,7 @@
 package de.websmssend.connector.base;
 
 import de.websmssend.storage.IConnectorSettings;
-import de.websmssend.IGui;
+import de.websmssend.IApp;
 
 /**
  *
@@ -35,7 +35,7 @@ public abstract class SmsConnector implements ISmsConnector {
     protected static final String REMAINING_SMS_FIELD = "RemainingSMS";
     protected static final String MAX_FREE_SMS = "MaxFreeSMS";
 
-    protected IGui gui = null;
+    protected IApp gui = null;
     protected int remsms = -1;
     protected int maxfreesms = -1;
     protected ConnectorSpecification specs = new ConnectorSpecification();

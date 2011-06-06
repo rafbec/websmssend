@@ -36,7 +36,7 @@ import javax.microedition.io.HttpConnection;
 import javax.microedition.io.HttpsConnection;
 import javax.microedition.pki.CertificateException;
 import me.regexp.RE;
-import de.websmssend.IGui;
+import de.websmssend.IApp;
 
 
 
@@ -53,7 +53,7 @@ public class NetworkHandler {
     private String password;
     private String content="";
     private String cookie="";
-    private IGui GUI;
+    private IApp GUI;
     private O2 parent;
 
 
@@ -77,7 +77,7 @@ public class NetworkHandler {
         cookie=cookie2;
     }
 
-    public NetworkHandler(String usernameIn, String passwordIn, IGui Debugger, O2 parent) {
+    public NetworkHandler(String usernameIn, String passwordIn, IApp Debugger, O2 parent) {
         username=usernameIn;
         password=passwordIn;
         GUI = Debugger;

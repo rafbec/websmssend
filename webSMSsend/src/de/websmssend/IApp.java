@@ -28,7 +28,7 @@ package de.websmssend;
  * @author Copyright 2011 redrocketracoon@googlemail.com
  */
 
-public interface IGui {
+public interface IApp {
     public void debug(String debugText);
     public void setWaitScreenText(String Text);
 }

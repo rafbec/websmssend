@@ -23,7 +23,7 @@
 
 package de.websmssend.connector.base;
 
-import de.websmssend.IGui;
+import de.websmssend.IApp;
 
 /**
  * SmsData bundles all necessary information for connectors to send an SMS
@@ -33,7 +33,7 @@ public class SmsData {
 
     private String username;
     private String password;
-    private IGui gui;
+    private IApp gui;
     private String smsRecv;
     private String smsText;
     private String senderName;
@@ -49,7 +49,7 @@ public class SmsData {
      * @param senderName
      * @param simulation
      */
-    public SmsData(String username, String password, IGui gui, String smsRecv, String smsText, String senderName, boolean simulation) {
+    public SmsData(String username, String password, IApp gui, String smsRecv, String smsText, String senderName, boolean simulation) {
         this.username = username;
         this.password = password;
         this.gui = gui;
@@ -90,14 +90,14 @@ public class SmsData {
     /**
      * @return the gui
      */
-    public IGui getGui() {
+    public IApp getGui() {
         return gui;
     }
 
     /**
      * @param gui the gui to set
      */
-    public void setGui(IGui gui) {
+    public void setGui(IApp gui) {
         this.gui = gui;
     }
 
