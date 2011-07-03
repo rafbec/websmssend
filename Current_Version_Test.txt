@@ -1,2 +1,2 @@
-0.70.0
-http://websmssend.googlecode.com/files/webSMSsend_0.70.0.jad
+0.80.0
+http://websmssend.googlecode.com/svn/trunk/webSMSsend/WebSMSsend/update.html
