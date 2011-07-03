@@ -754,8 +754,17 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
             } else if (command == WaitScreen.SUCCESS_COMMAND) {//GEN-LINE:|7-commandAction|71|401-preAction
                 if (getUpdateWaitScreen().getTask() != getCheckForUpdateTask()) {
                     getErrorAlert().setTitle("Update fortsetzen");
+                    
+//#if OviStore
+//#                     getErrorAlert().setString("Das System wurde angewiesen, "
+//#                             + "die OviStore-Seite von WebSMSsend im Browser zu öffnen. Falls dies nicht funktionert hat, "
+//#                             + "kann WebSMSsend unter http://store.ovi.com/content/117951 manuell heruntergeladen werden.");
+//#else
                     getErrorAlert().setString("Das System wurde angewiesen, "
-                            + "die aktuellste Version zu installieren.");
+                            + "die aktuellste Version zu installieren. Falls dies nicht funktioniert hat, "
+                            + "kann WebSMSsend unter http://code.google.com/p/websmssend/ manuell heruntergeladen werden.");
+//#endif
+                   
                     debug("Das System wurde angewiesen, "
                             + "die aktuellste Version zu installieren.");
                     switchDisplayable(getErrorAlert(), getMainMenu());
@@ -1970,7 +1979,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         } else {//GEN-LINE:|411-if|3|413-preAction
             getErrorAlert().setTitle("Kein Update verf\u00FCgbar");
             getErrorAlert().setString("Die installierte Version " + getVersion() +
-                    " ist die aktuellste.\n(Verf\u00FCgbar ist "+ currentVersion +")");
+                    " ist aktuell.\n(Verf\u00FCgbar ist "+ currentVersion +")");
             switchDisplayable(getErrorAlert(), getMainMenu());//GEN-LINE:|411-if|4|413-postAction
             errorAlert = null;
         }//GEN-LINE:|411-if|5|411-postIf
