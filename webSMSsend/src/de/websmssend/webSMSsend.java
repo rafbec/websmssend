@@ -157,6 +157,18 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
 //#endif
     }
 
+    private String getChannel(){
+//#if DefaultConfiguration
+        return "Standard";
+//#endif
+//#if OviStore
+//#         return "OviStore";
+//#endif
+//#if Test
+//#         return "Test";
+//#endif
+    }
+
     private String getVersion() {
         return getAppProperty("MIDlet-Version");
     }
@@ -754,7 +766,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
             } else if (command == WaitScreen.SUCCESS_COMMAND) {//GEN-LINE:|7-commandAction|71|401-preAction
                 if (getUpdateWaitScreen().getTask() != getCheckForUpdateTask()) {
                     getErrorAlert().setTitle("Update fortsetzen");
-                    
+
 //#if OviStore
 //#                     getErrorAlert().setString("Das System wurde angewiesen, "
 //#                             + "die OviStore-Seite von WebSMSsend im Browser zu öffnen. Falls dies nicht funktionert hat, "
@@ -764,7 +776,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
                             + "die aktuellste Version zu installieren. Falls dies nicht funktioniert hat, "
                             + "kann WebSMSsend unter http://code.google.com/p/websmssend/ manuell heruntergeladen werden.");
 //#endif
-                   
+
                     debug("Das System wurde angewiesen, "
                             + "die aktuellste Version zu installieren.");
                     switchDisplayable(getErrorAlert(), getMainMenu());
@@ -1057,7 +1069,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
     public Alert getAbout() {
         if (About == null) {//GEN-END:|116-getter|0|116-preInit
             // write pre-init user code here
-            About = new Alert("About", "© 2009 Max H\u00E4nze\n© 2010 Christian Morlok\n© 2010-2011 RedRocket\n© 2011 Schirinowski\nLizenz: GNU GPL 3.0\nVersion: "+getVersion(), null, null);//GEN-BEGIN:|116-getter|1|116-postInit
+            About = new Alert("About", "© 2009 Max H\u00E4nze\n© 2010 Christian Morlok\n© 2010-2011 RedRocket\n© 2011 Schirinowski\nLizenz: GNU GPL 3.0\nVersion: "+getVersion() + " " + getChannel(), null, null);//GEN-BEGIN:|116-getter|1|116-postInit
             About.setTimeout(Alert.FOREVER);//GEN-END:|116-getter|1|116-postInit
             // write post-init user code here
         }//GEN-BEGIN:|116-getter|2|
@@ -2405,7 +2417,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         if (appSettings.isDebug()) {
             StringBuffer props = new StringBuffer();
             props.append("webSMSsend-Version: ");
-            props.append(getVersion());
+            props.append(getVersion() + " " + getChannel());
             props.append("\nSystem properties\nmicroedition.configuration: ");
             props.append(System.getProperty("microedition.configuration"));
             props.append("\nmicroedition.profiles: ");
