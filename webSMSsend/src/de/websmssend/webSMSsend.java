@@ -386,7 +386,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         if (curUserAcc != null) {
             switchDisplayable(null, getSetup());
             loadAccount();
-            loadSenderName();
+            loadConnectorProperties();
         }
     }
 
@@ -394,7 +394,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         curUserAcc = new UserAccount();
         switchDisplayable(null, getSetup());
         loadAccount();
-        loadSenderName();
+        loadConnectorProperties();
     }
 
     /**
@@ -411,9 +411,11 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }
     }
 
-    private void loadSenderName() {
+    private void loadConnectorProperties() {
         initializeSmsConnector(); //makes sure the right connector is loaded
         if (SmsConnector != null) {
+            getTxtFieldPassword().setLabel(getPasswordFieldLabel()); //sets PasswordField label according to the connector
+            
             getChGrSenderName().setSelectedIndex(0, true);
             removeItem(getChGrSenderName(), getSetup());
             removeItem(getTxtFieldSenderName(), getSetup());
@@ -1312,7 +1314,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
                     if (item == getChoiceGroup2()) {
                         if (curUserAcc != null) {
                             curUserAcc.setProvider(getChoiceGroup2().getSelectedIndex());
-                            loadSenderName();
+                            loadConnectorProperties();
                             getTxtFieldPassword().setLabel(getPasswordFieldLabel());
                         }
                     }
