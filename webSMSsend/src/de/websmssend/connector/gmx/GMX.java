@@ -158,10 +158,10 @@ public class GMX extends SmsConnector {
         for (int i = 0; i < checkname.length; i++) {
             if ((checkname[i] >= 'a' && checkname[i] <= 'z') ||
                     (checkname[i] >= 'A' && checkname[i] <= 'Z') ||
-                   checkname[i] == '\u0020' // SPACE
+                    checkname[i] == '\u0020' // SPACE
                     ) {
             } else {
-                throw new Exception("Nur Leerzeichen und Buchstaben ohne Umlaute und ß sind erlaubt!");
+                throw new Exception("Nur Buchstaben (keine Umlaute) und Leerzeichen sind erlaubt!");
             }
         }
     }
