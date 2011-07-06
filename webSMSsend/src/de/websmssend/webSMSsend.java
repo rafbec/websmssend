@@ -2290,7 +2290,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
     public Command getViewContactListCommand() {
         if (viewContactListCommand == null) {//GEN-END:|478-getter|0|478-preInit
             // write pre-init user code here
-            viewContactListCommand = new Command("Telefonbuch", Command.CANCEL, 2);//GEN-LINE:|478-getter|1|478-postInit
+            viewContactListCommand = new Command("Kontakte", Command.CANCEL, 2);//GEN-LINE:|478-getter|1|478-postInit
             // write post-init user code here
         }//GEN-BEGIN:|478-getter|2|
         return viewContactListCommand;
