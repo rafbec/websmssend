@@ -129,12 +129,8 @@ public class O2 extends SmsConnector {
             //#else
             gui.debug("Empf\u00E4nger-Handynummer: " + smsRecv.substring(0, 6) + "*******");
             //#endif
-            url = "https://login.o2online.de/loginRegistration/loginAction"
-                    + ".do?_flowId=" + "login&o2_type=asp&o2_label=login/co"
-                    + "mcenter-login&scheme=http&" + "port=80&server=email."
-                    + "o2online.de&url=%2Fssomanager.osp%3FAPIID" + "%3DAUT"
-                    + "H-WEBSSO%26TargetApp%3D%2Fsms_new.osp%3F%26o2_type%3"
-                    + "Durl" + "%26o2_label%3Dweb2sms-o2online";
+            url = "https://login.o2online.de/auth/login?_flowId=login";
+
             for (int i = 0; i < 2; i++) {
                 try {
                     connection.httpHandler("GET", url, "login.o2online.de", "", true);
@@ -161,48 +157,43 @@ public class O2 extends SmsConnector {
                 }
             }
 
-            String flowExecutionKey;
-
-            flowExecutionKey = connection.getFlowExecutionKey();
-
             gui.setWaitScreenText("Zugangsdaten werden gesendet...");
-            gui.debug("Flow ExecutionKey: " + flowExecutionKey);
-            url = "https://login.o2online.de/loginRegistration/loginAction.do";
-            connection.httpHandler("POST", url, "login.o2online.de", "_flowExecutionKey="
-                    + URLEncoder.encode(flowExecutionKey)
-                    + "&loginName=" + URLEncoder.encode(connection.getUsername().trim())
-                    + "&password=" + URLEncoder.encode(connection.getPassword().trim())
-                    + "&_eventId=login", false);//False
+
+            url = "https://login.o2online.de/auth/;jsessionid=" +
+                    connection.getSessionID()
+                    +"?wicket:interface=:0:loginForm::IFormSubmitListener::";
+
+            connection.httpHandler("POST", url, "login.o2online.de",
+                    "id6_hf_0="+ "&loginName%3AloginName=" + URLEncoder.encode(connection.getUsername().trim())
+                    + "&password%3Apassword=" + URLEncoder.encode(connection.getPassword().trim())
+                    , false);//False
 
             gui.setWaitScreenText("Zugangsdaten werden gepr\u00FCft...");
-            url = "https://email.o2online.de/ssomanager.osp?APIID=AUTH-WEBSSO&"
-                    + "TargetApp=/sms_new.osp%3f&o2_type=url&o2_label=web2sms-o2online";
-            String localCookie = connection.getCookie();
-            connection.httpHandler("GET", url, "email.o2online.de", "", false);//false
 
-            if (localCookie.equals(connection.getCookie())) {
+            url = "https://email.o2online.de/ssomanager.osp?APIID=AUTH-WEBSSO";
+
+            connection.httpHandler("GET", url, "email.o2online.de", "", false);//false
+            gui.debug(connection.getContent());
+            //Check der Zugangsdaten (SSTOKEN wird nur bei richtigen Zugangsdaten übertragen
+            if (connection.getCookie().indexOf("SSOTOKEN") == -1) {
                 Exception ex = new Exception("Zugangsdaten falsch!");
                 throw ex;
             }
             gui.setWaitScreenText("Senden wird vorbereitet...");
             url = "https://email.o2online.de/smscenter_new.osp?Autocompletion=1&MsgContentID=-1";
-            long starttime = System.currentTimeMillis();
-            connection.httpHandler("GET", url, "email.o2online.de", "", true);
-            long httphandlertime = System.currentTimeMillis() - starttime;
-            gui.debug("Fertig mit connection.httpHandler, Dauer: " + httphandlertime + " ms");
-            //System.out.println(connection.getContent()+"\n\n\n");
-            String postRequest = "";
-            gui.setWaitScreenText("SMS wird gesendet...");
 
+            connection.httpHandler("GET", url, "email.o2online.de", "", true);
+
+            
 
             //Build SMS send request and get remaining SMS.
-
+            gui.setWaitScreenText("SMS wird gesendet...");
             String[] returnValue;
-            starttime = System.currentTimeMillis();
+            String postRequest = "";
             returnValue = connection.getSendPostRequest(true, SenderMode); //Sendermode: 0=phone number 1=text
-            gui.debug("Fertig mit getSendPostRequest, Dauer: " + (System.currentTimeMillis() - starttime) + " ms" + "HttpHandler: " + httphandlertime + " ms");
             postRequest = returnValue[0];
-
+            gui.debug("Post-Request: " + postRequest);  
+            
             try {
                 remsms = Integer.parseInt(returnValue[1]);
                 remsms = remsms - countSms(Sms.getSmsText()); //Counting amount of used SMS and subtract from remaining freesms
