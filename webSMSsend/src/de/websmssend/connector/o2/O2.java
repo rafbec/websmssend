@@ -219,7 +219,7 @@ public class O2 extends SmsConnector {
             Thread.sleep(7000);
             throw ex;
         } catch (Exception ex) {
-            gui.setWaitScreenText(ex.toString() + ": " + ex.getMessage());
+            gui.setWaitScreenText(ex.getMessage());
             gui.debug(ex.toString() + ": " + ex.getMessage());
             ex.printStackTrace();
             Thread.sleep(7000);
