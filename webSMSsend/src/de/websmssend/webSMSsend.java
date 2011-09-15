@@ -472,7 +472,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
 
     private void initializeAppSettings() {
         appSettings.setAutoUpdate(true);
-        appSettings.setDebug(false);
+        if (!simulation) {
+            appSettings.setDebug(false);
+        }
         appSettings.setSaveEachCharacter(true);
     }
 
