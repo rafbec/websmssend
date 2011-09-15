@@ -52,6 +52,10 @@ public class Update {
 //#     private static final String CURRENT_VERSION_URL =
 //#             "http://websmssend.googlecode.com/svn/trunk/Current_Version_Test.txt";
 //#endif
+//#if noPIM
+//#     private static final String CURRENT_VERSION_URL =
+//#             "http://websmssend.googlecode.com/svn/trunk/Current_Version_noPIM.txt";
+//#endif
 
 
     private static String currentVersion = null;

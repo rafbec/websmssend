@@ -29,8 +29,10 @@ import de.websmssend.connector.o2.O2;
 import de.websmssend.connector.base.ISmsConnector;
 import de.websmssend.connector.base.Properties;
 import de.websmssend.connector.base.SmsData;
+//#if !noPIM
 import de.websmssend.contactlist.IPhoneNumberPickerObserver;
 import de.websmssend.contactlist.ReadContactLists;
+//#endif
 import de.websmssend.storage.AppSettings;
 import de.websmssend.storage.AppSettingsManager;
 import de.websmssend.storage.UserAccount;
@@ -41,8 +43,11 @@ import javax.microedition.midlet.*;
 import org.netbeans.microedition.lcdui.WaitScreen;
 import org.netbeans.microedition.util.SimpleCancellableTask;
 
+//#if noPIM
+//# public class webSMSsend extends MIDlet implements CommandListener, IApp {
+//#else
 public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneNumberPickerObserver {
-
+//#endif
     public static final String MESSAGE_TEXTFIELD_LABEL = "0 (0 SMS)";
     //FOR DEBUG ONLY!! SMS will not be sent if true
     public static boolean simulation = false;
@@ -65,8 +70,10 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
     private UserAccount curUserAcc;
     private AppSettingsManager appSettingsManager;
     private AppSettings appSettings;
+    //#if !noPIM
     //ContactListViewer
     private ReadContactLists contactListViewer;
+    //#endif
     //if true setup Display jumps to MainMenu (needed on first start or when no accounts available)
     boolean jumpToMainMenu= false;
 
@@ -166,6 +173,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
 //#endif
 //#if Test
 //#         return "Test";
+//#endif
+//#if noPIM
+//#         return "noPIM";
 //#endif
     }
 
@@ -590,11 +600,13 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
             } else if (command == viewContactListCommand) {//GEN-LINE:|7-commandAction|17|479-preAction
                 // write pre-action user code here
 //GEN-LINE:|7-commandAction|18|479-postAction
+                //#if !noPIM
                 // write post-action user code here
                 if (contactListViewer == null){
                     contactListViewer = new ReadContactLists(this, getMainMenu(), this);
                 }
                 switchDisplayable(null, contactListViewer);
+                //#endif
             } else if (command == writeSMS) {//GEN-LINE:|7-commandAction|19|29-preAction
                 debug("Senden pressed");
                 resumeMode = false;
@@ -863,6 +875,10 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
             MainMenu.addCommand(getHelpCommand());
             MainMenu.setCommandListener(this);//GEN-END:|14-getter|1|14-postInit
             // write post-init user code here
+            //#if noPIM
+//#             MainMenu.removeCommand(getViewContactListCommand());
+            //#endif
+            
             ItemStateListener listener = new ItemStateListener() {
 
                 public void itemStateChanged(Item item) {
