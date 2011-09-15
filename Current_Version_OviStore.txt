@@ -1,2 +1,2 @@
-0.71.1
+0.71.0
 http://store.ovi.com/content/117951
