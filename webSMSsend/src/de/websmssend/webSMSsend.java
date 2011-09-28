@@ -2426,6 +2426,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
                 System.out.println(currentTime + ": " + debugText);
             } catch (Exception ex) {
                 getDebug().setString("Textbox voll: " + getDebug().size() + " Zeichen --> l\u00F6sche Inhalt\n");
+                debugSystemProperties();
             }
         }
     }
