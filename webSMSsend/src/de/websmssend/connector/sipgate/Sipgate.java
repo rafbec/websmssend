@@ -48,15 +48,8 @@ import javax.microedition.pki.CertificateException;
  */
 public class Sipgate extends SmsConnector {
     
-    
-    
     /** Target URL for XML-RPC Requests */
     protected static final String SIPGATEAPI_TARGET="https://samurai.sipgate.net/RPC2";
-    
-    /* Templates for testing purposes only*/
-    static String strXmlGetOwnUri = "<?xml version=\"1.0\"?>\r\n<methodCall><methodName>samurai.OwnUriListGet</methodName></methodCall>\r\n\r\n";
-    static String strXmlSendSms = "<?xml version=\"1.0\"?>\r\n<methodCall><methodName>samurai.SessionInitiate</methodName><params><param><value><struct><member><name>Content</name><value><string>It works! üäöß</string></value></member><member><name>RemoteUri</name><value><string>sip:491701404444@sipgate.net</string></value></member><member><name>TOS</name><value><string>text</string></value></member></struct></value></param></params></methodCall>\r\n\r\n";
-    static String strXmlSendSmsPlus = "<?xml version=\"1.0\"?>\r\n<methodCall><methodName>samurai.SessionInitiate</methodName><params><param><value><struct><member><name>Content</name><value><string>It works! üäöß deux</string></value></member><member><name>RemoteUri</name><value><string>sip:+491701404444@sipgate.net</string></value></member><member><name>TOS</name><value><string>text</string></value></member></struct></value></param></params></methodCall>\r\n\r\n";
    
     /** Tokens for generation of XMLRPC Message samurai.sessionInitiate */ 
     static String[] strXmlSendTokens = new String[]
