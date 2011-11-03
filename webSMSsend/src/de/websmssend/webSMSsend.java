@@ -5,6 +5,7 @@ Copyright 2009 Max Hänze --- maximum.blogsite.org
 Copyright 2010 Christian Morlok --- cmorlok.de
 modifiziert 2010 von RedRocket ---
 modifiziert 2011 von schirinowski@gmail.com
+modifiziert 2011 von manfred dreese
 This file is part of webSMSsend.
 
 webSMSsend is free software: you can redistribute it and/or modify
@@ -26,6 +27,7 @@ package de.websmssend;
 
 import de.websmssend.connector.gmx.GMX;
 import de.websmssend.connector.o2.O2;
+import de.websmssend.connector.sipgate.Sipgate;
 import de.websmssend.connector.base.ISmsConnector;
 import de.websmssend.connector.base.Properties;
 import de.websmssend.connector.base.SmsData;
@@ -77,7 +79,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
     //if true setup Display jumps to MainMenu (needed on first start or when no accounts available)
     boolean jumpToMainMenu= false;
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Fields ">//GEN-BEGIN:|fields|0|
+//<editor-fold defaultstate="collapsed" desc=" Generated Fields ">//GEN-BEGIN:|fields|0|
     private java.util.Hashtable __previousDisplayables = new java.util.Hashtable();
     private Command exitCommand;
     private Command goToSettings;
@@ -150,7 +152,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
     private Font smallFont;
     private SimpleCancellableTask checkForUpdateTask;
     private Image updateIcon;
-    //</editor-fold>//GEN-END:|fields|0|
+//</editor-fold>//GEN-END:|fields|0|
 
     /**
      * webSMSsend's constructor.
@@ -242,11 +244,25 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
              }
          } else {
              //set correct SMS-Provider
-             if (curUserAcc.getProvider() == 0) {
-                 SmsConnector = new O2();
-             } else {
-                 SmsConnector = new GMX();
+             switch(curUserAcc.getProvider())
+             {
+                 case 0:
+                     SmsConnector = new O2();
+                     break;
+                     
+                 case 1:
+                     SmsConnector = new GMX();
+                     break;
+                     
+                 case 2:
+                     SmsConnector = new Sipgate();
+                     break;
+                     
+                 default:
+                     SmsConnector = new GMX();
+                     break;
              }
+             
              SmsConnector.setConnectorSettings(curUserAcc.getConnectorSettings());
 
              if (getStringItem1() != null) {
@@ -452,7 +468,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
     }
 
     //</editor-fold>
-    //<editor-fold defaultstate="collapsed" desc=" Generated Methods ">//GEN-BEGIN:|methods|0|
+//<editor-fold defaultstate="collapsed" desc=" Generated Methods ">//GEN-BEGIN:|methods|0|
     /**
      * Switches a display to previous displayable of the current displayable.
      * The <code>display</code> instance is obtain from the <code>getDisplay</code> method.
@@ -466,11 +482,11 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
             }
         }
     }
-    //</editor-fold>//GEN-END:|methods|0|
+//</editor-fold>//GEN-END:|methods|0|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Method: initialize ">//GEN-BEGIN:|0-initialize|0|0-preInitialize
+//<editor-fold defaultstate="collapsed" desc=" Generated Method: initialize ">//GEN-BEGIN:|0-initialize|0|0-preInitialize
     /**
-     * Initilizes the application.
+     * Initializes the application.
      * It is called only once when the MIDlet is started. The method is called before the <code>startMIDlet</code> method.
      */
     private void initialize() {//GEN-END:|0-initialize|0|0-preInitialize
@@ -478,7 +494,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
 //GEN-LINE:|0-initialize|1|0-postInitialize
         // write post-initialize user code here
     }//GEN-BEGIN:|0-initialize|2|
-    //</editor-fold>//GEN-END:|0-initialize|2|
+//</editor-fold>//GEN-END:|0-initialize|2|
 
     private void initializeAppSettings() {
         appSettings.setAutoUpdate(true);
@@ -488,7 +504,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         appSettings.setSaveEachCharacter(true);
     }
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Method: startMIDlet ">//GEN-BEGIN:|3-startMIDlet|0|3-preAction
+//<editor-fold defaultstate="collapsed" desc=" Generated Method: startMIDlet ">//GEN-BEGIN:|3-startMIDlet|0|3-preAction
     /**
      * Performs an action assigned to the Mobile Device - MIDlet Started point.
      */
@@ -506,9 +522,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
 //GEN-LINE:|3-startMIDlet|1|3-postAction
         debugSystemProperties();
     }//GEN-BEGIN:|3-startMIDlet|2|
-    //</editor-fold>//GEN-END:|3-startMIDlet|2|
+//</editor-fold>//GEN-END:|3-startMIDlet|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Method: resumeMIDlet ">//GEN-BEGIN:|4-resumeMIDlet|0|4-preAction
+//<editor-fold defaultstate="collapsed" desc=" Generated Method: resumeMIDlet ">//GEN-BEGIN:|4-resumeMIDlet|0|4-preAction
     /**
      * Performs an action assigned to the Mobile Device - MIDlet Resumed point.
      */
@@ -517,9 +533,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
 //GEN-LINE:|4-resumeMIDlet|1|4-postAction
         // write post-action user code here
     }//GEN-BEGIN:|4-resumeMIDlet|2|
-    //</editor-fold>//GEN-END:|4-resumeMIDlet|2|
+//</editor-fold>//GEN-END:|4-resumeMIDlet|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Method: switchDisplayable ">//GEN-BEGIN:|5-switchDisplayable|0|5-preSwitch
+//<editor-fold defaultstate="collapsed" desc=" Generated Method: switchDisplayable ">//GEN-BEGIN:|5-switchDisplayable|0|5-preSwitch
     /**
      * Switches a current displayable in a display. The <code>display</code> instance is taken from <code>getDisplay</code> method. This method is used by all actions in the design for switching displayable.
      * @param alert the Alert which is temporarily set to the display; if <code>null</code>, then <code>nextDisplayable</code> is set immediately
@@ -529,7 +545,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         // write pre-switch user code here
         Display display = getDisplay();//GEN-BEGIN:|5-switchDisplayable|1|5-postSwitch
         Displayable __currentDisplayable = display.getCurrent();
-        if (__currentDisplayable != null  &&  nextDisplayable != null) {
+        if (__currentDisplayable != null && nextDisplayable != null) {
             __previousDisplayables.put(nextDisplayable, __currentDisplayable);
         }
         if (alert == null) {
@@ -539,9 +555,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-END:|5-switchDisplayable|1|5-postSwitch
         // write post-switch user code here
     }//GEN-BEGIN:|5-switchDisplayable|2|
-    //</editor-fold>//GEN-END:|5-switchDisplayable|2|
+//</editor-fold>//GEN-END:|5-switchDisplayable|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Method: commandAction for Displayables ">//GEN-BEGIN:|7-commandAction|0|7-preCommandAction
+//<editor-fold defaultstate="collapsed" desc=" Generated Method: commandAction for Displayables ">//GEN-BEGIN:|7-commandAction|0|7-preCommandAction
     /**
      * Called by a system to indicated that a command has been invoked on a particular displayable.
      * @param command the Command that was invoked
@@ -552,7 +568,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         if (displayable == Debug) {//GEN-BEGIN:|7-commandAction|1|294-preAction
             if (command == Clear) {//GEN-END:|7-commandAction|1|294-preAction
                 // write pre-action user code here
-                getDebug().setString(getDebug().size() +" Zeichen gel\u00F6scht");//GEN-LINE:|7-commandAction|2|294-postAction
+                getDebug().setString(getDebug().size() + " Zeichen gel\u00F6scht");//GEN-LINE:|7-commandAction|2|294-postAction
                 // write post-action user code here
             } else if (command == SendEmail) {//GEN-LINE:|7-commandAction|3|298-preAction
                 // write pre-action user code here
@@ -837,12 +853,12 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-END:|7-commandAction|85|7-postCommandAction
         // write post-action user code here
     }//GEN-BEGIN:|7-commandAction|86|
-    //</editor-fold>//GEN-END:|7-commandAction|86|
+//</editor-fold>//GEN-END:|7-commandAction|86|
 
 
 
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitCommand ">//GEN-BEGIN:|18-getter|0|18-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitCommand ">//GEN-BEGIN:|18-getter|0|18-preInit
     /**
      * Returns an initiliazed instance of exitCommand component.
      * @return the initialized component instance
@@ -855,9 +871,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|18-getter|2|
         return exitCommand;
     }
-    //</editor-fold>//GEN-END:|18-getter|2|
+//</editor-fold>//GEN-END:|18-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: MainMenu ">//GEN-BEGIN:|14-getter|0|14-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: MainMenu ">//GEN-BEGIN:|14-getter|0|14-preInit
     /**
      * Returns an initiliazed instance of MainMenu component.
      * @return the initialized component instance
@@ -865,7 +881,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
     public Form getMainMenu() {
         if (MainMenu == null) {//GEN-END:|14-getter|0|14-preInit
 
-            MainMenu = new Form("webSMSsend", new Item[] { getTxtFieldPhoneNumber(), getTxtFieldSmsText(), getStringItem1() });//GEN-BEGIN:|14-getter|1|14-postInit
+            MainMenu = new Form("webSMSsend", new Item[]{getTxtFieldPhoneNumber(), getTxtFieldSmsText(), getStringItem1()});//GEN-BEGIN:|14-getter|1|14-postInit
             MainMenu.addCommand(getExitCommand());
             MainMenu.addCommand(getWriteSMS());
             MainMenu.addCommand(getViewContactListCommand());
@@ -901,9 +917,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|14-getter|2|
         return MainMenu;
     }
-    //</editor-fold>//GEN-END:|14-getter|2|
+//</editor-fold>//GEN-END:|14-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: goToSettings ">//GEN-BEGIN:|24-getter|0|24-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: goToSettings ">//GEN-BEGIN:|24-getter|0|24-preInit
     /**
      * Returns an initiliazed instance of goToSettings component.
      * @return the initialized component instance
@@ -916,9 +932,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|24-getter|2|
         return goToSettings;
     }
-    //</editor-fold>//GEN-END:|24-getter|2|
+//</editor-fold>//GEN-END:|24-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: writeSMS ">//GEN-BEGIN:|28-getter|0|28-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: writeSMS ">//GEN-BEGIN:|28-getter|0|28-preInit
     /**
      * Returns an initiliazed instance of writeSMS component.
      * @return the initialized component instance
@@ -931,9 +947,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|28-getter|2|
         return writeSMS;
     }
-    //</editor-fold>//GEN-END:|28-getter|2|
+//</editor-fold>//GEN-END:|28-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: back ">//GEN-BEGIN:|33-getter|0|33-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: back ">//GEN-BEGIN:|33-getter|0|33-preInit
     /**
      * Returns an initiliazed instance of back component.
      * @return the initialized component instance
@@ -946,9 +962,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|33-getter|2|
         return back;
     }
-    //</editor-fold>//GEN-END:|33-getter|2|
+//</editor-fold>//GEN-END:|33-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: waitScreen ">//GEN-BEGIN:|47-getter|0|47-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: waitScreen ">//GEN-BEGIN:|47-getter|0|47-preInit
     /**
      * Returns an initiliazed instance of waitScreen component.
      * @return the initialized component instance
@@ -969,7 +985,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|47-getter|2|
         return waitScreen;
     }
-    //</editor-fold>//GEN-END:|47-getter|2|
+//</editor-fold>//GEN-END:|47-getter|2|
 
 
 
@@ -977,7 +993,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
 
 
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommand ">//GEN-BEGIN:|84-getter|0|84-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommand ">//GEN-BEGIN:|84-getter|0|84-preInit
     /**
      * Returns an initiliazed instance of okCommand component.
      * @return the initialized component instance
@@ -990,9 +1006,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|84-getter|2|
         return okCommand;
     }
-    //</editor-fold>//GEN-END:|84-getter|2|
+//</editor-fold>//GEN-END:|84-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: notSend ">//GEN-BEGIN:|90-getter|0|90-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: notSend ">//GEN-BEGIN:|90-getter|0|90-preInit
     /**
      * Returns an initiliazed instance of notSend component.
      * @return the initialized component instance
@@ -1015,9 +1031,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|90-getter|2|
         return notSend;
     }
-    //</editor-fold>//GEN-END:|90-getter|2|
+//</editor-fold>//GEN-END:|90-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: smsSend ">//GEN-BEGIN:|91-getter|0|91-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: smsSend ">//GEN-BEGIN:|91-getter|0|91-preInit
     /**
      * Returns an initiliazed instance of smsSend component.
      * @return the initialized component instance
@@ -1025,7 +1041,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
     public Alert getSmsSend() {
         if (smsSend == null) {//GEN-END:|91-getter|0|91-preInit
             // write pre-init user code here
-            smsSend = new Alert("Senden erfolgreich", "SMS gesendet\n"+getRemSMSText(), null, null);//GEN-BEGIN:|91-getter|1|91-postInit
+            smsSend = new Alert("Senden erfolgreich", "SMS gesendet\n" + getRemSMSText(), null, null);//GEN-BEGIN:|91-getter|1|91-postInit
             smsSend.addCommand(getOkCommand2());
             smsSend.addCommand(getExitCommand2());
             smsSend.setCommandListener(this);
@@ -1034,9 +1050,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|91-getter|2|
         return smsSend;
     }
-    //</editor-fold>//GEN-END:|91-getter|2|
+//</editor-fold>//GEN-END:|91-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitCommand1 ">//GEN-BEGIN:|98-getter|0|98-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitCommand1 ">//GEN-BEGIN:|98-getter|0|98-preInit
     /**
      * Returns an initiliazed instance of exitCommand1 component.
      * @return the initialized component instance
@@ -1049,9 +1065,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|98-getter|2|
         return exitCommand1;
     }
-    //</editor-fold>//GEN-END:|98-getter|2|
+//</editor-fold>//GEN-END:|98-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommand2 ">//GEN-BEGIN:|106-getter|0|106-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommand2 ">//GEN-BEGIN:|106-getter|0|106-preInit
     /**
      * Returns an initiliazed instance of okCommand2 component.
      * @return the initialized component instance
@@ -1064,9 +1080,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|106-getter|2|
         return okCommand2;
     }
-    //</editor-fold>//GEN-END:|106-getter|2|
+//</editor-fold>//GEN-END:|106-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommand3 ">//GEN-BEGIN:|111-getter|0|111-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommand3 ">//GEN-BEGIN:|111-getter|0|111-preInit
     /**
      * Returns an initiliazed instance of okCommand3 component.
      * @return the initialized component instance
@@ -1079,9 +1095,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|111-getter|2|
         return okCommand3;
     }
-    //</editor-fold>//GEN-END:|111-getter|2|
+//</editor-fold>//GEN-END:|111-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: About ">//GEN-BEGIN:|116-getter|0|116-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: About ">//GEN-BEGIN:|116-getter|0|116-preInit
     /**
      * Returns an initiliazed instance of About component.
      * @return the initialized component instance
@@ -1089,15 +1105,15 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
     public Alert getAbout() {
         if (About == null) {//GEN-END:|116-getter|0|116-preInit
             // write pre-init user code here
-            About = new Alert("About", "© 2009 Max H\u00E4nze\n© 2010 Christian Morlok\n© 2010-2011 RedRocket\n© 2011 Schirinowski\nLizenz: GNU GPL 3.0\nVersion: "+getVersion() + " " + getChannel(), null, null);//GEN-BEGIN:|116-getter|1|116-postInit
+            About = new Alert("About", "© 2009 Max H\u00E4nze\n© 2010 Christian Morlok\n© 2010-2011 RedRocket\n© 2011 Schirinowski\n© 2011 Manfred Dreese\nLizenz: GNU GPL 3.0\nVersion: " + getVersion() + " " + getChannel(), null, null);//GEN-BEGIN:|116-getter|1|116-postInit
             About.setTimeout(Alert.FOREVER);//GEN-END:|116-getter|1|116-postInit
             // write post-init user code here
         }//GEN-BEGIN:|116-getter|2|
         return About;
     }
-    //</editor-fold>//GEN-END:|116-getter|2|
+//</editor-fold>//GEN-END:|116-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: task ">//GEN-BEGIN:|140-getter|0|140-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: task ">//GEN-BEGIN:|140-getter|0|140-preInit
     /**
      * Returns an initiliazed instance of task component.
      * @return the initialized component instance
@@ -1107,6 +1123,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
             // write pre-init user code here
             task = new SimpleCancellableTask();//GEN-BEGIN:|140-getter|1|140-execute
             task.setExecutable(new org.netbeans.microedition.util.Executable() {
+
                 public void execute() throws Exception {//GEN-END:|140-getter|1|140-execute
                     sendSMS(recvNB, smsText);
                     if (appSettings.isAutoUpdate() && (!Update.alreadyCheckedForUpdate() || updateAvailable)) {
@@ -1121,11 +1138,11 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|140-getter|3|
         return task;
     }
-    //</editor-fold>//GEN-END:|140-getter|3|
+//</editor-fold>//GEN-END:|140-getter|3|
     //</editor-fold>
     //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtFieldPhoneNumber ">//GEN-BEGIN:|156-getter|0|156-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtFieldPhoneNumber ">//GEN-BEGIN:|156-getter|0|156-preInit
     /**
      * Returns an initiliazed instance of txtFieldPhoneNumber component.
      * @return the initialized component instance
@@ -1139,9 +1156,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|156-getter|2|
         return txtFieldPhoneNumber;
     }
-    //</editor-fold>//GEN-END:|156-getter|2|
+//</editor-fold>//GEN-END:|156-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: nextSettings ">//GEN-BEGIN:|172-getter|0|172-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: nextSettings ">//GEN-BEGIN:|172-getter|0|172-preInit
     /**
      * Returns an initiliazed instance of nextSettings component.
      * @return the initialized component instance
@@ -1154,9 +1171,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|172-getter|2|
         return nextSettings;
     }
-    //</editor-fold>//GEN-END:|172-getter|2|
+//</editor-fold>//GEN-END:|172-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: list ">//GEN-BEGIN:|165-getter|0|165-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: list ">//GEN-BEGIN:|165-getter|0|165-preInit
     /**
      * Returns an initiliazed instance of list component.
      * @return the initialized component instance
@@ -1173,14 +1190,14 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
             list.addCommand(getNextSettings());
             list.addCommand(getBack());
             list.setCommandListener(this);
-            list.setSelectedFlags(new boolean[] { false, false, false, false, false });//GEN-END:|165-getter|1|165-postInit
+            list.setSelectedFlags(new boolean[]{false, false, false, false, false});//GEN-END:|165-getter|1|165-postInit
             // write post-init user code here
         }//GEN-BEGIN:|165-getter|2|
         return list;
     }
-    //</editor-fold>//GEN-END:|165-getter|2|
+//</editor-fold>//GEN-END:|165-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Method: listAction ">//GEN-BEGIN:|165-action|0|165-preAction
+//<editor-fold defaultstate="collapsed" desc=" Generated Method: listAction ">//GEN-BEGIN:|165-action|0|165-preAction
     /**
      * Performs an action assigned to the selected list element in the list component.
      */
@@ -1214,13 +1231,13 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-END:|165-action|11|165-postAction
         // enter post-action user code here
     }//GEN-BEGIN:|165-action|12|
-    //</editor-fold>//GEN-END:|165-action|12|
+//</editor-fold>//GEN-END:|165-action|12|
 
 
 
 
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: optimSettings ">//GEN-BEGIN:|178-getter|0|178-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: optimSettings ">//GEN-BEGIN:|178-getter|0|178-preInit
     /**
      * Returns an initiliazed instance of optimSettings component.
      * @return the initialized component instance
@@ -1228,7 +1245,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
     public Form getOptimSettings() {
         if (optimSettings == null) {//GEN-END:|178-getter|0|178-preInit
             // write pre-init user code here
-            optimSettings = new Form("Optimierung", new Item[] { getChoiceGroup() });//GEN-BEGIN:|178-getter|1|178-postInit
+            optimSettings = new Form("Optimierung", new Item[]{getChoiceGroup()});//GEN-BEGIN:|178-getter|1|178-postInit
             optimSettings.addCommand(getBack());
             optimSettings.addCommand(getOkCommand());
             optimSettings.setCommandListener(this);//GEN-END:|178-getter|1|178-postInit
@@ -1236,13 +1253,13 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|178-getter|2|
         return optimSettings;
     }
-    //</editor-fold>//GEN-END:|178-getter|2|
+//</editor-fold>//GEN-END:|178-getter|2|
 
 
 
 
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: choiceGroup ">//GEN-BEGIN:|204-getter|0|204-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: choiceGroup ">//GEN-BEGIN:|204-getter|0|204-preInit
     /**
      * Returns an initiliazed instance of choiceGroup component.
      * @return the initialized component instance
@@ -1255,14 +1272,14 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
             choiceGroup.append("Debug-Meldungen schreiben", null);
             choiceGroup.append("Automatisch auf Updates pr\u00FCfen", null);
             choiceGroup.setFitPolicy(Choice.TEXT_WRAP_DEFAULT);
-            choiceGroup.setSelectedFlags(new boolean[] { false, false, false });//GEN-END:|204-getter|1|204-postInit
+            choiceGroup.setSelectedFlags(new boolean[]{false, false, false});//GEN-END:|204-getter|1|204-postInit
             // write post-init user code here
         }//GEN-BEGIN:|204-getter|2|
         return choiceGroup;
     }
-    //</editor-fold>//GEN-END:|204-getter|2|
+//</editor-fold>//GEN-END:|204-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: font ">//GEN-BEGIN:|211-getter|0|211-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: font ">//GEN-BEGIN:|211-getter|0|211-preInit
     /**
      * Returns an initiliazed instance of font component.
      * @return the initialized component instance
@@ -1275,9 +1292,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|211-getter|2|
         return font;
     }
-    //</editor-fold>//GEN-END:|211-getter|2|
+//</editor-fold>//GEN-END:|211-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: eingabeLeeren ">//GEN-BEGIN:|212-getter|0|212-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: eingabeLeeren ">//GEN-BEGIN:|212-getter|0|212-preInit
     /**
      * Returns an initiliazed instance of eingabeLeeren component.
      * @return the initialized component instance
@@ -1290,9 +1307,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|212-getter|2|
         return eingabeLeeren;
     }
-    //</editor-fold>//GEN-END:|212-getter|2|
+//</editor-fold>//GEN-END:|212-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: stringItem1 ">//GEN-BEGIN:|215-getter|0|215-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: stringItem1 ">//GEN-BEGIN:|215-getter|0|215-preInit
     /**
      * Returns an initiliazed instance of stringItem1 component.
      * @return the initialized component instance
@@ -1308,9 +1325,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|215-getter|2|
         return stringItem1;
     }
-    //</editor-fold>//GEN-END:|215-getter|2|
+//</editor-fold>//GEN-END:|215-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: setup ">//GEN-BEGIN:|217-getter|0|217-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: setup ">//GEN-BEGIN:|217-getter|0|217-preInit
     /**
      * Returns an initiliazed instance of setup component.
      * @return the initialized component instance
@@ -1318,7 +1335,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
     public Form getSetup() {
         if (setup == null) {//GEN-END:|217-getter|0|217-preInit
             // write pre-init user code here
-            setup = new Form("Setup", new Item[] { getTxtFieldAccountName(), getChoiceGroup2(), getTxtFieldUserName(), getTxtFieldPassword(), getChGrSenderName(), getTxtFieldSenderName() });//GEN-BEGIN:|217-getter|1|217-postInit
+            setup = new Form("Setup", new Item[]{getTxtFieldAccountName(), getChoiceGroup2(), getTxtFieldUserName(), getTxtFieldPassword(), getChGrSenderName(), getTxtFieldSenderName()});//GEN-BEGIN:|217-getter|1|217-postInit
             setup.addCommand(getOkCommand());
             setup.addCommand(getCancelCommand1());
             setup.setCommandListener(this);//GEN-END:|217-getter|1|217-postInit
@@ -1342,9 +1359,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|217-getter|2|
         return setup;
     }
-    //</editor-fold>//GEN-END:|217-getter|2|
+//</editor-fold>//GEN-END:|217-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtFieldPassword ">//GEN-BEGIN:|219-getter|0|219-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtFieldPassword ">//GEN-BEGIN:|219-getter|0|219-preInit
     /**
      * Returns an initiliazed instance of txtFieldPassword component.
      * @return the initialized component instance
@@ -1357,9 +1374,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|219-getter|2|
         return txtFieldPassword;
     }
-    //</editor-fold>//GEN-END:|219-getter|2|
+//</editor-fold>//GEN-END:|219-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: choiceGroup2 ">//GEN-BEGIN:|220-getter|0|220-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: choiceGroup2 ">//GEN-BEGIN:|220-getter|0|220-preInit
     /**
      * Returns an initiliazed instance of choiceGroup2 component.
      * @return the initialized component instance
@@ -1370,16 +1387,18 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
             choiceGroup2 = new ChoiceGroup("Anbieter", Choice.EXCLUSIVE);//GEN-BEGIN:|220-getter|1|220-postInit
             choiceGroup2.append("O2-Internet-Pack", null);
             choiceGroup2.append("GMX", null);
-            choiceGroup2.setSelectedFlags(new boolean[] { false, false });
+            choiceGroup2.append("Sipgate", null);
+            choiceGroup2.setSelectedFlags(new boolean[]{false, false, false});
             choiceGroup2.setFont(0, getFont());
-            choiceGroup2.setFont(1, getFont());//GEN-END:|220-getter|1|220-postInit
+            choiceGroup2.setFont(1, getFont());
+            choiceGroup2.setFont(2, null);//GEN-END:|220-getter|1|220-postInit
             // write post-init user code here
         }//GEN-BEGIN:|220-getter|2|
         return choiceGroup2;
     }
-    //</editor-fold>//GEN-END:|220-getter|2|
+//</editor-fold>//GEN-END:|220-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtFieldUserName ">//GEN-BEGIN:|226-getter|0|226-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtFieldUserName ">//GEN-BEGIN:|226-getter|0|226-preInit
     /**
      * Returns an initiliazed instance of txtFieldUserName component.
      * @return the initialized component instance
@@ -1392,11 +1411,11 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|226-getter|2|
         return txtFieldUserName;
     }
-    //</editor-fold>//GEN-END:|226-getter|2|
+//</editor-fold>//GEN-END:|226-getter|2|
 
 
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: image1 ">//GEN-BEGIN:|244-getter|0|244-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: image1 ">//GEN-BEGIN:|244-getter|0|244-preInit
     /**
      * Returns an initiliazed instance of image1 component.
      * @return the initialized component instance
@@ -1413,12 +1432,12 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|244-getter|3|
         return image1;
     }
-    //</editor-fold>//GEN-END:|244-getter|3|
+//</editor-fold>//GEN-END:|244-getter|3|
     //</editor-fold>
     //</editor-fold>
     //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtFieldSmsText ">//GEN-BEGIN:|247-getter|0|247-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtFieldSmsText ">//GEN-BEGIN:|247-getter|0|247-preInit
     /**
      * Returns an initiliazed instance of txtFieldSmsText component.
      * @return the initialized component instance
@@ -1432,9 +1451,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|247-getter|2|
         return txtFieldSmsText;
     }
-    //</editor-fold>//GEN-END:|247-getter|2|
+//</editor-fold>//GEN-END:|247-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommand5 ">//GEN-BEGIN:|253-getter|0|253-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommand5 ">//GEN-BEGIN:|253-getter|0|253-preInit
     /**
      * Returns an initiliazed instance of okCommand5 component.
      * @return the initialized component instance
@@ -1447,9 +1466,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|253-getter|2|
         return okCommand5;
     }
-    //</editor-fold>//GEN-END:|253-getter|2|
+//</editor-fold>//GEN-END:|253-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: chooseAccount ">//GEN-BEGIN:|248-getter|0|248-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: chooseAccount ">//GEN-BEGIN:|248-getter|0|248-preInit
     /**
      * Returns an initiliazed instance of chooseAccount component.
      * @return the initialized component instance
@@ -1463,14 +1482,14 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
             chooseAccount.addCommand(getEditAccount());
             chooseAccount.addCommand(getDeleteAccount());
             chooseAccount.setCommandListener(this);
-            chooseAccount.setSelectedFlags(new boolean[] {  });//GEN-END:|248-getter|1|248-postInit
+            chooseAccount.setSelectedFlags(new boolean[]{});//GEN-END:|248-getter|1|248-postInit
             // write post-init user code here
         }//GEN-BEGIN:|248-getter|2|
         return chooseAccount;
     }
-    //</editor-fold>//GEN-END:|248-getter|2|
+//</editor-fold>//GEN-END:|248-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Method: chooseAccountAction ">//GEN-BEGIN:|248-action|0|248-preAction
+//<editor-fold defaultstate="collapsed" desc=" Generated Method: chooseAccountAction ">//GEN-BEGIN:|248-action|0|248-preAction
     /**
      * Performs an action assigned to the selected list element in the chooseAccount component.
      */
@@ -1483,7 +1502,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
             initializeSmsConnector();
         }
     }//GEN-BEGIN:|248-action|2|
-    //</editor-fold>//GEN-END:|248-action|2|
+//</editor-fold>//GEN-END:|248-action|2|
 
 
 
@@ -1493,7 +1512,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
 
 
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: BenutzerwahlBestaetigung ">//GEN-BEGIN:|281-getter|0|281-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: BenutzerwahlBestaetigung ">//GEN-BEGIN:|281-getter|0|281-preInit
     /**
      * Returns an initiliazed instance of BenutzerwahlBestaetigung component.
      * @return the initialized component instance
@@ -1501,15 +1520,15 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
     public Alert getBenutzerwahlBestaetigung() {
         if (BenutzerwahlBestaetigung == null) {//GEN-END:|281-getter|0|281-preInit
             // write pre-init user code here
-            BenutzerwahlBestaetigung = new Alert("Benutzerwahl", "Das Benutzerkonto \"" + curUserAcc.getAccountName()  + "\" mit dem Benutzernamen \"" + curUserAcc.getUserName() +"\" wurde aktiviert", null, AlertType.INFO);//GEN-BEGIN:|281-getter|1|281-postInit
+            BenutzerwahlBestaetigung = new Alert("Benutzerwahl", "Das Benutzerkonto \"" + curUserAcc.getAccountName() + "\" mit dem Benutzernamen \"" + curUserAcc.getUserName() + "\" wurde aktiviert", null, AlertType.INFO);//GEN-BEGIN:|281-getter|1|281-postInit
             BenutzerwahlBestaetigung.setTimeout(Alert.FOREVER);//GEN-END:|281-getter|1|281-postInit
             BenutzerwahlBestaetigung.setType(null);
         }//GEN-BEGIN:|281-getter|2|
         return BenutzerwahlBestaetigung;
     }
-    //</editor-fold>//GEN-END:|281-getter|2|
+//</editor-fold>//GEN-END:|281-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: Debug ">//GEN-BEGIN:|287-getter|0|287-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: Debug ">//GEN-BEGIN:|287-getter|0|287-preInit
     /**
      * Returns an initiliazed instance of Debug component.
      * @return the initialized component instance
@@ -1526,9 +1545,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|287-getter|2|
         return Debug;
     }
-    //</editor-fold>//GEN-END:|287-getter|2|
+//</editor-fold>//GEN-END:|287-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: Clear ">//GEN-BEGIN:|293-getter|0|293-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: Clear ">//GEN-BEGIN:|293-getter|0|293-preInit
     /**
      * Returns an initiliazed instance of Clear component.
      * @return the initialized component instance
@@ -1541,9 +1560,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|293-getter|2|
         return Clear;
     }
-    //</editor-fold>//GEN-END:|293-getter|2|
+//</editor-fold>//GEN-END:|293-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: SendEmail ">//GEN-BEGIN:|297-getter|0|297-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: SendEmail ">//GEN-BEGIN:|297-getter|0|297-preInit
     /**
      * Returns an initiliazed instance of SendEmail component.
      * @return the initialized component instance
@@ -1556,9 +1575,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|297-getter|2|
         return SendEmail;
     }
-    //</editor-fold>//GEN-END:|297-getter|2|
+//</editor-fold>//GEN-END:|297-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: startEmailClient ">//GEN-BEGIN:|305-getter|0|305-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: startEmailClient ">//GEN-BEGIN:|305-getter|0|305-preInit
     /**
      * Returns an initiliazed instance of startEmailClient component.
      * @return the initialized component instance
@@ -1571,9 +1590,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|305-getter|2|
         return startEmailClient;
     }
-    //</editor-fold>//GEN-END:|305-getter|2|
+//</editor-fold>//GEN-END:|305-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: SendEmailForm ">//GEN-BEGIN:|301-getter|0|301-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: SendEmailForm ">//GEN-BEGIN:|301-getter|0|301-preInit
     /**
      * Returns an initiliazed instance of SendEmailForm component.
      * @return the initialized component instance
@@ -1581,7 +1600,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
     public Form getSendEmailForm() {
         if (SendEmailForm == null) {//GEN-END:|301-getter|0|301-preInit
             // write pre-init user code here
-            SendEmailForm = new Form("Debug Meldungen versenden", new Item[] { getStringItem3(), getTxtCCemail(), getTxtFehlerbeschreibung() });//GEN-BEGIN:|301-getter|1|301-postInit
+            SendEmailForm = new Form("Debug Meldungen versenden", new Item[]{getStringItem3(), getTxtCCemail(), getTxtFehlerbeschreibung()});//GEN-BEGIN:|301-getter|1|301-postInit
             SendEmailForm.addCommand(getStartEmailClient());
             SendEmailForm.addCommand(getBack());
             SendEmailForm.setCommandListener(this);//GEN-END:|301-getter|1|301-postInit
@@ -1589,9 +1608,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|301-getter|2|
         return SendEmailForm;
     }
-    //</editor-fold>//GEN-END:|301-getter|2|
+//</editor-fold>//GEN-END:|301-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: stringItem3 ">//GEN-BEGIN:|302-getter|0|302-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: stringItem3 ">//GEN-BEGIN:|302-getter|0|302-preInit
     /**
      * Returns an initiliazed instance of stringItem3 component.
      * @return the initialized component instance
@@ -1604,9 +1623,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|302-getter|2|
         return stringItem3;
     }
-    //</editor-fold>//GEN-END:|302-getter|2|
+//</editor-fold>//GEN-END:|302-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtFehlerbeschreibung ">//GEN-BEGIN:|303-getter|0|303-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtFehlerbeschreibung ">//GEN-BEGIN:|303-getter|0|303-preInit
     /**
      * Returns an initiliazed instance of txtFehlerbeschreibung component.
      * @return the initialized component instance
@@ -1619,9 +1638,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|303-getter|2|
         return txtFehlerbeschreibung;
     }
-    //</editor-fold>//GEN-END:|303-getter|2|
+//</editor-fold>//GEN-END:|303-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtCCemail ">//GEN-BEGIN:|304-getter|0|304-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtCCemail ">//GEN-BEGIN:|304-getter|0|304-preInit
     /**
      * Returns an initiliazed instance of txtCCemail component.
      * @return the initialized component instance
@@ -1634,9 +1653,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|304-getter|2|
         return txtCCemail;
     }
-    //</editor-fold>//GEN-END:|304-getter|2|
+//</editor-fold>//GEN-END:|304-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: waitScreen1 ">//GEN-BEGIN:|310-getter|0|310-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: waitScreen1 ">//GEN-BEGIN:|310-getter|0|310-preInit
     /**
      * Returns an initiliazed instance of waitScreen1 component.
      * @return the initialized component instance
@@ -1652,9 +1671,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|310-getter|2|
         return waitScreen1;
     }
-    //</editor-fold>//GEN-END:|310-getter|2|
+//</editor-fold>//GEN-END:|310-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: task1 ">//GEN-BEGIN:|313-getter|0|313-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: task1 ">//GEN-BEGIN:|313-getter|0|313-preInit
     /**
      * Returns an initiliazed instance of task1 component.
      * @return the initialized component instance
@@ -1664,6 +1683,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
             // write pre-init user code here
             task1 = new SimpleCancellableTask();//GEN-BEGIN:|313-getter|1|313-execute
             task1.setExecutable(new org.netbeans.microedition.util.Executable() {
+
                 public void execute() throws Exception {//GEN-END:|313-getter|1|313-execute
                     // write updateTask-execution user code here
                     EmailClient client = new EmailClient(GUI, "d2Vic21zZW5kQGdteC5kZQ==", "ZG5lc3Ntc2Jldw==",
@@ -1679,9 +1699,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|313-getter|3|
         return task1;
     }
-    //</editor-fold>//GEN-END:|313-getter|3|
+//</editor-fold>//GEN-END:|313-getter|3|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: EmailSent ">//GEN-BEGIN:|315-getter|0|315-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: EmailSent ">//GEN-BEGIN:|315-getter|0|315-preInit
     /**
      * Returns an initiliazed instance of EmailSent component.
      * @return the initialized component instance
@@ -1695,9 +1715,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|315-getter|2|
         return EmailSent;
     }
-    //</editor-fold>//GEN-END:|315-getter|2|
+//</editor-fold>//GEN-END:|315-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: EmailNotSent ">//GEN-BEGIN:|318-getter|0|318-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: EmailNotSent ">//GEN-BEGIN:|318-getter|0|318-preInit
     /**
      * Returns an initiliazed instance of EmailNotSent component.
      * @return the initialized component instance
@@ -1711,9 +1731,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|318-getter|2|
         return EmailNotSent;
     }
-    //</editor-fold>//GEN-END:|318-getter|2|
+//</editor-fold>//GEN-END:|318-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: NoEmail ">//GEN-BEGIN:|321-getter|0|321-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: NoEmail ">//GEN-BEGIN:|321-getter|0|321-preInit
     /**
      * Returns an initiliazed instance of NoEmail component.
      * @return the initialized component instance
@@ -1730,9 +1750,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|321-getter|2|
         return NoEmail;
     }
-    //</editor-fold>//GEN-END:|321-getter|2|
+//</editor-fold>//GEN-END:|321-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommand1 ">//GEN-BEGIN:|324-getter|0|324-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommand1 ">//GEN-BEGIN:|324-getter|0|324-preInit
     /**
      * Returns an initiliazed instance of okCommand1 component.
      * @return the initialized component instance
@@ -1745,9 +1765,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|324-getter|2|
         return okCommand1;
     }
-    //</editor-fold>//GEN-END:|324-getter|2|
+//</editor-fold>//GEN-END:|324-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Method: isEmailNotEntered ">//GEN-BEGIN:|330-if|0|330-preIf
+//<editor-fold defaultstate="collapsed" desc=" Generated Method: isEmailNotEntered ">//GEN-BEGIN:|330-if|0|330-preIf
     /**
      * Performs an action assigned to the isEmailNotEntered if-point.
      */
@@ -1764,9 +1784,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-LINE:|330-if|5|330-postIf
         // enter post-if user code here
     }//GEN-BEGIN:|330-if|6|
-    //</editor-fold>//GEN-END:|330-if|6|
+//</editor-fold>//GEN-END:|330-if|6|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Method: charactersCorrect ">//GEN-BEGIN:|336-if|0|336-preIf
+//<editor-fold defaultstate="collapsed" desc=" Generated Method: charactersCorrect ">//GEN-BEGIN:|336-if|0|336-preIf
     /**
      * Performs an action assigned to the charactersCorrect if-point.
      */
@@ -1803,9 +1823,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-LINE:|336-if|5|336-postIf
         // enter post-if user code here
     }//GEN-BEGIN:|336-if|6|
-    //</editor-fold>//GEN-END:|336-if|6|
+//</editor-fold>//GEN-END:|336-if|6|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: WrongCharacter ">//GEN-BEGIN:|340-getter|0|340-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: WrongCharacter ">//GEN-BEGIN:|340-getter|0|340-preInit
     /**
      * Returns an initiliazed instance of WrongCharacter component.
      * @return the initialized component instance
@@ -1819,9 +1839,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|340-getter|2|
         return WrongCharacter;
     }
-    //</editor-fold>//GEN-END:|340-getter|2|
+//</editor-fold>//GEN-END:|340-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: LastSMS ">//GEN-BEGIN:|347-getter|0|347-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: LastSMS ">//GEN-BEGIN:|347-getter|0|347-preInit
     /**
      * Returns an initiliazed instance of LastSMS component.
      * @return the initialized component instance
@@ -1834,12 +1854,12 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|347-getter|2|
         return LastSMS;
     }
-    //</editor-fold>//GEN-END:|347-getter|2|
+//</editor-fold>//GEN-END:|347-getter|2|
 
     //<editor-fold defaultstate="collapsed" desc=" Generated Getter: smallFont ">
     /**
-     * //<editor-fold defaultstate="collapsed" desc=" Generated Getter: smallFont ">//GEN-BEGIN:|351-getter|0|351-preInit
-     * /**
+    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: smallFont ">//GEN-BEGIN:|351-getter|0|351-preInit
+    /**
      * Returns an initiliazed instance of smallFont component.
      * @return the initialized component instance
      */
@@ -1851,9 +1871,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|351-getter|2|
         return smallFont;
     }
-    //</editor-fold>//GEN-END:|351-getter|2|
+//</editor-fold>//GEN-END:|351-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Method: noMoreFreeSmsAvailable ">//GEN-BEGIN:|367-if|0|367-preIf
+//<editor-fold defaultstate="collapsed" desc=" Generated Method: noMoreFreeSmsAvailable ">//GEN-BEGIN:|367-if|0|367-preIf
     /**
      * Performs an action assigned to the noMoreFreeSmsAvailable if-point.
      */
@@ -1871,9 +1891,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-LINE:|367-if|5|367-postIf
         // enter post-if user code here
     }//GEN-BEGIN:|367-if|6|
-    //</editor-fold>//GEN-END:|367-if|6|
+//</editor-fold>//GEN-END:|367-if|6|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: noMoreFreeSmsScreen ">//GEN-BEGIN:|378-getter|0|378-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: noMoreFreeSmsScreen ">//GEN-BEGIN:|378-getter|0|378-preInit
     /**
      * Returns an initiliazed instance of noMoreFreeSmsScreen component.
      * @return the initialized component instance
@@ -1881,22 +1901,23 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
     public Alert getNoMoreFreeSmsScreen() {
         if (noMoreFreeSmsScreen == null) {//GEN-END:|378-getter|0|378-preInit
             // write pre-init user code here
-            noMoreFreeSmsScreen = new Alert("Keine Frei-SMS!", "Es sind keine Frei-SMS mehr vorhanden.\r\n" +//GEN-BEGIN:|378-getter|1|378-postInit
-                    "Soll die SMS trotzdem versendet werden\r\n" +
-                    "oder der Account gewechselt werden?", null, null);
+            noMoreFreeSmsScreen = new Alert("Keine Frei-SMS!", "Es sind keine Frei-SMS mehr vorhanden.\r\n"//GEN-BEGIN:|378-getter|1|378-postInit
+                    + "Soll die SMS trotzdem versendet werden\r\n"
+                    + "oder der Account gewechselt werden?", null, null);
             noMoreFreeSmsScreen.addCommand(getSwitchAccount());
             noMoreFreeSmsScreen.addCommand(getCancelCommand());
             noMoreFreeSmsScreen.addCommand(getOkCommandResumeSendSms());
             noMoreFreeSmsScreen.setCommandListener(this);
-            noMoreFreeSmsScreen.setTimeout(Alert.FOREVER);//GEN-END:|378-getter|1|378-postInit
+            noMoreFreeSmsScreen.setTimeout(Alert.FOREVER);
+//GEN-END:|378-getter|1|378-postInit
             // write post-init user code here
         }//GEN-BEGIN:|378-getter|2|
         return noMoreFreeSmsScreen;
     }
-    //</editor-fold>//GEN-END:|378-getter|2|
+//</editor-fold>//GEN-END:|378-getter|2|
     //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: switchAccount ">//GEN-BEGIN:|380-getter|0|380-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: switchAccount ">//GEN-BEGIN:|380-getter|0|380-preInit
     /**
      * Returns an initiliazed instance of switchAccount component.
      * @return the initialized component instance
@@ -1909,9 +1930,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|380-getter|2|
         return switchAccount;
     }
-    //</editor-fold>//GEN-END:|380-getter|2|
+//</editor-fold>//GEN-END:|380-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: cancelCommand ">//GEN-BEGIN:|382-getter|0|382-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: cancelCommand ">//GEN-BEGIN:|382-getter|0|382-preInit
     /**
      * Returns an initiliazed instance of cancelCommand component.
      * @return the initialized component instance
@@ -1924,9 +1945,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|382-getter|2|
         return cancelCommand;
     }
-    //</editor-fold>//GEN-END:|382-getter|2|
+//</editor-fold>//GEN-END:|382-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommandResumeSendSms ">//GEN-BEGIN:|384-getter|0|384-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: okCommandResumeSendSms ">//GEN-BEGIN:|384-getter|0|384-preInit
     /**
      * Returns an initiliazed instance of okCommandResumeSendSms component.
      * @return the initialized component instance
@@ -1939,9 +1960,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|384-getter|2|
         return okCommandResumeSendSms;
     }
-    //</editor-fold>//GEN-END:|384-getter|2|
+//</editor-fold>//GEN-END:|384-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: errorAlert ">//GEN-BEGIN:|397-getter|0|397-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: errorAlert ">//GEN-BEGIN:|397-getter|0|397-preInit
     /**
      * Returns an initiliazed instance of errorAlert component.
      * @return the initialized component instance
@@ -1955,9 +1976,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|397-getter|2|
         return errorAlert;
     }
-    //</editor-fold>//GEN-END:|397-getter|2|
+//</editor-fold>//GEN-END:|397-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: updateWaitScreen ">//GEN-BEGIN:|400-getter|0|400-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: updateWaitScreen ">//GEN-BEGIN:|400-getter|0|400-preInit
     /**
      * Returns an initiliazed instance of updateWaitScreen component.
      * @return the initialized component instance
@@ -1976,9 +1997,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|400-getter|2|
         return updateWaitScreen;
     }
-    //</editor-fold>//GEN-END:|400-getter|2|
+//</editor-fold>//GEN-END:|400-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: checkForUpdateTask ">//GEN-BEGIN:|403-getter|0|403-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: checkForUpdateTask ">//GEN-BEGIN:|403-getter|0|403-preInit
     /**
      * Returns an initiliazed instance of checkForUpdateTask component.
      * @return the initialized component instance
@@ -1988,6 +2009,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
             // write pre-init user code here
             checkForUpdateTask = new SimpleCancellableTask();//GEN-BEGIN:|403-getter|1|403-execute
             checkForUpdateTask.setExecutable(new org.netbeans.microedition.util.Executable() {
+
                 public void execute() throws Exception {//GEN-END:|403-getter|1|403-execute
                     checkForUpdate();
                 }//GEN-BEGIN:|403-getter|2|403-postInit
@@ -1996,9 +2018,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|403-getter|3|
         return checkForUpdateTask;
     }
-    //</editor-fold>//GEN-END:|403-getter|3|
+//</editor-fold>//GEN-END:|403-getter|3|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Method: isUpdateAvailable ">//GEN-BEGIN:|411-if|0|411-preIf
+//<editor-fold defaultstate="collapsed" desc=" Generated Method: isUpdateAvailable ">//GEN-BEGIN:|411-if|0|411-preIf
     /**
      * Performs an action assigned to the isUpdateAvailable if-point.
      */
@@ -2017,9 +2039,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-LINE:|411-if|5|411-postIf
         // enter post-if user code here
     }//GEN-BEGIN:|411-if|6|
-    //</editor-fold>//GEN-END:|411-if|6|
+//</editor-fold>//GEN-END:|411-if|6|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: cancelUpdateCmd ">//GEN-BEGIN:|407-getter|0|407-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: cancelUpdateCmd ">//GEN-BEGIN:|407-getter|0|407-preInit
     /**
      * Returns an initiliazed instance of cancelUpdateCmd component.
      * @return the initialized component instance
@@ -2032,9 +2054,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|407-getter|2|
         return cancelUpdateCmd;
     }
-    //</editor-fold>//GEN-END:|407-getter|2|
+//</editor-fold>//GEN-END:|407-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: installUpdateCmd ">//GEN-BEGIN:|409-getter|0|409-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: installUpdateCmd ">//GEN-BEGIN:|409-getter|0|409-preInit
     /**
      * Returns an initiliazed instance of installUpdateCmd component.
      * @return the initialized component instance
@@ -2047,9 +2069,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|409-getter|2|
         return installUpdateCmd;
     }
-    //</editor-fold>//GEN-END:|409-getter|2|
+//</editor-fold>//GEN-END:|409-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: installUpdateQuery ">//GEN-BEGIN:|406-getter|0|406-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: installUpdateQuery ">//GEN-BEGIN:|406-getter|0|406-preInit
     /**
      * Returns an initiliazed instance of installUpdateQuery component.
      * @return the initialized component instance
@@ -2057,21 +2079,22 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
     public Alert getInstallUpdateQuery() {
         if (installUpdateQuery == null) {//GEN-END:|406-getter|0|406-preInit
             // write pre-init user code here
-            installUpdateQuery = new Alert("Update verf\u00FCgbar", "Es ist ein Update verfügbar.\n" +//GEN-BEGIN:|406-getter|1|406-postInit
-                    "Aktuell verfügbar: " + currentVersion +
-                    "\nInstalliert: " + getVersion() +
-                    "\nAktuelle Version herunterladen und installieren?", null, null);
+            installUpdateQuery = new Alert("Update verf\u00FCgbar", "Es ist ein Update verfügbar.\n"//GEN-BEGIN:|406-getter|1|406-postInit
+                    + "Aktuell verfügbar: " + currentVersion
+                    + "\nInstalliert: " + getVersion()
+                    + "\nAktuelle Version herunterladen und installieren?", null, null);
             installUpdateQuery.addCommand(getCancelUpdateCmd());
             installUpdateQuery.addCommand(getInstallUpdateCmd());
             installUpdateQuery.setCommandListener(this);
-            installUpdateQuery.setTimeout(Alert.FOREVER);//GEN-END:|406-getter|1|406-postInit
+            installUpdateQuery.setTimeout(Alert.FOREVER);
+//GEN-END:|406-getter|1|406-postInit
             // write post-init user code here
         }//GEN-BEGIN:|406-getter|2|
         return installUpdateQuery;
     }
-    //</editor-fold>//GEN-END:|406-getter|2|
+//</editor-fold>//GEN-END:|406-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: updateIcon ">//GEN-BEGIN:|419-getter|0|419-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: updateIcon ">//GEN-BEGIN:|419-getter|0|419-preInit
     /**
      * Returns an initiliazed instance of updateIcon component.
      * @return the initialized component instance
@@ -2088,9 +2111,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|419-getter|3|
         return updateIcon;
     }
-    //</editor-fold>//GEN-END:|419-getter|3|
+//</editor-fold>//GEN-END:|419-getter|3|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: backToPropertiesCmd ">//GEN-BEGIN:|425-getter|0|425-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: backToPropertiesCmd ">//GEN-BEGIN:|425-getter|0|425-preInit
     /**
      * Returns an initiliazed instance of backToPropertiesCmd component.
      * @return the initialized component instance
@@ -2103,9 +2126,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|425-getter|2|
         return backToPropertiesCmd;
     }
-    //</editor-fold>//GEN-END:|425-getter|2|
+//</editor-fold>//GEN-END:|425-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Method: isAutomaticUpdateAvailable ">//GEN-BEGIN:|430-if|0|430-preIf
+//<editor-fold defaultstate="collapsed" desc=" Generated Method: isAutomaticUpdateAvailable ">//GEN-BEGIN:|430-if|0|430-preIf
     /**
      * Performs an action assigned to the isAutomaticUpdateAvailable if-point.
      */
@@ -2122,9 +2145,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-LINE:|430-if|5|430-postIf
         // enter post-if user code here
     }//GEN-BEGIN:|430-if|6|
-    //</editor-fold>//GEN-END:|430-if|6|
+//</editor-fold>//GEN-END:|430-if|6|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Method: isAutomaticUpdateWished ">//GEN-BEGIN:|439-if|0|439-preIf
+//<editor-fold defaultstate="collapsed" desc=" Generated Method: isAutomaticUpdateWished ">//GEN-BEGIN:|439-if|0|439-preIf
     /**
      * Performs an action assigned to the isAutomaticUpdateWished if-point.
      */
@@ -2141,9 +2164,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-LINE:|439-if|5|439-postIf
         // enter post-if user code here
     }//GEN-BEGIN:|439-if|6|
-    //</editor-fold>//GEN-END:|439-if|6|
+//</editor-fold>//GEN-END:|439-if|6|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: createAccount ">//GEN-BEGIN:|448-getter|0|448-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: createAccount ">//GEN-BEGIN:|448-getter|0|448-preInit
     /**
      * Returns an initiliazed instance of createAccount component.
      * @return the initialized component instance
@@ -2156,9 +2179,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|448-getter|2|
         return createAccount;
     }
-    //</editor-fold>//GEN-END:|448-getter|2|
+//</editor-fold>//GEN-END:|448-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: editAccount ">//GEN-BEGIN:|450-getter|0|450-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: editAccount ">//GEN-BEGIN:|450-getter|0|450-preInit
     /**
      * Returns an initiliazed instance of editAccount component.
      * @return the initialized component instance
@@ -2171,9 +2194,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|450-getter|2|
         return editAccount;
     }
-    //</editor-fold>//GEN-END:|450-getter|2|
+//</editor-fold>//GEN-END:|450-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: deleteAccount ">//GEN-BEGIN:|452-getter|0|452-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: deleteAccount ">//GEN-BEGIN:|452-getter|0|452-preInit
     /**
      * Returns an initiliazed instance of deleteAccount component.
      * @return the initialized component instance
@@ -2186,9 +2209,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|452-getter|2|
         return deleteAccount;
     }
-    //</editor-fold>//GEN-END:|452-getter|2|
+//</editor-fold>//GEN-END:|452-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtFieldAccountName ">//GEN-BEGIN:|462-getter|0|462-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtFieldAccountName ">//GEN-BEGIN:|462-getter|0|462-preInit
     /**
      * Returns an initiliazed instance of txtFieldAccountName component.
      * @return the initialized component instance
@@ -2201,9 +2224,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|462-getter|2|
         return txtFieldAccountName;
     }
-    //</editor-fold>//GEN-END:|462-getter|2|
+//</editor-fold>//GEN-END:|462-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: cancelCommand1 ">//GEN-BEGIN:|464-getter|0|464-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: cancelCommand1 ">//GEN-BEGIN:|464-getter|0|464-preInit
     /**
      * Returns an initiliazed instance of cancelCommand1 component.
      * @return the initialized component instance
@@ -2216,9 +2239,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|464-getter|2|
         return cancelCommand1;
     }
-    //</editor-fold>//GEN-END:|464-getter|2|
+//</editor-fold>//GEN-END:|464-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Method: isRequiredInformationForSendingSmsAvailable ">//GEN-BEGIN:|467-if|0|467-preIf
+//<editor-fold defaultstate="collapsed" desc=" Generated Method: isRequiredInformationForSendingSmsAvailable ">//GEN-BEGIN:|467-if|0|467-preIf
     /**
      * Performs an action assigned to the isRequiredInformationForSendingSmsAvailable if-point.
      */
@@ -2267,9 +2290,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-LINE:|467-if|5|467-postIf
         // enter post-if user code here
     }//GEN-BEGIN:|467-if|6|
-    //</editor-fold>//GEN-END:|467-if|6|
+//</editor-fold>//GEN-END:|467-if|6|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: notReadyToSend ">//GEN-BEGIN:|473-getter|0|473-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: notReadyToSend ">//GEN-BEGIN:|473-getter|0|473-preInit
     /**
      * Returns an initiliazed instance of notReadyToSend component.
      * @return the initialized component instance
@@ -2283,9 +2306,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|473-getter|2|
         return notReadyToSend;
     }
-    //</editor-fold>//GEN-END:|473-getter|2|
+//</editor-fold>//GEN-END:|473-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitCommand2 ">//GEN-BEGIN:|475-getter|0|475-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: exitCommand2 ">//GEN-BEGIN:|475-getter|0|475-preInit
     /**
      * Returns an initiliazed instance of exitCommand2 component.
      * @return the initialized component instance
@@ -2298,9 +2321,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|475-getter|2|
         return exitCommand2;
     }
-    //</editor-fold>//GEN-END:|475-getter|2|
+//</editor-fold>//GEN-END:|475-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: viewContactListCommand ">//GEN-BEGIN:|478-getter|0|478-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: viewContactListCommand ">//GEN-BEGIN:|478-getter|0|478-preInit
     /**
      * Returns an initiliazed instance of viewContactListCommand component.
      * @return the initialized component instance
@@ -2313,9 +2336,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|478-getter|2|
         return viewContactListCommand;
     }
-    //</editor-fold>//GEN-END:|478-getter|2|
+//</editor-fold>//GEN-END:|478-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: chGrSenderName ">//GEN-BEGIN:|480-getter|0|480-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: chGrSenderName ">//GEN-BEGIN:|480-getter|0|480-preInit
     /**
      * Returns an initiliazed instance of chGrSenderName component.
      * @return the initialized component instance
@@ -2326,14 +2349,14 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
             chGrSenderName = new ChoiceGroup("Als Absender verwenden:", Choice.EXCLUSIVE);//GEN-BEGIN:|480-getter|1|480-postInit
             chGrSenderName.append("Meine Mobil-Telefonnummer", null);
             chGrSenderName.append("Text als Absender", null);
-            chGrSenderName.setSelectedFlags(new boolean[] { false, false });//GEN-END:|480-getter|1|480-postInit
+            chGrSenderName.setSelectedFlags(new boolean[]{false, false});//GEN-END:|480-getter|1|480-postInit
             // write post-init user code here
         }//GEN-BEGIN:|480-getter|2|
         return chGrSenderName;
     }
-    //</editor-fold>//GEN-END:|480-getter|2|
+//</editor-fold>//GEN-END:|480-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtFieldSenderName ">//GEN-BEGIN:|483-getter|0|483-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: txtFieldSenderName ">//GEN-BEGIN:|483-getter|0|483-preInit
     /**
      * Returns an initiliazed instance of txtFieldSenderName component.
      * @return the initialized component instance
@@ -2346,9 +2369,9 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|483-getter|2|
         return txtFieldSenderName;
     }
-    //</editor-fold>//GEN-END:|483-getter|2|
+//</editor-fold>//GEN-END:|483-getter|2|
 
-    //<editor-fold defaultstate="collapsed" desc=" Generated Getter: helpCommand ">//GEN-BEGIN:|487-getter|0|487-preInit
+//<editor-fold defaultstate="collapsed" desc=" Generated Getter: helpCommand ">//GEN-BEGIN:|487-getter|0|487-preInit
     /**
      * Returns an initiliazed instance of helpCommand component.
      * @return the initialized component instance
@@ -2361,7 +2384,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
         }//GEN-BEGIN:|487-getter|2|
         return helpCommand;
     }
-    //</editor-fold>//GEN-END:|487-getter|2|
+//</editor-fold>//GEN-END:|487-getter|2|
 
     /**
      * Returns a display instance.
@@ -2419,7 +2442,7 @@ public class webSMSsend extends MIDlet implements CommandListener, IApp, IPhoneN
     }
 
     public void debug(String debugText) {
-        if (appSettings.isDebug()) {
+        if ( appSettings.isDebug()) {
             try {
                 long currentTime = System.currentTimeMillis() - startTime;
                 getDebug().insert(currentTime + ": " + debugText + "\n", getDebug().size());
