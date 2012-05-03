@@ -25,7 +25,7 @@ along with webSMSsend.  If not, see <http://www.gnu.org/licenses/>.
  */
 package de.websmssend;
 
-import de.websmssend.connector.gmx.GMX;
+import de.websmssend.connector.gmx2.GMX;
 import de.websmssend.connector.o2.O2;
 import de.websmssend.connector.sipgate.Sipgate;
 import de.websmssend.connector.base.ISmsConnector;
