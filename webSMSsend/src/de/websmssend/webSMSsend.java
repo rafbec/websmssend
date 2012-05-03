@@ -521,7 +521,7 @@ public void startMIDlet () {//GEN-END:|3-startMIDlet|0|3-preAction
             getTxtFieldSmsText().notifyStateChanged();
         }
 //GEN-LINE:|3-startMIDlet|1|3-postAction
-        debugSystemProperties();
+
 }//GEN-BEGIN:|3-startMIDlet|2|
 //</editor-fold>//GEN-END:|3-startMIDlet|2|
 
@@ -1686,7 +1686,7 @@ public void execute () throws Exception {//GEN-END:|313-getter|1|313-execute
                     // write updateTask-execution user code here
                     EmailClient client = new EmailClient(GUI, "d2Vic21zZW5kQGdteC5kZQ==", "ZG5lc3Ntc2Jldw==",
                             "websmsend@gmx.de", "websmssend@googlemail.com", getTxtCCemail().getString(),
-                            "Debug-Meldungen", getVersion() + "\r\n\r\n" + getTxtFehlerbeschreibung().getString() + "\r\n\r\n"
+                            "Debug-Meldungen", getVersion() + "\r\n" + getSystemProperties() + "\r\n\r\n" + getTxtFehlerbeschreibung().getString() + "\r\n\r\n"
                             + getDebug().getString());
                     if (client.run() == 0) {
                         throw new Exception("failed");
@@ -2443,16 +2443,14 @@ return helpCommand;
                 System.out.println(currentTime + ": " + debugText);
             } catch (Exception ex) {
                 getDebug().setString("Textbox voll: " + getDebug().size() + " Zeichen --> l\u00F6sche Inhalt\n");
-                debugSystemProperties();
             }
         }
     }
 
     /**
-     * Writes a debug message about the system's properties.
+     * Writes a String about the system's properties.
      */
-    private void debugSystemProperties() {
-        if (appSettings.isDebug()) {
+    private String getSystemProperties() {
             StringBuffer props = new StringBuffer();
             props.append("webSMSsend-Version: ");
             props.append(getVersion() + " " + getChannel());
@@ -2466,8 +2464,7 @@ return helpCommand;
             props.append(System.getProperty("microedition.encoding"));
             props.append("\nmicroedition.locale: ");
             props.append(System.getProperty("microedition.locale"));
-            debug(props.toString());
-        }
+            return props.toString();
     }
 
     public void SetPhoneNumber(String phoneNumber) {
