@@ -188,8 +188,23 @@ public class NetworkHandler {
                 }
                 GUI.debug("HTTP Response Code: " + con.getResponseCode());
                 responseCode = con.getResponseCode();
-                if (con.getResponseCode() == HttpsConnection.HTTP_OK || con.getResponseCode() == HttpsConnection.HTTP_ACCEPTED) {
 
+                if (con.getResponseCode() == HttpsConnection.HTTP_MOVED_TEMP) {
+                    String newUrl = con.getHeaderField("Location");
+                    System.out.println(newUrl);
+                    if (is != null) {
+                        is.close();
+                    }
+                    if (con != null) {
+                        con.close();
+                    }
+                    if (os != null) {
+                        os.close();
+                    }
+                    httpHandler("GET", newUrl, host, "", true);
+
+                } else {
+                    
                     // Get length and process data
                     try {
                         int len = (int) con.getLength();
@@ -225,23 +240,6 @@ public class NetworkHandler {
                         GUI.debug("reading input stream failed, exception: " + ex.toString());
                         throw ex;
                     }
-
-                } else if (con.getResponseCode() == HttpsConnection.HTTP_MOVED_TEMP) {
-                    String newUrl = con.getHeaderField("Location");
-                    System.out.println(newUrl);
-                    if (is != null) {
-                        is.close();
-                    }
-                    if (con != null) {
-                        con.close();
-                    }
-                    if (os != null) {
-                        os.close();
-                    }
-                    httpHandler("GET", newUrl, host, "", true);
-
-                } else {
-                    throw new Exception("Connection failed, response code: " + con.getResponseCode());
                 }
 
             }
