@@ -1,7 +1,7 @@
 /*
  *
  *
-    Copyright 2011 redrocketracoon@googlemail.com
+    Copyright 2012 redrocketracoon@googlemail.com
     This file is part of WebSMSsend.
 
     WebSMSsend is free software: you can redistribute it and/or modify
@@ -33,7 +33,7 @@ import de.websmssend.IApp;
 public abstract class SmsConnector implements ISmsConnector {
 
     protected static final String REMAINING_SMS_FIELD = "RemainingSMS";
-    protected static final String MAX_FREE_SMS = "MaxFreeSMS";
+    protected static final String MAX_FREE_SMS_FIELD = "MaxFreeSMS";
 
     protected IApp gui = null;
     protected int remsms = -1;
@@ -53,7 +53,7 @@ public abstract class SmsConnector implements ISmsConnector {
 
     public int getMaxFreeSMS() {
         try {
-            String maxfreesms = getItem(MAX_FREE_SMS);
+            String maxfreesms = getItem(MAX_FREE_SMS_FIELD);
             this.maxfreesms = Integer.parseInt(maxfreesms);
         } catch (Exception ex) {
             maxfreesms = -1; //-1 if no value could be restored

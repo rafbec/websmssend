@@ -28,6 +28,7 @@
 package de.websmssend.connector.sipgate;
 
 
+import de.websmssend.connector.base.BasicAuth;
 import de.websmssend.connector.base.SmsConnector;
 import de.websmssend.connector.base.SmsData;
 import de.websmssend.connector.base.URLEncoder;

@@ -406,7 +406,7 @@ public class GMX extends SmsConnector {
             maxfreesms = Integer.parseInt(freeMaxMonth.toString());
 
             saveItem(REMAINING_SMS_FIELD, remsms+"");
-            saveItem(MAX_FREE_SMS, maxfreesms+"");
+            saveItem(MAX_FREE_SMS_FIELD, maxfreesms+"");
 
             gui.debug("Fertig mit " + getClass().getName()
                     + ".Send(), Dauer: "

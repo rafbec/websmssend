@@ -45,6 +45,7 @@ public class NetworkHandler {
     private String content = "";
     private String cookie = "";
     private String lasturl = "";
+    private int responseCode;
     private IApp GUI;
     private GMX parent;
 
@@ -66,6 +67,10 @@ public class NetworkHandler {
 
     public String getLastUrl() {
         return lasturl;
+    }
+    
+    public int getResponseCode(){
+        return responseCode;
     }
 
     public void setContent(String content2) {
@@ -182,7 +187,8 @@ public class NetworkHandler {
                     throw ex;
                 }
                 GUI.debug("HTTP Response Code: " + con.getResponseCode());
-                if (con.getResponseCode() == HttpsConnection.HTTP_OK) {
+                responseCode = con.getResponseCode();
+                if (con.getResponseCode() == HttpsConnection.HTTP_OK || con.getResponseCode() == HttpsConnection.HTTP_ACCEPTED) {
 
                     // Get length and process data
                     try {

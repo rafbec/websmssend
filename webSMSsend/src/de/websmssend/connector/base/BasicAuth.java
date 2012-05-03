@@ -2,14 +2,13 @@
  * Copyright (c) 2000-2001 Sun Microsystems, Inc. All Rights Reserved.
  */
 
+package de.websmssend.connector.base;
 
 /**
  * This class encodes a user name and password
  * in the format (base 64) that HTTP Basic
  * Authorization requires.
  */
-package de.websmssend.connector.sipgate;
-
 
 public class BasicAuth {
     // make sure no one can instantiate this class
@@ -41,7 +40,7 @@ public class BasicAuth {
      *    passwd   the user's password
      *    returns  String   the base64 encoded name:password
      */
-    static String encode(String name,
+    public static String encode(String name,
                          String passwd) {
         byte input[] = (name + ":" + passwd).getBytes();
         byte[] output = new byte[((input.length / 3) + 1) * 4];
@@ -85,5 +84,5 @@ public class BasicAuth {
             }
         }
         return new String(output);
-    } 
+    }
 }

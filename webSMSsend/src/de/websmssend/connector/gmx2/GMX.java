@@ -28,6 +28,7 @@ import de.websmssend.connector.base.SmsConnector;
 import de.websmssend.connector.base.Properties;
 import de.websmssend.connector.base.SmsData;
 import java.io.IOException;
+import javax.microedition.io.HttpsConnection;
 import javax.microedition.pki.CertificateException;
 
 /**
@@ -36,7 +37,7 @@ import javax.microedition.pki.CertificateException;
  */
 public class GMX extends SmsConnector {
 
-    private ResumeData resumeData = null;
+    private SmsData resumeSms = null;
 
     /** Maximum SMS length allowed */
     protected static final int MAX_SMS_LENGTH = 760;
@@ -102,11 +103,11 @@ public class GMX extends SmsConnector {
 
     public int send(SmsData Sms) throws Exception {
         int SenderMode = 0; //0=Phonenumber, 1=Text( SenderName )
-        boolean failedToGetRemSms = false;
         gui = Sms.getGui();
+                
         if (Sms.getSenderName().length() >= 5) {
             SenderMode = 1;
-        }
+        }      
 
         try {
             gui.debug("starte sendSMSGMX()" + (Sms.isSimulation() ? " SIMULATION!" : ""));
@@ -166,48 +167,41 @@ public class GMX extends SmsConnector {
                 }
             }
             
-            //Check of user credentials
+            //Check user credentials
             String response = connection.getContent();
             if (response.indexOf("authentication error") != -1) {
                 Exception ex = new Exception("Zugangsdaten falsch!");
                 throw ex;
             }
+            gui.setWaitScreenText("Login erfolgreich");
             
             //Parse Response (Remaining SMS and maximal SMS per month)
-            parseSmsCount(response);  
+            parseSmsCount(response);
+            //Calculate remaining SMS after sending SMS
+            remsms = remsms - countSms(Sms.getSmsText());
 
-            gui.setWaitScreenText("Login erfolgreich");
-//            gui.setWaitScreenText("Senden wird vorbereitet...");
-
-
-
-//            Build SMS send request and get remaining SMS.
-//            String postRequest = connection.getSendPostRequest(Sms.getSmsRecv(), Sms.getSmsText(), SenderMode);
-            String postRequest = connection.getSendPostRequest(Sms.getSmsRecv(), Sms.getSmsText(), SenderMode);
-//            String[] returnValue;
-//            String postRequest = "";
-//            returnValue = connection.getSendPostRequest(true, SenderMode); //Sendermode: 0=phone number 1=text
-//            postRequest = returnValue[0];
-//            gui.debug("Post-Request: " + postRequest);
-
-//            try {
-//                remsms = Integer.parseInt(returnValue[1]);
-//                remsms = remsms - countSms(Sms.getSmsText()); //Counting amount of used SMS and subtract from remaining freesms
-//            } catch (Exception ex) {
-//                gui.debug("Failed to receive remaining SMS: " + ex.toString() + ex.getMessage());
-//                failedToGetRemSms = true;
-//            }
-
-//            for Debug purposes: simulates no more Free-SMS available
-//            remsms = -1;
-            gui.debug("LastURL: " + connection.getLastUrl());
-
-            if (remsms < 0 && failedToGetRemSms == false) { //No free sms remaining ask user what to do. In case it's not possible to aquire remsms send anyway
-                resumeData = new ResumeData(SenderMode, postRequest, smsRecv, Sms, connection);
+            if (resumeSms != Sms && remsms < 0) {
+                //not enough free SMS and no Resume in Progress. Abort and ask user what to do
+                resumeSms = Sms;
                 return -1;
-            } else { //enough free sms avaiable
-                sendSms(new ResumeData(SenderMode, postRequest, smsRecv, Sms, connection));
-                gui.debug("Fertig mit sendSMS02, Dauer: " + (System.currentTimeMillis() - totaltime) + " ms");
+            } else {
+                //Resume in progress or enough freesms
+                gui.setWaitScreenText("SMS wird gesendet...");
+                resumeSms = null;
+                //without sourceNumber GMX SMS will be the sender
+                url = "https://sms-submission-service.gmx.de/sms-submission-service/gmx/sms/2.0/SmsSubmission?"
+                        + "destinationNumber=" + smsRecv + "&sourceNumber=004917670499487&clientType=GMX_ANDROID&messageType=SMS&options=SEND_ERROR_NOTIFY_MAIL";
+                if (!Sms.isSimulation()) {
+                    connection.httpHandler("POST", url, "sms-submission-service.gmx.de", Sms.getSmsText(), true);
+                }
+                if (connection.getResponseCode() == HttpsConnection.HTTP_ACCEPTED) {
+                    gui.setWaitScreenText("SMS wurde versandt!");
+
+                }
+
+                saveItem(REMAINING_SMS_FIELD, remsms + "");
+                saveItem(MAX_FREE_SMS_FIELD, maxfreesms + "");
+                gui.debug("Fertig mit sendSMSGMX, Dauer: " + (System.currentTimeMillis() - totaltime) + " ms");
                 return 0;
             }
         } catch (OutOfMemoryError ex) {
@@ -232,24 +226,25 @@ public class GMX extends SmsConnector {
     private void parseSmsCount(String response) {
         //Parse Response MAX_MONTH_FREE_SMS=10&MONTH_FREE_SMS=4&LIMIT_MONTH_AUTO_SMS=100&AVAILABLE_FREE_SMS=6&USER_TYPE=GMX_FREEMAIL&MAX_WEBCENT=0&MONTH_PAY_SMS=0&MONTH_AUTO_SMS=0
         final String MAX_SMS = "MAX_MONTH_FREE_SMS=";
-        final String REM_SMS = "MONTH_FREE_SMS=";
+        final String REM_SMS = "MONTH_FREE_SMS="; //Amount of already used free SMS
         try {
+            gui.debug(response);
             int index = response.indexOf(MAX_SMS);
             int endindex = response.indexOf("&", index);
             maxfreesms = Integer.parseInt(response.substring(index + MAX_SMS.length(), endindex));
 
             index = response.indexOf(REM_SMS, endindex);
             remsms = Integer.parseInt(response.substring(index + REM_SMS.length(), response.indexOf("&", index)));
+            remsms = maxfreesms - remsms;
         } catch (NumberFormatException e) {
             gui.debug(e.getMessage());
         }
     }
 
-
     public boolean resumeSending() throws Exception {
         gui.debug("Resume SMS sending process");
-        if (resumeData != null) {
-            sendSms(resumeData);
+        if (resumeSms != null) {
+            send(resumeSms);
             return true;
         } else {
             return false;
@@ -257,37 +252,22 @@ public class GMX extends SmsConnector {
 
     }
 
-    private void sendSms(ResumeData resumeData) throws IOException, Exception {
-        
-        gui.setWaitScreenText("SMS wird gesendet...");
-//        final String url = "https://ums.gmx.net/ums/home;jsessionid=" + resumeData.getSessionID()
-//               + "-1.IBehaviorListener.0-main~tab-content~panel~container-content~panel-form-sendMessage&wicket-ajax=true&wicket-ajax-baseurl=home";
-        String postRequest = resumeData.getPostRequest();
-        SmsData Sms = resumeData.getSms();
-
-//        if (resumeData.getSenderMode() == 1) {
-//            //Text as Sender
-//            postRequest = postRequest + "SMSTo=" + URLEncoder.encode(resumeData.getSmsRecv()) + "&SMSText="
-//                    + URLEncoder.encode(Sms.getSmsText()) + "&SMSFrom=" + URLEncoder.encode(Sms.getSenderName()) + "&Frequency=5";
-//        } else {
-//            postRequest = postRequest + "SMSTo=" + URLEncoder.encode(resumeData.getSmsRecv()) + "&SMSText="
-//                    + URLEncoder.encode(Sms.getSmsText()) + "&SMSFrom=&Frequency=5";
-//        }
-
-//        if (!Sms.isSimulation()) {
-//            resumeData.getConnection().httpHandler("POST", url, "ums.gmx.net", postRequest, true,true); //false
-//        }
-gui.debug("Response: " + resumeData.getConnection().getContent());
-        gui.setWaitScreenText("SMS wurde versandt!");
-        saveItem(REMAINING_SMS_FIELD, remsms + "");
+    protected String checkRecv(String smsRecv) {
+        if (smsRecv.startsWith("0")) {
+            smsRecv = "0049".concat(smsRecv.substring(1));
+        }
+        if (smsRecv.startsWith("+")) {
+            smsRecv = "00".concat(smsRecv.substring(1));
+        }
+        return smsRecv;
     }
 
     //<editor-fold defaultstate="collapsed" desc="Save- and Get-Function for Networkhandler">
-    void saveSetting(String itemName, String value){
+    void saveSetting(String itemName, String value) {
         saveItem(itemName, value);
     }
 
-    String getSetting(String itemName){
+    String getSetting(String itemName) {
         return getItem(itemName);
     }
     //</editor-fold>
