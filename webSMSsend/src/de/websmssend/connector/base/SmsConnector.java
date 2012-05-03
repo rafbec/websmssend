@@ -98,4 +98,16 @@ public abstract class SmsConnector implements ISmsConnector {
         }
         return smsRecv;
     }
+    
+    public String getSenderStandardLabel() {
+        return "Meine Mobiltelefonnummer";   
+    }
+
+    public String getSenderAlternativeLabel() {
+        return "Text als Absender";
+    }
+
+    public String getSenderAlternativeDescription() {
+        return "Absender-Text:";
+    }
 }

@@ -2,6 +2,8 @@
  *
  *
     Copyright 2012 redrocketracoon@googlemail.com
+    Inspired by Felix Bachstein's WebSMS GMX Connector https://github.com/felixb/websms-connector-gmx
+ 
     This file is part of WebSMSsend.
 
     WebSMSsend is free software: you can redistribute it and/or modify
@@ -23,7 +25,6 @@
 
 package de.websmssend.connector.gmx2;
 
-import de.websmssend.connector.base.URLEncoder;
 import de.websmssend.connector.base.SmsConnector;
 import de.websmssend.connector.base.Properties;
 import de.websmssend.connector.base.SmsData;
@@ -33,7 +34,7 @@ import javax.microedition.pki.CertificateException;
 
 /**
  *
- * @author Copyright 2011 redrocketracoon@googlemail.com
+ * @author Copyright 2012 redrocketracoon@googlemail.com
  */
 public class GMX extends SmsConnector {
 
@@ -43,7 +44,7 @@ public class GMX extends SmsConnector {
     protected static final int MAX_SMS_LENGTH = 760;
 
     public GMX() {
-        specs.AddProperty(new int[]{Properties.CAN_SEND_NAME_AS_SENDER,
+        specs.AddProperty(new int[]{Properties.CAN_SEND_WITH_ALTERNATIVE_SENDER,
             Properties.CAN_SIMULATE_SEND_PROCESS,
             Properties.CAN_ABORT_SEND_PROCESS_WHEN_NO_FREE_SMS_AVAILABLE});
     }
@@ -54,6 +55,18 @@ public class GMX extends SmsConnector {
 
     public String getPasswordFieldLabel() {
         return "Passwort:";
+    }
+    
+    public String getSenderStandardLabel() {
+        return "GMX SMS";   
+    }
+
+    public String getSenderAlternativeLabel() {
+        return "Meine Mobiltelefonnummer";
+    }
+
+    public String getSenderAlternativeDescription() {
+        return "Telefonnummer (00491...):";
     }
 
     public String getRemSmsText() {
@@ -82,21 +95,14 @@ public class GMX extends SmsConnector {
     }
 
     public void checkSmsSenderNameConstraints(String senderName) throws Exception {
-        if (senderName.length() < 5) {
-            //Fehlermeldung "Name zu kurz" falls Text als Absender gewählt
-            throw new Exception("Der Absender muss mindestens 5 Buchstaben lang sein");
-        } else if (senderName.length() > 10) {
-            //Fehlermeldung "Name zu lang" falls Text als Absender gewählt
-            throw new Exception("Der Absender darf h\u00F6chstens 10 Buchstaben lang sein");
-        }
     }
 
     public void checkSmsSenderNameCharacters(String text) throws Exception {
         char[] checkname = text.toCharArray();
         for (int i = 0; i < checkname.length; i++) {
-            if ((checkname[i] >= 'a' && checkname[i] <= 'z') || (checkname[i] >= 'A' && checkname[i] <= 'Z')) {
+            if ((checkname[i] >= '0' && checkname[i] <= '9') && text.startsWith("00")) {
             } else {
-                throw new Exception("Nur Buchstaben ohne Umlaute sind erlaubt!");
+                throw new Exception("Die Handynummer muss im Format 0049... angegeben werden z.B. 0049176111111");
             }
         }
     }
@@ -105,7 +111,7 @@ public class GMX extends SmsConnector {
         int SenderMode = 0; //0=Phonenumber, 1=Text( SenderName )
         gui = Sms.getGui();
                 
-        if (Sms.getSenderName().length() >= 5) {
+        if (Sms.getSenderName().length() > 0) {
             SenderMode = 1;
         }      
 
@@ -188,15 +194,24 @@ public class GMX extends SmsConnector {
                 //Resume in progress or enough freesms
                 gui.setWaitScreenText("SMS wird gesendet...");
                 resumeSms = null;
-                //without sourceNumber GMX SMS will be the sender
-                url = "https://sms-submission-service.gmx.de/sms-submission-service/gmx/sms/2.0/SmsSubmission?"
-                        + "destinationNumber=" + smsRecv + "&sourceNumber=004917670499487&clientType=GMX_ANDROID&messageType=SMS&options=SEND_ERROR_NOTIFY_MAIL";
+                if (SenderMode == 1) {
+                    //send with phone number as sender
+                    url = "https://sms-submission-service.gmx.de/sms-submission-service/gmx/sms/2.0/SmsSubmission?"
+                            + "destinationNumber=" + smsRecv + "&sourceNumber=" + Sms.getSenderName()
+                            + "&clientType=GMX_ANDROID&messageType=SMS&options=SEND_ERROR_NOTIFY_MAIL";
+                } else {
+                    //without sourceNumber "GMX SMS" will be the sender
+                    url = "https://sms-submission-service.gmx.de/sms-submission-service/gmx/sms/2.0/SmsSubmission?"
+                            + "destinationNumber=" + smsRecv + "&clientType=GMX_ANDROID&messageType=SMS&options=SEND_ERROR_NOTIFY_MAIL";
+                }
+                gui.debug(url);
+                
                 if (!Sms.isSimulation()) {
                     connection.httpHandler("POST", url, "sms-submission-service.gmx.de", Sms.getSmsText(), true);
                 }
                 if (connection.getResponseCode() == HttpsConnection.HTTP_ACCEPTED) {
                     gui.setWaitScreenText("SMS wurde versandt!");
-
+                    
                 }
 
                 saveItem(REMAINING_SMS_FIELD, remsms + "");

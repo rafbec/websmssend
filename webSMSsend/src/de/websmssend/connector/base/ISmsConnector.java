@@ -62,6 +62,24 @@ public interface ISmsConnector {
      * @return
      */
     public abstract String getRemSmsText();
+    
+     /**
+     *
+     * @return
+     */
+    public abstract String getSenderStandardLabel();
+    
+     /**
+     *
+     * @return
+     */
+    public abstract String getSenderAlternativeLabel();
+    
+     /**
+     *
+     * @return
+     */
+    public abstract String getSenderAlternativeDescription();
 
     /**
      *

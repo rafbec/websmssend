@@ -42,7 +42,7 @@ public class O2 extends SmsConnector {
     protected static final int MAX_SMS_LENGTH = 1800;
 
     public O2() {
-        specs.AddProperty(new int[]{Properties.CAN_SEND_NAME_AS_SENDER,
+        specs.AddProperty(new int[]{Properties.CAN_SEND_WITH_ALTERNATIVE_SENDER,
             Properties.CAN_SIMULATE_SEND_PROCESS,
             Properties.CAN_ABORT_SEND_PROCESS_WHEN_NO_FREE_SMS_AVAILABLE});
     }

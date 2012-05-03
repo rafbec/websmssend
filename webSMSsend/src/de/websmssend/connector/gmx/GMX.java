@@ -86,7 +86,7 @@ public class GMX extends SmsConnector {
      * CAN_ABORT_SEND_PROCESS_WHEN_NO_FREE_SMS_AVAILABLE} property.
      */
     public GMX(){
-        specs.AddProperty(new int[]{Properties.CAN_SEND_NAME_AS_SENDER,
+        specs.AddProperty(new int[]{Properties.CAN_SEND_WITH_ALTERNATIVE_SENDER,
             Properties.CAN_SIMULATE_SEND_PROCESS,
             Properties.CAN_ABORT_SEND_PROCESS_WHEN_NO_FREE_SMS_AVAILABLE});
     }

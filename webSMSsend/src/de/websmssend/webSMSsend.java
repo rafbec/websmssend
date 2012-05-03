@@ -185,10 +185,6 @@ private Image updateIcon;
         return getAppProperty("MIDlet-Version");
     }
 
-    private String getPasswordFieldLabel() {
-        return SmsConnector.getPasswordFieldLabel();
-    }
-
     private String getRemSMSText() {
         return SmsConnector.getRemSmsText()
                 + "\nBenutzerkonto: " + curUserAcc.getAccountName();
@@ -440,15 +436,20 @@ private Image updateIcon;
     private void loadConnectorProperties() {
         initializeSmsConnector(); //makes sure the right connector is loaded
         if (SmsConnector != null) {
-            getTxtFieldPassword().setLabel(getPasswordFieldLabel()); //sets PasswordField label according to the connector
+            getTxtFieldPassword().setLabel(SmsConnector.getPasswordFieldLabel()); //sets PasswordField label according to the connector
             
             getChGrSenderName().setSelectedIndex(0, true);
             removeItem(getChGrSenderName(), getSetup());
             removeItem(getTxtFieldSenderName(), getSetup());
 
-            if (SmsConnector.hasProperty(Properties.CAN_SEND_NAME_AS_SENDER)) {
-                getSetup().append(getChGrSenderName());
+            if (SmsConnector.hasProperty(Properties.CAN_SEND_WITH_ALTERNATIVE_SENDER)) {
+                getSetup().append(getChGrSenderName()); //Add sender options to allow user to choose between 2 sender variants specified by the connector
+                getChGrSenderName().deleteAll();
+                chGrSenderName.append (SmsConnector.getSenderStandardLabel(), null);
+                chGrSenderName.append (SmsConnector.getSenderAlternativeLabel(), null);
+                
                 getSetup().append(getTxtFieldSenderName());
+                getTxtFieldSenderName().setLabel(SmsConnector.getSenderAlternativeDescription());
 
                 if (curUserAcc.getSenderMode() < chGrSenderName.size() && curUserAcc.getSenderMode() >= 0) {
                     chGrSenderName.setSelectedIndex(curUserAcc.getSenderMode(), true);
@@ -1349,7 +1350,6 @@ setup.setCommandListener (this);//GEN-END:|217-getter|1|217-postInit
                         if (curUserAcc != null) {
                             curUserAcc.setProvider(getChoiceGroup2().getSelectedIndex());
                             loadConnectorProperties();
-                            getTxtFieldPassword().setLabel(getPasswordFieldLabel());
                         }
                     }
                 }
@@ -2342,9 +2342,8 @@ public ChoiceGroup getChGrSenderName () {
 if (chGrSenderName == null) {//GEN-END:|480-getter|0|480-preInit
             // write pre-init user code here
 chGrSenderName = new ChoiceGroup ("Als Absender verwenden:", Choice.EXCLUSIVE);//GEN-BEGIN:|480-getter|1|480-postInit
-chGrSenderName.append ("Meine Mobil-Telefonnummer", null);
 chGrSenderName.append ("Text als Absender", null);
-chGrSenderName.setSelectedFlags (new boolean[] { false, false });//GEN-END:|480-getter|1|480-postInit
+chGrSenderName.setSelectedFlags (new boolean[] { false });//GEN-END:|480-getter|1|480-postInit
             // write post-init user code here
 }//GEN-BEGIN:|480-getter|2|
 return chGrSenderName;
