@@ -1106,7 +1106,7 @@ return okCommand3;
 public Alert getAbout () {
 if (About == null) {//GEN-END:|116-getter|0|116-preInit
             // write pre-init user code here
-About = new Alert ("About", "© 2009 Max H\u00E4nze\n© 2010 Christian Morlok\n© 2011 Schirinowski\n© 2010-2012 RedRocket\n© 2012 Manfred Dreese\nLizenz: GNU GPL 3.0\nVersion: "+getVersion() + " " + getChannel(), null, null);//GEN-BEGIN:|116-getter|1|116-postInit
+About = new Alert ("About", "© 2009 Max H\u00E4nze\n© 2010 Christian Morlok\n© 2011 Schirinowski\n© 2012 Manfred Dreese\n© 2010-2012 RedRocket\nLizenz: GNU GPL 3.0\nVersion: "+getVersion() + " " + getChannel(), null, null);//GEN-BEGIN:|116-getter|1|116-postInit
 About.setTimeout (Alert.FOREVER);//GEN-END:|116-getter|1|116-postInit
             // write post-init user code here
 }//GEN-BEGIN:|116-getter|2|
