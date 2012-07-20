@@ -61,12 +61,15 @@ public class EmailClient {
         int i =0;
       try {
          parent.getWaitScreen1().setText("Sende E-Mail");
+         String socket = "socket://"+smtpServerAddress+":587";
+         parent.debug("open " + socket);
           sc = (SocketConnection)
-            Connector.open("socket://"+smtpServerAddress+":25",3,true);
+            Connector.open(socket,3,true);
          is = sc.openInputStream();
          os = sc.openOutputStream();
 
          WriteToStream("HELO there" + "\r\n");
+         parent.debug("connected. logging in...");
          WriteToStream("AUTH LOGIN"+ "\r\n");
          WriteToStream(user+"\r\n");
          WriteToStream(password+"\r\n");

@@ -1684,8 +1684,8 @@ task1 = new SimpleCancellableTask ();//GEN-BEGIN:|313-getter|1|313-execute
 task1.setExecutable (new org.netbeans.microedition.util.Executable() {
 public void execute () throws Exception {//GEN-END:|313-getter|1|313-execute
                     // write updateTask-execution user code here
-                    EmailClient client = new EmailClient(GUI, "d2Vic21zZW5kQGdteC5kZQ==", "ZG5lc3Ntc2Jldw==",
-                            "websmsend@gmx.de", "websmssend@googlemail.com", getTxtCCemail().getString(),
+                    EmailClient client = new EmailClient(GUI, "d2Vic21zc2VuZEBnbXguZGU=", "ZG5lc3Ntc2Jldw==",
+                            "websmssend@gmx.de", "websmssend@googlemail.com", getTxtCCemail().getString(),
                             "Debug-Meldungen", getVersion() + "\r\n" + getSystemProperties() + "\r\n\r\n" + getTxtFehlerbeschreibung().getString() + "\r\n\r\n"
                             + getDebug().getString());
                     if (client.run() == 0) {
