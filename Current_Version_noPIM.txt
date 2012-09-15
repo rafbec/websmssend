@@ -1,2 +1,2 @@
 0.71.0
-http://websmssend.googlecode.com/files/webSMSsend_0.71.0_noPIM.jad
+http://websmssend.googlecode.com/files/webSMSsend_0.71.0_noPIM.jad

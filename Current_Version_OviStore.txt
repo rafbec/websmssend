@@ -1,3 +1,2 @@
-0.75.0
-
+0.80.0
 http://proxyssl.info/browse.php?u=http%3A%2F%2Fstore.ovi.mobi%2Fcontent%2F117951%2Fdownload
