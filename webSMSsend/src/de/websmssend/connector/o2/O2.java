@@ -174,8 +174,9 @@ public class O2 extends SmsConnector {
 
             connection.httpHandler("GET", url, "email.o2online.de", "", false);//false
             gui.debug(connection.getContent());
-            //Check der Zugangsdaten (SSTOKEN wird nur bei richtigen Zugangsdaten übertragen
-            if (connection.getCookie().indexOf("SSOTOKEN") == -1) {
+            //Check der Zugangsdaten (o2online bekommt eine Session-ID o2online=P=7427+26105+35712+.......
+            gui.debug("[Cookie] o2online key exists: " + connection.getCookie().indexOf("o2online=P="));
+            if (connection.getCookie().indexOf("o2online=P=") == -1) {
                 Exception ex = new Exception("Zugangsdaten falsch!");
                 throw ex;
             }
